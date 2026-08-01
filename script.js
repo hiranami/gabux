@@ -1723,7 +1723,7 @@ function initMailboxOverlay() {
             addInput('_subject', formData.subject);
             addInput('message', formData.message);
             addInput('_captcha', 'false');
-            addInput('_template', 'table');
+            addInput('_template', 'box');
 
             if (formData.files && formData.files.length > 0) {
                 formData.files.forEach((file, index) => {
