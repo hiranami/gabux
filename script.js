@@ -541,7 +541,19 @@ activeTagsData.forEach((text, i) => {
 
 setTimeout(() => { tags.forEach(tag => { tag.width = tag.el.offsetWidth; tag.height = tag.el.offsetHeight; }); }, 50);
 
+let isHeroVisible = true;
+if ('IntersectionObserver' in window && hero) {
+    const heroObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => isHeroVisible = e.isIntersecting);
+    }, { threshold: 0.01 });
+    heroObs.observe(hero);
+}
+
 function animateTags() {
+    if (!isHeroVisible) {
+        requestAnimationFrame(animateTags);
+        return;
+    }
     ctx.clearRect(0, 0, width, height);
     const time = Date.now() * 0.001;
     const isTouchMobileDevice = (window.innerWidth <= 840) || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
@@ -799,7 +811,17 @@ function initSectionGrains() {
         });
     }
 
-    setInterval(renderGrains, 75);
+    let isGrainsVisible = true;
+    if ('IntersectionObserver' in window) {
+        const grainObs = new IntersectionObserver((entries) => {
+            isGrainsVisible = entries.some(e => e.isIntersecting);
+        }, { threshold: 0.01 });
+        canvases.forEach(c => grainObs.observe(c));
+    }
+
+    setInterval(() => {
+        if (isGrainsVisible) renderGrains();
+    }, 120);
 }
 
 window.addEventListener('load', () => {
@@ -953,10 +975,20 @@ function initChromaShader() {
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
 
+    let isChromaVisible = true;
+    if ('IntersectionObserver' in window && container) {
+        const chromaObs = new IntersectionObserver((entries) => {
+            entries.forEach(e => isChromaVisible = e.isIntersecting);
+        }, { threshold: 0.01 });
+        chromaObs.observe(container);
+    }
+
     const startTime = performance.now();
     function animateChroma(currentTime) {
-        material.uniforms.uTime.value = (currentTime - startTime) * 0.001;
-        renderer.render(scene, camera);
+        if (isChromaVisible) {
+            material.uniforms.uTime.value = (currentTime - startTime) * 0.001;
+            renderer.render(scene, camera);
+        }
         requestAnimationFrame(animateChroma);
     }
     requestAnimationFrame(animateChroma);
@@ -1282,8 +1314,19 @@ function initAsciiShader() {
         const starRamp = ["+", "*", "✦", "★", "*"];
         const redRamp = ["i", "!", "|", "║", "!"];
         const matrixGlyphs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "@", "#", "$", "%", "&", "*", "+", "=", "?", "X", "Z", "¥", "§", "¶", "µ", "∆", "Ω"];
+        let isAsciiVisible = true;
+        if ('IntersectionObserver' in window && canvas.parentElement) {
+            const asciiObs = new IntersectionObserver((entries) => {
+                entries.forEach(e => isAsciiVisible = e.isIntersecting);
+            }, { threshold: 0.01 });
+            asciiObs.observe(canvas.parentElement);
+        }
 
         function renderAsciiFrame(now) {
+            if (!isAsciiVisible) {
+                requestAnimationFrame(renderAsciiFrame);
+                return;
+            }
             const width = canvas.clientWidth || (canvas.parentElement ? canvas.parentElement.clientWidth : 0);
             const height = canvas.clientHeight || (canvas.parentElement ? canvas.parentElement.clientHeight : 0);
             if (width === 0 || height === 0) {
