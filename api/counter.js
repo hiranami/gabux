@@ -1,7 +1,12 @@
-// Vercel Serverless Function for 100% persistent IP-based real-time counter
+// Vercel Serverless Function: Secured & Protected Real-Time Counter API
 let globalVisits = 1;
 let globalClaps = 0;
 const visitedIPs = new Set();
+const clappedIPs = new Set();
+
+// External persistent DB endpoint kept strictly server-side (hidden from client)
+const DB_NAME = 'gabux_v1012_ip_sync';
+const DB_BASE_URL = `https://api.counterapi.dev/v1/${DB_NAME}`;
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,7 +20,6 @@ export default async function handler(req, res) {
 
     const { action } = req.query || {};
     const ts = Date.now();
-    const DB_KEY = 'gabux_v1012_ip_sync';
 
     // Extract client IP address
     const rawIp = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket?.remoteAddress || '127.0.0.1';
@@ -23,10 +27,10 @@ export default async function handler(req, res) {
 
     try {
         if (action === 'visit') {
-            // Only count if IP is new
+            // Count visit ONLY if client IP is unique
             if (!visitedIPs.has(clientIp)) {
                 visitedIPs.add(clientIp);
-                const r = await fetch(`https://api.counterapi.dev/v1/${DB_KEY}/visits/up?t=${ts}`, { cache: 'no-store' });
+                const r = await fetch(`${DB_BASE_URL}/visits/up?t=${ts}`, { cache: 'no-store' });
                 if (r.ok) {
                     const data = await r.json();
                     if (data && typeof data.count === 'number') globalVisits = data.count;
@@ -34,37 +38,40 @@ export default async function handler(req, res) {
                     globalVisits++;
                 }
             } else {
-                // Fetch current visit count without incrementing
-                const rV = await fetch(`https://api.counterapi.dev/v1/${DB_KEY}/visits?t=${ts}`, { cache: 'no-store' });
+                // Return current visit count without incrementing
+                const rV = await fetch(`${DB_BASE_URL}/visits?t=${ts}`, { cache: 'no-store' });
                 if (rV.ok) {
                     const dV = await rV.json();
                     if (dV && typeof dV.count === 'number') globalVisits = dV.count;
                 }
             }
-        } else if (action === 'clap_up') {
-            const r = await fetch(`https://api.counterapi.dev/v1/${DB_KEY}/claps/up?t=${ts}`, { cache: 'no-store' });
-            if (r.ok) {
-                const data = await r.json();
-                if (data && typeof data.count === 'number') globalClaps = data.count;
+        } else if (action === 'clap') {
+            // Count clap ONLY ONCE PER UNIQUE IP (no unclapping/resetting)
+            if (!clappedIPs.has(clientIp)) {
+                clappedIPs.add(clientIp);
+                const r = await fetch(`${DB_BASE_URL}/claps/up?t=${ts}`, { cache: 'no-store' });
+                if (r.ok) {
+                    const data = await r.json();
+                    if (data && typeof data.count === 'number') globalClaps = data.count;
+                } else {
+                    globalClaps++;
+                }
             } else {
-                globalClaps++;
-            }
-        } else if (action === 'clap_down') {
-            const r = await fetch(`https://api.counterapi.dev/v1/${DB_KEY}/claps/down?t=${ts}`, { cache: 'no-store' });
-            if (r.ok) {
-                const data = await r.json();
-                if (data && typeof data.count === 'number') globalClaps = Math.max(0, data.count);
-            } else {
-                globalClaps = Math.max(0, globalClaps - 1);
+                // Fetch current clap count without incrementing again
+                const rC = await fetch(`${DB_BASE_URL}/claps?t=${ts}`, { cache: 'no-store' });
+                if (rC.ok) {
+                    const dC = await rC.json();
+                    if (dC && typeof dC.count === 'number') globalClaps = dC.count;
+                }
             }
         } else {
-            // Fetch current live totals
-            const rV = await fetch(`https://api.counterapi.dev/v1/${DB_KEY}/visits?t=${ts}`, { cache: 'no-store' });
+            // Sync live totals
+            const rV = await fetch(`${DB_BASE_URL}/visits?t=${ts}`, { cache: 'no-store' });
             if (rV.ok) {
                 const dV = await rV.json();
                 if (dV && typeof dV.count === 'number') globalVisits = dV.count;
             }
-            const rC = await fetch(`https://api.counterapi.dev/v1/${DB_KEY}/claps?t=${ts}`, { cache: 'no-store' });
+            const rC = await fetch(`${DB_BASE_URL}/claps?t=${ts}`, { cache: 'no-store' });
             if (rC.ok) {
                 const dC = await rC.json();
                 if (dC && typeof dC.count === 'number') globalClaps = dC.count;
@@ -74,6 +81,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
         visits: Math.max(1, globalVisits),
-        claps: Math.max(0, globalClaps)
+        claps: Math.max(0, globalClaps),
+        hasClapped: clappedIPs.has(clientIp)
     });
 }

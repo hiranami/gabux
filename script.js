@@ -1904,18 +1904,16 @@ function initMailboxOverlay() {
     });
 }
 
-// --- 11. REAL-TIME PERSISTENT COUNTER & SERVERLESS DB ENGINE ---
+// --- 11. SECURED REAL-TIME PERSISTENT COUNTER SYSTEM ---
 let realVisitCount = 0;
 let realClapCount = 0;
 let isVisitorSlotTriggered = false;
-const COUNTER_NAMESPACE = 'gabux_v1012_db_sync';
 
 async function fetchLiveCounterData(isNewSession = false) {
     const ts = Date.now();
     let visits = realVisitCount || 1;
     let claps = realClapCount || 0;
 
-    // 1. Try Vercel Serverless Function /api/counter
     try {
         const actionUrl = isNewSession ? `/api/counter?action=visit&t=${ts}` : `/api/counter?t=${ts}`;
         const res = await fetch(actionUrl, { cache: 'no-store' });
@@ -1924,29 +1922,12 @@ async function fetchLiveCounterData(isNewSession = false) {
             if (data && typeof data.visits === 'number') {
                 visits = data.visits;
                 claps = data.claps;
+                if (data.hasClapped) {
+                    localStorage.setItem('gabux_user_clapped', 'true');
+                }
             }
-        } else {
-            throw new Error('Fallback to direct DB');
         }
-    } catch(err) {
-        // Fallback to direct serverless DB API
-        try {
-            const vUrl = isNewSession 
-                ? `https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/visits/up?t=${ts}`
-                : `https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/visits?t=${ts}`;
-            const vRes = await fetch(vUrl, { cache: 'no-store' });
-            if (vRes.ok) {
-                const vData = await vRes.json();
-                if (vData && typeof vData.count === 'number') visits = vData.count;
-            }
-
-            const cRes = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps?t=${ts}`, { cache: 'no-store' });
-            if (cRes.ok) {
-                const cData = await cRes.json();
-                if (cData && typeof cData.count === 'number') claps = cData.count;
-            }
-        } catch(e) {}
-    }
+    } catch(err) {}
 
     realVisitCount = Math.max(1, visits);
     realClapCount = Math.max(0, claps);
@@ -1958,12 +1939,6 @@ async function fetchLiveCounterData(isNewSession = false) {
 }
 
 async function initVisitorAndClapSystem() {
-    // Clear all legacy device caches
-    localStorage.removeItem('gabux_visits');
-    localStorage.removeItem('gabux_claps');
-    localStorage.removeItem('gabux_v1012_visits');
-    localStorage.removeItem('gabux_v1012_claps');
-
     const isNewSession = !sessionStorage.getItem('gabux_db_session_v1012');
     if (isNewSession) {
         sessionStorage.setItem('gabux_db_session_v1012', 'true');
@@ -1974,10 +1949,10 @@ async function initVisitorAndClapSystem() {
     setupClapButtonListeners();
     observeFooterForCasinoSlot();
 
-    // Real-time polling every 2.5s so PC and Mobile sync live across all devices
+    // Poll live updates every 2s for instant multi-device synchronization
     setInterval(() => {
         fetchLiveCounterData(false);
-    }, 2500);
+    }, 2000);
 }
 
 function updateClapUI() {
@@ -1991,35 +1966,11 @@ function updateClapUI() {
     });
 }
 
-async function sendClapAction(actionType) {
-    const ts = Date.now();
-    try {
-        const res = await fetch(`/api/counter?action=${actionType}&t=${ts}`, { cache: 'no-store' });
-        if (res.ok) {
-            const data = await res.json();
-            if (data && typeof data.claps === 'number') {
-                return data.claps;
-            }
-        }
-    } catch(e) {}
-
-    try {
-        const endpoint = actionType === 'clap_up' ? 'up' : 'down';
-        const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps/${endpoint}?t=${ts}`, { cache: 'no-store' });
-        if (res.ok) {
-            const data = await res.json();
-            if (data && typeof data.count === 'number') {
-                return data.count;
-            }
-        }
-    } catch(e) {}
-
-    return null;
-}
-
 function setupClapButtonListeners() {
-    document.querySelectorAll('.visitor-clap-btn').forEach(btn => {
-        btn.onclick = async (e) => {
+    const buttons = document.querySelectorAll('.visitor-clap-btn');
+
+    buttons.forEach(btn => {
+        const handleClap = async (e) => {
             if (e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -2029,29 +1980,29 @@ function setupClapButtonListeners() {
             const clickX = (e && e.clientX) ? e.clientX : (window.innerWidth / 2);
             const clickY = (e && e.clientY) ? e.clientY : (window.innerHeight / 2);
 
+            // Always trigger particles feedback on click
+            spawnClapParticles(clickX, clickY);
+
             if (!isClapped) {
                 localStorage.setItem('gabux_user_clapped', 'true');
                 realClapCount += 1;
-                spawnClapParticles(clickX, clickY);
                 updateClapUI();
 
-                const updatedClaps = await sendClapAction('clap_up');
-                if (typeof updatedClaps === 'number') {
-                    realClapCount = updatedClaps;
-                    updateClapUI();
-                }
-            } else {
-                localStorage.removeItem('gabux_user_clapped');
-                realClapCount = Math.max(0, realClapCount - 1);
-                updateClapUI();
-
-                const updatedClaps = await sendClapAction('clap_down');
-                if (typeof updatedClaps === 'number') {
-                    realClapCount = updatedClaps;
-                    updateClapUI();
-                }
+                const ts = Date.now();
+                try {
+                    const res = await fetch(`/api/counter?action=clap&t=${ts}`, { cache: 'no-store' });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && typeof data.claps === 'number') {
+                            realClapCount = data.claps;
+                            updateClapUI();
+                        }
+                    }
+                } catch(err) {}
             }
         };
+
+        btn.onclick = handleClap;
     });
 }
 
