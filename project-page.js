@@ -199,12 +199,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Página Anterior button: set skip_preloader flag so index.html loads instantly at #projetos
+    // Página Anterior button: set skip_preloader and scroll_to_projetos flags so index.html loads clean at #projetos
     const btnBackHome = document.getElementById('btn-back-home');
     if (btnBackHome) {
         btnBackHome.addEventListener('click', () => {
             sessionStorage.setItem('skip_preloader', 'true');
             sessionStorage.setItem('site_visited', 'true');
+            sessionStorage.setItem('scroll_to_projetos', 'true');
         });
     }
 

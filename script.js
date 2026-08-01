@@ -693,14 +693,37 @@ function restorePortfolioState() {
         currentLang = savedLang;
         updateLanguageTexts();
     }
-    const savedY = sessionStorage.getItem('portfolio_scroll_y');
-    if (savedY !== null && !isNaN(parseFloat(savedY))) {
-        const val = parseFloat(savedY);
-        curScroll = val;
-        tarScroll = val;
-        window.scrollTo(0, val);
-        if (typeof lenis !== 'undefined' && lenis) {
-            lenis.scrollTo(val, { immediate: true });
+
+    const scrollToProjetos = sessionStorage.getItem('scroll_to_projetos') === 'true';
+    if (scrollToProjetos || window.location.hash === '#projetos') {
+        sessionStorage.removeItem('scroll_to_projetos');
+        if (window.location.hash) {
+            try {
+                history.replaceState(null, '', window.location.pathname + window.location.search);
+            } catch(e) {}
+        }
+        setTimeout(() => {
+            const projEl = document.getElementById('projetos') || document.getElementById('secao-projetos-wrapper');
+            if (projEl) {
+                const topPos = projEl.offsetTop;
+                curScroll = topPos;
+                tarScroll = topPos;
+                window.scrollTo(0, topPos);
+                if (typeof lenis !== 'undefined' && lenis) {
+                    lenis.scrollTo(topPos, { immediate: true });
+                }
+            }
+        }, 30);
+    } else {
+        const savedY = sessionStorage.getItem('portfolio_scroll_y');
+        if (savedY !== null && !isNaN(parseFloat(savedY))) {
+            const val = parseFloat(savedY);
+            curScroll = val;
+            tarScroll = val;
+            window.scrollTo(0, val);
+            if (typeof lenis !== 'undefined' && lenis) {
+                lenis.scrollTo(val, { immediate: true });
+            }
         }
     }
 }
