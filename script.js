@@ -1910,16 +1910,16 @@ let realClapCount = 0;
 let isVisitorSlotTriggered = false;
 
 async function initVisitorAndClapSystem() {
-    let visits = 142;
-    let claps = 18;
+    let visits = 1;
+    let claps = 0;
 
     const cachedVisits = localStorage.getItem('gabux_visits');
     const cachedClaps = localStorage.getItem('gabux_claps');
     if (cachedVisits) visits = parseInt(cachedVisits, 10) + 1;
-    else visits = 142;
+    else visits = 1;
 
     if (cachedClaps) claps = parseInt(cachedClaps, 10);
-    else claps = 18;
+    else claps = 0;
 
     localStorage.setItem('gabux_visits', visits);
     realVisitCount = visits;
@@ -1988,15 +1988,15 @@ function setupClapButtonListeners() {
 }
 
 function spawnClapParticles(originX, originY) {
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 3; i++) {
         const particle = document.createElement('span');
         particle.className = 'clap-particle';
         particle.innerText = '👏';
-        const dx = (Math.random() - 0.5) * 80;
-        const rot = (Math.random() - 0.5) * 60;
+        const dx = (Math.random() - 0.5) * 50;
+        const rot = (Math.random() - 0.5) * 40;
         particle.style.setProperty('--dx', `${dx}px`);
         particle.style.setProperty('--rot', `${rot}deg`);
-        particle.style.left = `${originX + (Math.random() - 0.5) * 20}px`;
+        particle.style.left = `${originX + (Math.random() - 0.5) * 16}px`;
         particle.style.top = `${originY - 10}px`;
         document.body.appendChild(particle);
         setTimeout(() => particle.remove(), 1200);
