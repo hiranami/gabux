@@ -1908,44 +1908,58 @@ function initMailboxOverlay() {
 let realVisitCount = 0;
 let realClapCount = 0;
 let isVisitorSlotTriggered = false;
+const COUNTER_NAMESPACE = 'gabux_v1_0_1_2_prod';
 
 async function initVisitorAndClapSystem() {
-    let visits = 1;
-    let claps = 0;
+    // Clear legacy test keys from localStorage
+    localStorage.removeItem('gabux_visits');
+    localStorage.removeItem('gabux_claps');
 
-    const cachedVisits = localStorage.getItem('gabux_visits');
-    const cachedClaps = localStorage.getItem('gabux_claps');
-    if (cachedVisits) visits = parseInt(cachedVisits, 10) + 1;
-    else visits = 1;
+    let visits = parseInt(localStorage.getItem('gabux_v1012_visits') || '0', 10);
+    let claps = parseInt(localStorage.getItem('gabux_v1012_claps') || '0', 10);
 
-    if (cachedClaps) claps = parseInt(cachedClaps, 10);
-    else claps = 0;
+    // Count session visit once per browser session
+    if (!sessionStorage.getItem('gabux_v1012_session_counted')) {
+        sessionStorage.setItem('gabux_v1012_session_counted', 'true');
+        visits += 1;
+        localStorage.setItem('gabux_v1012_visits', visits);
 
-    localStorage.setItem('gabux_visits', visits);
-    realVisitCount = visits;
-    realClapCount = claps;
-
-    try {
-        const res = await fetch('https://api.counterapi.dev/v1/gabux_portfolio/visits/up');
-        if (res.ok) {
-            const data = await res.json();
-            if (data && typeof data.count === 'number') {
-                realVisitCount = data.count;
-                localStorage.setItem('gabux_visits', realVisitCount);
+        try {
+            const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/visits/up`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data && typeof data.count === 'number') {
+                    visits = data.count;
+                    localStorage.setItem('gabux_v1012_visits', visits);
+                }
             }
-        }
-    } catch(e) {}
+        } catch(e) {}
+    } else {
+        try {
+            const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/visits`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data && typeof data.count === 'number') {
+                    visits = data.count;
+                    localStorage.setItem('gabux_v1012_visits', visits);
+                }
+            }
+        } catch(e) {}
+    }
 
     try {
-        const cRes = await fetch('https://api.counterapi.dev/v1/gabux_portfolio/claps');
+        const cRes = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps`);
         if (cRes.ok) {
             const cData = await cRes.json();
             if (cData && typeof cData.count === 'number') {
-                realClapCount = cData.count;
-                localStorage.setItem('gabux_claps', realClapCount);
+                claps = cData.count;
+                localStorage.setItem('gabux_v1012_claps', claps);
             }
         }
     } catch(e) {}
+
+    realVisitCount = visits;
+    realClapCount = claps;
 
     updateClapUI();
     setupClapButtonListeners();
@@ -1972,35 +1986,62 @@ function setupClapButtonListeners() {
                 realClapCount++;
                 spawnClapParticles(e.clientX, e.clientY);
                 try {
-                    fetch('https://api.counterapi.dev/v1/gabux_portfolio/claps/up');
+                    fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps/up`);
                 } catch(err) {}
             } else {
                 localStorage.removeItem('gabux_user_clapped');
                 realClapCount = Math.max(0, realClapCount - 1);
                 try {
-                    fetch('https://api.counterapi.dev/v1/gabux_portfolio/claps/down');
+                    fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps/down`);
                 } catch(err) {}
             }
-            localStorage.setItem('gabux_claps', realClapCount);
+            localStorage.setItem('gabux_v1012_claps', realClapCount);
             updateClapUI();
         });
     });
 }
 
 function spawnClapParticles(originX, originY) {
-    for (let i = 0; i < 3; i++) {
+    // 1. Spaced directions for the 3 mini claps (Left, Center, Right)
+    const directions = [
+        { dx: -45, dy: -80, rot: -25 },
+        { dx: 0,   dy: -95, rot: 0 },
+        { dx: 45,  dy: -80, rot: 25 }
+    ];
+
+    directions.forEach(dir => {
         const particle = document.createElement('span');
         particle.className = 'clap-particle';
         particle.innerText = '👏';
-        const dx = (Math.random() - 0.5) * 50;
-        const rot = (Math.random() - 0.5) * 40;
-        particle.style.setProperty('--dx', `${dx}px`);
-        particle.style.setProperty('--rot', `${rot}deg`);
-        particle.style.left = `${originX + (Math.random() - 0.5) * 16}px`;
+        particle.style.setProperty('--dx', `${dir.dx}px`);
+        particle.style.setProperty('--dy', `${dir.dy}px`);
+        particle.style.setProperty('--rot', `${dir.rot}deg`);
+        particle.style.left = `${originX}px`;
         particle.style.top = `${originY - 10}px`;
         document.body.appendChild(particle);
         setTimeout(() => particle.remove(), 1200);
-    }
+    });
+
+    // 2. Confetti Burst effect (8 festive confetti elements: ✨, 🎉, ⭐, 💥)
+    const confettiIcons = ['✨', '🎉', '⭐', '💥', '✨', '🎉', '⭐', '💥'];
+    confettiIcons.forEach((icon, idx) => {
+        const conf = document.createElement('span');
+        conf.className = 'confetti-particle';
+        conf.innerText = icon;
+        const angle = (idx / confettiIcons.length) * Math.PI - (Math.PI / 2);
+        const dist = 50 + Math.random() * 35;
+        const dx = Math.cos(angle) * dist;
+        const dy = Math.sin(angle) * dist - 20;
+        const rot = (Math.random() - 0.5) * 360;
+
+        conf.style.setProperty('--dx', `${dx}px`);
+        conf.style.setProperty('--dy', `${dy}px`);
+        conf.style.setProperty('--rot', `${rot}deg`);
+        conf.style.left = `${originX}px`;
+        conf.style.top = `${originY - 10}px`;
+        document.body.appendChild(conf);
+        setTimeout(() => conf.remove(), 1200);
+    });
 }
 
 function observeFooterForCasinoSlot() {
