@@ -2045,8 +2045,8 @@ function spawnClapParticles(originX, originY) {
 }
 
 function observeFooterForCasinoSlot() {
-    const footer = document.querySelector('.footer-desktop-view') || document.querySelector('.footer-mobile-view');
-    if (!footer) return;
+    const footerSection = document.getElementById('footer') || document.querySelector('footer');
+    if (!footerSection) return;
 
     if ('IntersectionObserver' in window) {
         const observer = new IntersectionObserver((entries) => {
@@ -2056,9 +2056,10 @@ function observeFooterForCasinoSlot() {
                     runCasino777SlotAnimation(realVisitCount);
                 }
             });
-        }, { threshold: 0.1 });
-        observer.observe(footer);
+        }, { threshold: 0.05 });
+        observer.observe(footerSection);
     } else {
+        isVisitorSlotTriggered = true;
         runCasino777SlotAnimation(realVisitCount);
     }
 }
