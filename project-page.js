@@ -199,6 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnBackHome) {
         btnBackHome.addEventListener('click', () => {
             sessionStorage.setItem('skip_preloader', 'true');
+            sessionStorage.setItem('site_visited', 'true');
         });
     }
 

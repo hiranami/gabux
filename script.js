@@ -101,6 +101,7 @@ function runPreloader() {
             preloader.style.opacity = '0';
             preloader.style.pointerEvents = 'none';
             setTimeout(() => {
+                sessionStorage.setItem('site_visited', 'true');
                 if (preloader.parentNode) preloader.remove();
                 window.removeEventListener('wheel', preventPreloaderScroll);
                 window.removeEventListener('touchmove', preventPreloaderScroll);
@@ -229,47 +230,47 @@ function updateThemeAssets() {
     if (currentTheme === 'dark') {
         document.body.classList.remove('light-theme');
         document.body.classList.add('dark-theme');
-        setElSrc(logoImg, "files/imagens/imagens-dark-mode/logo-gabux-light.svg");
-        setElSrc(imgLantern, "files/imagens/bttn-lantern-off-dark.svg");
-        setElText(txtLanternStatus, data.themeDark);
-        setElSrc(imgTranslate, "files/imagens/imagens-dark-mode/icon-translate-light.svg");
-        setElSrc(imgCv, "files/imagens/imagens-dark-mode/icon-download-light.svg");
+        setElSrc('logo-img', "files/imagens/imagens-dark-mode/logo-gabux-light.svg");
+        setElSrc('img-lantern', "files/imagens/bttn-lantern-off-dark.svg");
+        setElText('txt-lantern-status', data.themeDark);
+        setElSrc('img-translate', "files/imagens/imagens-dark-mode/icon-translate-light.svg");
+        setElSrc('img-cv', "files/imagens/imagens-dark-mode/icon-download-light.svg");
 
-        setElSrc(iconFigma, "files/imagens/imagens-dark-mode/icon-figma-light.svg");
-        setElSrc(iconFramer, "files/imagens/imagens-dark-mode/icon-framer-light.svg");
-        setElSrc(iconCode, "files/imagens/imagens-dark-mode/icon-code-light.svg");
-        setElSrc(iconAi, "files/imagens/imagens-dark-mode/icon-ai-light.svg");
-        setElSrc(iconPs, "files/imagens/imagens-dark-mode/icon-photoshop-light.svg");
+        setElSrc('icon-figma', "files/imagens/imagens-dark-mode/icon-figma-light.svg");
+        setElSrc('icon-framer', "files/imagens/imagens-dark-mode/icon-framer-light.svg");
+        setElSrc('icon-code', "files/imagens/imagens-dark-mode/icon-code-light.svg");
+        setElSrc('icon-ai', "files/imagens/imagens-dark-mode/icon-ai-light.svg");
+        setElSrc('icon-ps', "files/imagens/imagens-dark-mode/icon-photoshop-light.svg");
 
         document.querySelectorAll('.img-linkedin-icon').forEach(el => el.src = "files/imagens/imagens-dark-mode/logo-linkedin-light.svg");
         document.querySelectorAll('.img-behance-icon').forEach(el => el.src = "files/imagens/imagens-dark-mode/logo-behance-light.svg");
-        setElSrc(imgEnviar, "files/imagens/imagens-dark-mode/icon-enviar-light.svg");
-        setElSrc(imgBackTop, "files/imagens/imagens-dark-mode/icon-topo-página.svg");
+        setElSrc('img-enviar', "files/imagens/imagens-dark-mode/icon-enviar-light.svg");
+        setElSrc('img-back-top', "files/imagens/imagens-dark-mode/icon-topo-página.svg");
 
-        setElSrc(imgMobileMenu, "files/imagens/imagens-dark-mode/icon-menu-light.svg");
-        setElSrc(mobileImgCv, "files/imagens/imagens-dark-mode/icon-download-light.svg");
+        setElSrc('img-mobile-menu', "files/imagens/imagens-dark-mode/icon-menu-light.svg");
+        setElSrc('mobile-img-cv', "files/imagens/imagens-dark-mode/icon-download-light.svg");
     } else {
         document.body.classList.remove('dark-theme');
         document.body.classList.add('light-theme');
-        setElSrc(logoImg, "files/imagens/imagens-light-mode/logo-gabux-dark.svg");
-        setElSrc(imgLantern, "files/imagens/bttn-lantern-on-light.svg");
-        setElText(txtLanternStatus, data.themeLight);
-        setElSrc(imgTranslate, "files/imagens/imagens-light-mode/icon-translate-dark.svg");
-        setElSrc(imgCv, "files/imagens/imagens-light-mode/icon-download-dark.svg");
+        setElSrc('logo-img', "files/imagens/imagens-light-mode/logo-gabux-dark.svg");
+        setElSrc('img-lantern', "files/imagens/bttn-lantern-on-light.svg");
+        setElText('txt-lantern-status', data.themeLight);
+        setElSrc('img-translate', "files/imagens/imagens-light-mode/icon-translate-dark.svg");
+        setElSrc('img-cv', "files/imagens/imagens-light-mode/icon-download-dark.svg");
 
-        setElSrc(iconFigma, "files/imagens/imagens-light-mode/icon-figma-dark.svg");
-        setElSrc(iconFramer, "files/imagens/imagens-light-mode/icon-framer-dark.svg");
-        setElSrc(iconCode, "files/imagens/imagens-light-mode/icon-code-dark.svg");
-        setElSrc(iconAi, "files/imagens/imagens-light-mode/icon-ai-dark.svg");
-        setElSrc(iconPs, "files/imagens/imagens-light-mode/icon-photoshop-dark.svg");
+        setElSrc('icon-figma', "files/imagens/imagens-light-mode/icon-figma-dark.svg");
+        setElSrc('icon-framer', "files/imagens/imagens-light-mode/icon-framer-dark.svg");
+        setElSrc('icon-code', "files/imagens/imagens-light-mode/icon-code-dark.svg");
+        setElSrc('icon-ai', "files/imagens/imagens-light-mode/icon-ai-dark.svg");
+        setElSrc('icon-ps', "files/imagens/imagens-light-mode/icon-photoshop-dark.svg");
 
         document.querySelectorAll('.img-linkedin-icon').forEach(el => el.src = "files/imagens/imagens-light-mode/logo-linkedin-dark.svg");
         document.querySelectorAll('.img-behance-icon').forEach(el => el.src = "files/imagens/imagens-light-mode/logo-behance-dark.svg");
-        setElSrc(imgEnviar, "files/imagens/imagens-light-mode/icon-enviar-dark.svg");
-        setElSrc(imgBackTop, "files/imagens/imagens-light-mode/icon-topo-página.svg");
+        setElSrc('img-enviar', "files/imagens/imagens-light-mode/icon-enviar-dark.svg");
+        setElSrc('img-back-top', "files/imagens/imagens-light-mode/icon-topo-página.svg");
 
-        setElSrc(imgMobileMenu, "files/imagens/imagens-light-mode/icon-menu-dark.svg");
-        setElSrc(mobileImgCv, "files/imagens/imagens-light-mode/icon-download-dark.svg");
+        setElSrc('img-mobile-menu', "files/imagens/imagens-light-mode/icon-menu-dark.svg");
+        setElSrc('mobile-img-cv', "files/imagens/imagens-light-mode/icon-download-dark.svg");
     }
 }
 

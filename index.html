@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio - Gabux UX/UI</title>
+    <script>
+        if (sessionStorage.getItem('site_visited') === 'true' || window.location.hash === '#projetos' || window.location.search.includes('skip_preloader')) {
+            document.write('<style>#preloader { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }</style>');
+        }
+    </script>
     
     <!-- Google Fonts Fallbacks -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
