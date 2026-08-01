@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Local Font Definitions with Google Fonts Fallbacks */
+@font-face {
+  font-family: 'PP Editorial New';
+  src: url('/files/fonts/pp editorial/PPEditorialNew-Italic-BF644b214fb0c0a.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PP Editorial New';
+  src: url('/files/fonts/pp editorial/PPEditorialNew-Ultrabold-BF644b21500840c.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PP Editorial New';
+  src: url('/files/fonts/pp editorial/PPEditorialNew-UltraboldItalic-BF644b214faef01.otf') format('opentype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PP Mori';
+  src: url('/files/fonts/pp mori/PPMori-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PP Mori';
+  src: url('/files/fonts/pp mori/PPMori-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg-color: #0d0d0d;
+  --text-color: #ffffff;
+  --card-bg: rgba(255, 255, 255, 0.04);
+  --border-color: rgba(255, 255, 255, 0.08);
+}
+
+.light-theme {
+  --bg-color: #f7f7f8;
+  --text-color: #121214;
+  --card-bg: rgba(0, 0, 0, 0.03);
+  --border-color: rgba(0, 0, 0, 0.08);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'PP Mori', 'Plus Jakarta Sans', 'Inter', sans-serif;
+  transition: background-color 0.4s ease, color 0.4s ease;
+  overflow-x: hidden;
+}
+
+/* Custom font helper classes */
+.font-mori {
+  font-family: 'PP Mori', 'Plus Jakarta Sans', 'Inter', sans-serif;
+}
+
+.font-editorial-italic {
+  font-family: 'PP Editorial New', 'Playfair Display', 'Cormorant Garamond', serif;
+  font-style: italic;
+}
+
+.font-editorial-ultrabold {
+  font-family: 'PP Editorial New', 'Playfair Display', 'Cormorant Garamond', serif;
+  font-weight: 800;
+  font-style: italic;
+}
+
+/* Scroll Twitch Animation from hero-section.html */
+@keyframes vhs-twitch {
+  0%, 95% { transform: translate(0, 0); opacity: 1; }
+  96% { transform: translate(-1px, 1px); opacity: 0.9; }
+  97% { transform: translate(1px, -1px); opacity: 1; }
+  98% { transform: translate(-1px, -1px); opacity: 0.95; }
+  99% { transform: translate(1px, 1px); opacity: 1; }
+  100% { transform: translate(0, 0); opacity: 1; }
+}
+
+.vhs-grid {
+  animation: vhs-twitch 4s infinite;
+}

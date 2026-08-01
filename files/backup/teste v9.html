@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Header Interativo - G-LX</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0; padding: 0;
+            background-color: #0d0d0d;
+            color: #ffffff;
+            font-family: 'Share Tech Mono', monospace;
+            overflow-x: hidden;
+        }
+
+        /* Container de scroll para permitir a rolagem mantendo o fundo fixo */
+        .scroll-wrapper {
+            height: 400vh;
+            position: relative;
+        }
+
+        header#hero {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0d0d0d;
+            z-index: 1;
+        }
+
+        /* --- HEADER SUPERIOR (GLASS) --- */
+        .fixed-header {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            height: 70px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            box-sizing: border-box;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .nav-group { display: flex; gap: 25px; align-items: center; width: 35%; }
+        .nav-group.right { justify-content: flex-end; }
+        .nav-item { color: #fff; text-decoration: none; font-size: 14px; opacity: 0.7; transition: 0.3s; cursor: pointer; }
+        .nav-item:hover { opacity: 1; }
+
+        .btn-cv {
+            background: #fff; color: #000;
+            padding: 8px 18px; font-weight: bold; font-size: 12px;
+            text-decoration: none; min-width: 140px; text-align: center;
+            border: 1px solid transparent;
+            transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .btn-cv:hover {
+            transform: scale(1.08);
+            background: transparent;
+            border-color: #fff;
+            color: #fff;
+        }
+
+        /* --- TÍTULOS CENTRAIS --- */
+        .hero-titles-layer {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 50;
+            pointer-events: none;
+            width: 100%;
+        }
+        #sub-title-img { width: 300px; margin-bottom: 10px; opacity: 0; }
+        #main-title-img { width: 750px; opacity: 0; }
+
+        /* --- LOGO E RESIZE --- */
+        .logo-wrapper {
+            position: fixed;
+            z-index: 110;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+        }
+        .logo-wrapper img { display: block; width: 100%; height: auto; pointer-events: none; }
+
+        .resize-border { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border: 1px solid #18a0fb; pointer-events: none; }
+        .handle {
+            position: absolute;
+            width: 8px; height: 8px;
+            background: #ffffff; border: 1px solid #18a0fb;
+            box-sizing: border-box; z-index: 10;
+        }
+        /* Hitbox invisível de 30px */
+        .handle::after {
+            content: ''; position: absolute; top: -11px; left: -11px; width: 30px; height: 30px; cursor: pointer;
+        }
+        /* Alinhamento dos centros dos quadrados nas bordas */
+        .handle.nw { top: -4px; left: -4px; cursor: nwse-resize; }
+        .handle.ne { top: -4px; right: -4px; cursor: nesw-resize; }
+        .handle.sw { bottom: -4px; left: -4px; cursor: nesw-resize; }
+        .handle.se { bottom: -4px; right: -4px; cursor: nwse-resize; }
+
+        /* --- BACKGROUND ORIGINAIS (PARTÍCULAS E GRID) --- */
+        @keyframes vhs-twitch {
+            0%, 95% { transform: translate(0, 0); opacity: 1; }
+            96% { transform: translate(-1px, 1px); opacity: 0.9; }
+            97% { transform: translate(1px, -1px); opacity: 1; }
+            98% { transform: translate(-1px, -1px); opacity: 0.95; }
+            99% { transform: translate(1px, 1px); opacity: 1; }
+            100% { transform: translate(0, 0); opacity: 1; }
+        }
+        .grid-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 3px 3px;
+            animation: vhs-twitch 4s infinite;
+        }
+        #canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .vignette {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 20%, rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, 0.4) 80%, rgba(0, 0, 0, 0.98) 100%);
+        }
+        .tag {
+            position: absolute; z-index: 4; padding: 6px 12px; font-size: 14px; cursor: pointer;
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+            user-select: none; color: rgba(255, 255, 255, 0.2); white-space: nowrap;
+        }
+        .tag:hover { background-color: #ffffff !important; color: #000000 !important; border-color: #ffffff !important; }
+    </style>
+</head>
+<body>
+
+<div class="scroll-wrapper">
+    <header id="hero">
+        <div class="grid-bg"></div>
+        <canvas id="canvas"></canvas>
+        <div class="vignette"></div>
+
+        <div class="hero-titles-layer">
+            <img src="sub-title-h1.svg" id="sub-title-img" alt="Sub">
+            <img src="title-h1.svg" id="main-title-img" alt="Title">
+        </div>
+    </header>
+
+    <nav class="fixed-header" id="header">
+        <div class="nav-group">
+            <a class="nav-item">Início</a>
+            <a class="nav-item">Projetos</a>
+            <a class="nav-item">Sobre Mim</a>
+        </div>
+        <div style="width: 80px;"></div>
+        <div class="nav-group right">
+            <a class="nav-item">Skills</a>
+            <a class="nav-item">Contato</a>
+            <a href="#" class="btn-cv" id="cv-btn">Baixar currículo</a>
+        </div>
+    </nav>
+
+    <div class="logo-wrapper" id="logo-wrapper">
+        <div class="resize-border" id="resize-ui"></div>
+        <img src="logo 2.svg" alt="Logo" id="logo-img">
+        <div class="handle nw"></div><div class="handle ne"></div>
+        <div class="handle sw"></div><div class="handle se"></div>
+    </div>
+</div>
+
+<script>
+    // --- LÓGICA DE TAGS (REPLICADA INTEGRALMENTE SEM ALTERAÇÕES) ---
+    const tagsData = ['motion', 'web', 'design', 'cloud', 'creative', 'effects', 'ui/ux', 'code', 'frontend', 'visuals', 'system', 'react', 'nextjs', 'interface', 'animation', 'framer', 'figma', 'prototype', 'startup', 'innovation', 'development', 'javascript', 'html5', 'css3', 'backend', 'fullstack', 'database', 'api', 'serverless', 'mobile', 'responsive', 'performance', 'agile', 'scrum', 'marketing', 'seo', 'svg', 'canvas', 'webgl', '3d', 'tailwind', 'sass', 'webpack', 'vite', 'git', 'github', 'supabase', 'user experience', 'user interface', 'wireframe', 'usability', 'typography', 'interaction', 'user flow', 'design system', 'prototyping', 'heuristics', 'user research', 'personas', 'mockup', 'information architecture', 'visual grammar', 'microinteractions', 'ui kit', 'layout', 'grid system', 'accessibility'];
+    const hero = document.getElementById('hero');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let width = hero.clientWidth, height = hero.clientHeight;
+    canvas.width = width; canvas.height = height;
+    const tags = [];
+    const mouse = { x: -1000, y: -1000 };
+    const EXCLUSION_RADIUS_WORDS = 250, EXCLUSION_RADIUS_LINES = 220;
+
+    function pointLineDistance(px, py, x1, y1, x2, y2) {
+        const A = px - x1, B = py - y1, C = x2 - x1, D = y2 - y1;
+        const dot = A * C + B * D, len_sq = C * C + D * D;
+        let param = -1; if (len_sq != 0) param = dot / len_sq;
+        let xx, yy;
+        if (param < 0) { xx = x1; yy = y1; } else if (param > 1) { xx = x2; yy = y2; } else { xx = x1 + param * C; yy = y1 + param * D; }
+        const dx = px - xx, dy = py - yy; return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    const cols = 12, rows = 9;
+    const cellW = width / cols, cellH = height / rows;
+    let validCells = [];
+    for(let c = 0; c < cols; c++) {
+        for(let r = 0; r < rows; r++) {
+            const dx = (c * cellW + cellW / 2) - (width / 2), dy = (r * cellH + cellH / 2) - (height / 2);
+            if (Math.sqrt(dx*dx + dy*dy) > EXCLUSION_RADIUS_WORDS - 20) validCells.push({ c, r });
+        }
+    }
+    for (let i = validCells.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [validCells[i], validCells[j]] = [validCells[j], validCells[i]];
+    }
+
+    tagsData.forEach((text, i) => {
+        const el = document.createElement('div');
+        el.classList.add('tag'); el.innerText = text;
+        hero.appendChild(el);
+        const cell = validCells[i % validCells.length];
+        const originX = cell.c * cellW + (cellW * 0.1) + Math.random() * (cellW * 0.8);
+        const originY = cell.r * cellH + (cellH * 0.1) + Math.random() * (cellH * 0.8);
+        const tagObj = { el, originX, originY, timeOffsetX: Math.random() * Math.PI * 2, timeOffsetY: Math.random() * Math.PI * 2, speedX: 0.2 + Math.random() * 0.3, speedY: 0.2 + Math.random() * 0.3, amplitude: 15 + Math.random() * 20, width: 0, height: 0, currentDrawX: originX, currentDrawY: originY, currentScale: 0.85, currentOpacity: 0.2, isHovered: false };
+        el.addEventListener('mouseenter', () => tagObj.isHovered = true);
+        el.addEventListener('mouseleave', () => tagObj.isHovered = false);
+        tags.push(tagObj);
+    });
+
+    setTimeout(() => { tags.forEach(tag => { tag.width = tag.el.offsetWidth; tag.height = tag.el.offsetHeight; }); }, 50);
+
+    function animateTags() {
+        ctx.clearRect(0, 0, width, height);
+        const time = Date.now() * 0.001;
+        tags.forEach(tag => {
+            const baseX = tag.originX + Math.sin(time * tag.speedX + tag.timeOffsetX) * tag.amplitude;
+            const baseY = tag.originY + Math.cos(time * tag.speedY + tag.timeOffsetY) * tag.amplitude;
+            let targetX = baseX, targetY = baseY, targetScale = 0.85, targetOpacity = 0.20;
+            const dx = mouse.x - baseX, dy = mouse.y - baseY, dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 260) {
+                const force = (260 - dist) / 260;
+                targetScale = 0.85 + force * 0.40; targetOpacity = 0.20 + force * 0.8;
+                targetX += dx * force * 0.22; targetY += dy * force * 0.22;
+            }
+            if (tag.isHovered) targetScale = 1.30;
+            tag.currentDrawX += (targetX - tag.currentDrawX) * 0.08;
+            tag.currentDrawY += (targetY - tag.currentDrawY) * 0.08;
+            tag.currentScale += (targetScale - tag.currentScale) * 0.12;
+            tag.currentOpacity += (targetOpacity - tag.currentOpacity) * 0.12;
+            tag.el.style.left = `${tag.currentDrawX - tag.width / 2}px`;
+            tag.el.style.top = `${tag.currentDrawY - tag.height / 2}px`;
+            tag.el.style.transform = `scale(${tag.currentScale})`;
+            if(!tag.isHovered) tag.el.style.color = `rgba(255, 255, 255, ${tag.currentOpacity})`;
+        });
+        ctx.lineWidth = 1;
+        for (let i = 0; i < tags.length; i++) {
+            for (let j = i + 1; j < tags.length; j++) {
+                const dx = tags[i].currentDrawX - tags[j].currentDrawX, dy = tags[i].currentDrawY - tags[j].currentDrawY, dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 250) {
+                    const distToCenter = pointLineDistance(width/2, height/2, tags[i].currentDrawX, tags[i].currentDrawY, tags[j].currentDrawX, tags[j].currentDrawY);
+                    if (distToCenter > EXCLUSION_RADIUS_LINES) {
+                        let opacity = (1 - (dist / 250)) * 0.25;
+                        ctx.beginPath(); ctx.moveTo(tags[i].currentDrawX, tags[i].currentDrawY); ctx.lineTo(tags[j].currentDrawX, tags[j].currentDrawY);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`; ctx.stroke();
+                    }
+                }
+            }
+        }
+        requestAnimationFrame(animateTags);
+    }
+
+    // --- NOVA LÓGICA DE INTERAÇÕES ---
+    const logoWrapper = document.getElementById('logo-wrapper');
+    const resizeUI = document.getElementById('resize-ui');
+    const headerEl = document.getElementById('header');
+    const subTitleImg = document.getElementById('sub-title-img');
+    const mainTitleImg = document.getElementById('main-title-img');
+    const cvBtn = document.getElementById('cv-btn');
+
+    let targetLogoWidth = 300;
+    let currentLogoWidth = 300;
+    let isResizing = false;
+
+    // SCRAMBLE EFFECT HELPER
+    function scramble(el, text) {
+        const chars = '!<>-_\\/[]{}—=+*^?#________';
+        let iteration = 0;
+        const interval = setInterval(() => {
+            el.innerText = text.split("").map((letter, index) => {
+                if(index < iteration) return text[index];
+                return chars[Math.floor(Math.random() * chars.length)];
+            }).join("");
+            if(iteration >= text.length) clearInterval(interval);
+            iteration += 1/3;
+        }, 30);
+    }
+
+    // RESIZE (FIGMA STYLE + LERP SUAVE)
+    function initResize(e) {
+        e.preventDefault(); e.stopPropagation();
+        isResizing = true;
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', () => isResizing = false);
+    }
+
+    function handleMove(e) {
+        if (!isResizing) return;
+        const rect = logoWrapper.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        let newWidth = Math.abs(e.clientX - centerX) * 2;
+        if (newWidth < 300) newWidth = 300; // Bloqueia diminuir
+        if (newWidth > 540) newWidth = 540; // Max 1.8x
+        targetLogoWidth = newWidth;
+    }
+
+    document.querySelectorAll('.handle').forEach(h => h.addEventListener('mousedown', initResize));
+
+    // SCROLL ANIMATION (CHAIN REACTION)
+    let curScroll = 0, tarScroll = 0;
+    window.addEventListener('scroll', () => tarScroll = window.scrollY);
+
+    function mainLoop() {
+        // Interpolação suave para Resize e Scroll
+        currentLogoWidth += (targetLogoWidth - currentLogoWidth) * 0.1;
+        curScroll += (tarScroll - curScroll) * 0.1;
+
+        const scrollRange = height * 0.6;
+        const pLogo = Math.min(curScroll / scrollRange, 1);
+
+        // 1. Logo Position e Scale
+        const headerLogoWidth = 65; // Tamanho fixo no header
+        const scrollWidth = currentLogoWidth + (headerLogoWidth - currentLogoWidth) * pLogo;
+        const startY = height / 2, endY = 35;
+        const currentY = startY + (endY - startY) * pLogo;
+
+        logoWrapper.style.width = scrollWidth + 'px';
+        logoWrapper.style.top = currentY + 'px';
+        logoWrapper.style.transform = `translate(-50%, -50%)`;
+
+        // 2. UI Resize Visibility (Suma no scroll)
+        const uiAlpha = Math.max(0, 1 - (pLogo * 5));
+        resizeUI.style.opacity = uiAlpha;
+        document.querySelectorAll('.handle').forEach(h => h.style.opacity = uiAlpha);
+
+        // 3. Chain Reaction Titles
+        // Sub-título: Começa quando Logo termina (pLogo = 1)
+        const subStart = scrollRange;
+        const subEnd = scrollRange + 400;
+        const pSub = Math.max(0, Math.min(1, (curScroll - subStart) / 400));
+        subTitleImg.style.opacity = pSub;
+        subTitleImg.style.transform = `translateY(${(1-pSub)*20}px)`;
+
+        // H1: Começa quando Sub-título está 95%
+        const h1Start = subStart + (400 * 0.95);
+        const pMain = Math.max(0, Math.min(1, (curScroll - h1Start) / 400));
+        mainTitleImg.style.opacity = pMain;
+        mainTitleImg.style.transform = `translateY(${(1-pMain)*20}px)`;
+
+        // Header Visibility
+        headerEl.style.opacity = pLogo > 0.9 ? 1 : 0;
+        headerEl.style.pointerEvents = pLogo > 0.9 ? "auto" : "none";
+
+        // CV Scramble Trigger
+        if(pLogo > 0.9 && !headerEl.dataset.scr) {
+            headerEl.dataset.scr = "1";
+            scramble(cvBtn, "BAIXAR CURRÍCULO");
+        } else if (pLogo < 0.2) headerEl.dataset.scr = "";
+
+        requestAnimationFrame(mainLoop);
+    }
+
+    // INITIALIZATION
+    window.addEventListener('load', () => {
+        animateTags();
+        mainLoop();
+        // Logo Initial Scramble (Simulação visual hacker no carregamento)
+        const img = document.getElementById('logo-img');
+        img.style.filter = "blur(15px)"; img.style.opacity = "0";
+        setTimeout(() => {
+            img.style.transition = "all 1s ease";
+            img.style.filter = "none"; img.style.opacity = "1";
+        }, 500);
+    });
+
+    window.addEventListener('mousemove', e => {
+        const rect = hero.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left; mouse.y = e.clientY - rect.top;
+    });
+
+    window.addEventListener('resize', () => {
+        width = hero.clientWidth; height = hero.clientHeight;
+        canvas.width = width; canvas.height = height;
+    });
+</script>
+</body>
+</html>

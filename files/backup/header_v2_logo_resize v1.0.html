@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Header Interativo - VHS</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0d0d0d;
+            color: #ffffff;
+            font-family: 'Share Tech Mono', monospace;
+            overflow: hidden;
+        }
+        header {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0d0d0d;
+        }
+        
+        
+        @keyframes vhs-twitch {
+            0%, 95% { transform: translate(0, 0); opacity: 1; }
+            96% { transform: translate(-1px, 1px); opacity: 0.9; }
+            97% { transform: translate(1px, -1px); opacity: 1; }
+            98% { transform: translate(-1px, -1px); opacity: 0.95; }
+            99% { transform: translate(1px, 1px); opacity: 1; }
+            100% { transform: translate(0, 0); opacity: 1; }
+        }
+        .grid-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 3px 3px;
+            animation: vhs-twitch 4s infinite;
+        }
+
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+            /* BRILHO EXTREMAMENTE SUAVIZADO: Vai de 5% de opacidade até 0% bem no meio da tela */
+            background: radial-gradient(circle at center, 
+                rgba(255, 255, 255, 0.05) 0%, 
+                rgba(255, 255, 255, 0.02) 20%, 
+                rgba(255, 255, 255, 0) 45%, 
+                rgba(0, 0, 0, 0.4) 80%, 
+                rgba(0, 0, 0, 0.98) 100%);
+        }
+        .logo-wrapper {
+            position: absolute;
+            z-index: 10;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+        }
+        .logo-wrapper img {
+            display: block;
+            width: 100%;
+            height: auto;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        .resize-border {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border: 1px solid #18a0fb;
+            pointer-events: none;
+        }
+        .handle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #ffffff;
+            border: 1px solid #18a0fb;
+            box-sizing: border-box;
+            pointer-events: auto;
+        }
+        .handle.nw { top: -4px; left: -4px; cursor: nwse-resize; }
+        .handle.ne { top: -4px; right: -4px; cursor: nesw-resize; }
+        .handle.sw { bottom: -4px; left: -4px; cursor: nesw-resize; }
+        .handle.se { bottom: -4px; right: -4px; cursor: nwse-resize; }
+        .tag {
+            position: absolute;
+            z-index: 4;
+            padding: 6px 12px;
+            border-radius: 0px;
+            border: 1px solid transparent;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+            user-select: none;
+            transform-origin: center center;
+            color: rgba(255, 255, 255, 0.2);
+            white-space: nowrap;
+        }
+        .tag:hover {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border-color: #ffffff !important;
+        }
+    </style>
+</head>
+<body>
+
+<header id="hero">
+    <div class="grid-bg"></div>
+    <canvas id="canvas"></canvas>
+    <div class="vignette"></div>
+    <div class="logo-wrapper" id="logo-wrapper">
+        <div class="resize-border"></div>
+        <img src="logo 2.svg" alt="Logo" id="logo-img" draggable="false">
+        <div class="handle nw"></div>
+        <div class="handle ne"></div>
+        <div class="handle sw"></div>
+        <div class="handle se"></div>
+    </div>
+</header>
+
+<script>
+    const tagsData = [
+        'motion', 'web', 'design', 'cloud', 'creative', 'effects', 'ui/ux', 'code', 
+        'frontend', 'visuals', 'system', 'react', 'nextjs', 'interface', 'animation',
+        'framer', 'figma', 'prototype', 'startup', 'innovation', 'development', 
+        'javascript', 'html5', 'css3', 'backend', 'fullstack', 'database', 'api', 
+        'serverless', 'mobile', 'responsive', 'performance', 'agile', 'scrum', 
+        'marketing', 'seo', 'svg', 'canvas', 'webgl', '3d', 'tailwind', 'sass', 
+        'webpack', 'vite', 'git', 'github', 'supabase', 'user experience', 'user interface', 
+        'wireframe', 'usability', 'typography', 'interaction', 'user flow', 'design system', 
+        'prototyping', 'heuristics', 'user research', 'personas', 'mockup', 'information architecture', 
+        'visual grammar', 'microinteractions', 'ui kit', 'layout', 'grid system', 'accessibility'
+    ];
+    
+    const hero = document.getElementById('hero');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    let width = hero.clientWidth;
+    let height = hero.clientHeight;
+    canvas.width = width;
+    canvas.height = height;
+    
+    const tags = [];
+    const mouse = { x: -1000, y: -1000 };
+    
+    const EXCLUSION_RADIUS_WORDS = 250; 
+    const EXCLUSION_RADIUS_LINES = 220; 
+    
+    window.addEventListener('resize', () => {
+        width = hero.clientWidth;
+        height = hero.clientHeight;
+        canvas.width = width;
+        canvas.height = height;
+    });
+    
+    hero.addEventListener('mousemove', (e) => {
+        const rect = hero.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+    });
+    
+    hero.addEventListener('mouseleave', () => {
+        mouse.x = -1000;
+        mouse.y = -1000;
+    });
+
+    function pointLineDistance(px, py, x1, y1, x2, y2) {
+        const A = px - x1;
+        const B = py - y1;
+        const C = x2 - x1;
+        const D = y2 - y1;
+        const dot = A * C + B * D;
+        const len_sq = C * C + D * D;
+        let param = -1;
+        if (len_sq != 0) param = dot / len_sq;
+        let xx, yy;
+        if (param < 0) { xx = x1; yy = y1; } 
+        else if (param > 1) { xx = x2; yy = y2; } 
+        else { xx = x1 + param * C; yy = y1 + param * D; }
+        const dx = px - xx;
+        const dy = py - yy;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    const cols = 12;
+    const rows = 9;
+    const cellW = width / cols;
+    const cellH = height / rows;
+    let validCells = [];
+    
+    for(let c = 0; c < cols; c++) {
+        for(let r = 0; r < rows; r++) {
+            const cx = c * cellW + cellW / 2;
+            const cy = r * cellH + cellH / 2;
+            const dx = cx - (width / 2);
+            const dy = cy - (height / 2);
+            
+            if (Math.sqrt(dx*dx + dy*dy) > EXCLUSION_RADIUS_WORDS - 20) {
+                validCells.push({ c, r });
+            }
+        }
+    }
+    
+    for (let i = validCells.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [validCells[i], validCells[j]] = [validCells[j], validCells[i]];
+    }
+
+    tagsData.forEach((text, i) => {
+        const el = document.createElement('div');
+        el.classList.add('tag');
+        el.innerText = text;
+        hero.appendChild(el);
+        
+        const cell = validCells[i % validCells.length];
+        
+        const originX = cell.c * cellW + (cellW * 0.1) + Math.random() * (cellW * 0.8);
+        const originY = cell.r * cellH + (cellH * 0.1) + Math.random() * (cellH * 0.8);
+        
+        const tagObj = { 
+            el, 
+            originX, 
+            originY,
+            timeOffsetX: Math.random() * Math.PI * 2,
+            timeOffsetY: Math.random() * Math.PI * 2,
+            speedX: 0.2 + Math.random() * 0.3,
+            speedY: 0.2 + Math.random() * 0.3,
+            amplitude: 15 + Math.random() * 20, 
+            width: 0, 
+            height: 0, 
+            currentDrawX: originX, 
+            currentDrawY: originY,
+            currentScale: 0.85, 
+            currentOpacity: 0.2,
+            isHovered: false
+        };
+
+        el.addEventListener('mouseenter', () => tagObj.isHovered = true);
+        el.addEventListener('mouseleave', () => tagObj.isHovered = false);
+
+        tags.push(tagObj);
+    });
+    
+    setTimeout(() => {
+        tags.forEach(tag => {
+            tag.width = tag.el.offsetWidth;
+            tag.height = tag.el.offsetHeight;
+        });
+    }, 50);
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+        const time = Date.now() * 0.001; 
+        
+        tags.forEach(tag => {
+            const baseX = tag.originX + Math.sin(time * tag.speedX + tag.timeOffsetX) * tag.amplitude;
+            const baseY = tag.originY + Math.cos(time * tag.speedY + tag.timeOffsetY) * tag.amplitude;
+
+            let targetX = baseX;
+            let targetY = baseY;
+            let targetScale = 0.85; 
+            let targetOpacity = 0.20;
+            
+            const dx = mouse.x - baseX;
+            const dy = mouse.y - baseY;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            const influenceRadius = 260;
+            
+            if (dist < influenceRadius) {
+                const force = (influenceRadius - dist) / influenceRadius;
+                targetScale = 0.85 + force * 0.40;
+                targetOpacity = 0.20 + force * 0.8;
+                
+                targetX += dx * force * 0.22;
+                targetY += dy * force * 0.22;
+            }
+
+            if (tag.isHovered) {
+                targetScale = 1.30; 
+            }
+            
+            // MARGEM DE SEGURANÇA (2px)
+            const margin = 2;
+            const halfW = tag.width / 2;
+            const halfH = tag.height / 2;
+            
+            // Trava o alvo para que ele nunca ultrapasse a tela
+            targetX = Math.max(margin + halfW, Math.min(width - margin - halfW, targetX));
+            targetY = Math.max(margin + halfH, Math.min(height - margin - halfH, targetY));
+            
+            tag.currentDrawX += (targetX - tag.currentDrawX) * 0.08;
+            tag.currentDrawY += (targetY - tag.currentDrawY) * 0.08;
+            tag.currentScale += (targetScale - tag.currentScale) * 0.12;
+            tag.currentOpacity += (targetOpacity - tag.currentOpacity) * 0.12;
+            
+            tag.el.style.left = `${tag.currentDrawX - halfW}px`;
+            tag.el.style.top = `${tag.currentDrawY - halfH}px`;
+            tag.el.style.transform = `scale(${tag.currentScale})`;
+            
+            if(!tag.isHovered){
+                tag.el.style.color = `rgba(255, 255, 255, ${tag.currentOpacity})`;
+            }
+
+            let borderAlpha = (tag.currentOpacity - 0.20) * 1.5;
+            if (borderAlpha > 1) borderAlpha = 1;
+            if (borderAlpha < 0) borderAlpha = 0;
+            
+            if(!tag.isHovered) {
+               tag.el.style.borderColor = `rgba(255, 255, 255, ${borderAlpha * 0.35})`;
+            }
+        });
+        
+        ctx.lineWidth = 1;
+        const MAX_CONNECTION_DISTANCE = 250; 
+        
+        for (let i = 0; i < tags.length; i++) {
+            for (let j = i + 1; j < tags.length; j++) {
+                const dx = tags[i].currentDrawX - tags[j].currentDrawX;
+                const dy = tags[i].currentDrawY - tags[j].currentDrawY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                
+                if (dist < MAX_CONNECTION_DISTANCE) {
+                    const distToCenter = pointLineDistance(
+                        width/2, height/2, 
+                        tags[i].currentDrawX, tags[i].currentDrawY, 
+                        tags[j].currentDrawX, tags[j].currentDrawY
+                    );
+                    
+                    if (distToCenter > EXCLUSION_RADIUS_LINES) {
+                        let opacity = 1 - (dist / MAX_CONNECTION_DISTANCE);
+                        opacity = opacity * 0.25; 
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(tags[i].currentDrawX, tags[i].currentDrawY);
+                        ctx.lineTo(tags[j].currentDrawX, tags[j].currentDrawY);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+        
+        requestAnimationFrame(animate);
+    }
+    
+    animate();
+    
+    // === LÓGICA DE REDIMENSIONAMENTO DO LOGO (ESTILO FIGMA) ===
+    const logoWrapper = document.getElementById('logo-wrapper');
+    const handles = document.querySelectorAll('.handle');
+    
+    let isResizing = false;
+    let baseWidth = 0; 
+    let minWidth = 100;
+    let maxWidth = 0;
+    let centerX = 0;
+
+    function initResize(e) {
+        e.preventDefault();
+        isResizing = true;
+        
+        const rect = logoWrapper.getBoundingClientRect();
+        if (baseWidth === 0) {
+            baseWidth = rect.width;
+            maxWidth = baseWidth * 2.5; // Limite de 2.5x o tamanho original
+            minWidth = baseWidth * 0.2; // Limite mínimo
+        }
+        
+        centerX = rect.left + rect.width / 2;
+        
+        window.addEventListener('mousemove', handleMove, { passive: false });
+        window.addEventListener('touchmove', handleMove, { passive: false });
+        window.addEventListener('mouseup', stopResize);
+        window.addEventListener('touchend', stopResize);
+    }
+
+    function handleMove(e) {
+        if (!isResizing) return;
+        e.preventDefault();
+        
+        let clientX;
+        if (e.touches && e.touches.length > 0) {
+            clientX = e.touches[0].clientX;
+        } else {
+            clientX = e.clientX;
+        }
+
+        // Calcula a nova largura baseada na distância do cursor ao centro do logo
+        // Multiplicado por 2 pois a distância capturada é do centro até a borda
+        let newWidth = Math.abs(clientX - centerX) * 2;
+        
+        // Limita o tamanho ao máximo (2.5x) e ao mínimo
+        newWidth = Math.max(minWidth, Math.min(newWidth, maxWidth));
+        
+        logoWrapper.style.width = newWidth + 'px';
+    }
+
+    function stopResize() {
+        isResizing = false;
+        window.removeEventListener('mousemove', handleMove);
+        window.removeEventListener('touchmove', handleMove);
+        window.removeEventListener('mouseup', stopResize);
+        window.removeEventListener('touchend', stopResize);
+    }
+
+    handles.forEach(handle => {
+        handle.addEventListener('mousedown', initResize);
+        handle.addEventListener('touchstart', initResize, { passive: false });
+    });
+</script>
+</body>
+</html>

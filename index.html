@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Gabux UX/UI</title>
+    
+    <!-- Google Fonts Fallbacks -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,300;1,400;1,600&display=swap" rel="stylesheet">
+
+    <!-- Three.js for WebGL Chroma Background in Fold 3 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Lenis Smooth Scroll & GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+
+<!-- MAIL BOX CONTACT OVERLAY WINDOW (FIGMA SPEC) -->
+<div id="mailbox-overlay" aria-hidden="true">
+    <!-- CENTER STAGE FORM MODAL CONTAINER -->
+    <div class="mailbox-modal-container" id="mailbox-modal-container">
+        <!-- CLOSE BUTTON AT TOP RIGHT OF INPUT ROW -->
+        <button class="mailbox-close-btn" id="btn-mailbox-close" title="Fechar (Esc)">✕</button>
+
+        <!-- MULTI-STEP FORM BODY -->
+        <div id="mailbox-form-step" style="width: 100%;">
+            
+            <!-- STEPS 1 & 2: SINGLE LINE INPUT BLOCK (NAME / EMAIL) -->
+            <div id="mailbox-single-input-step">
+                <div class="mailbox-input-block">
+                    <div class="mailbox-label-badge" id="mailbox-label">Seu nome:</div>
+                    <input type="text" class="mailbox-input-field" id="mailbox-input" placeholder="" autocomplete="off">
+                </div>
+                <!-- REAL-TIME INLINE EMAIL VALIDATION ERROR MESSAGE -->
+                <div id="mailbox-email-error" class="mailbox-email-error" style="display: none;">
+                    Este e-mail não é válido. Por favor, tente novamente.
+                </div>
+            </div>
+
+            <!-- STEP 3: FULL COMPOSER MODAL (FIGMA SCREENSHOT media__1785358900834.jpg) -->
+            <div id="mailbox-step3-composer" style="display: none; width: 100%;">
+                <!-- ROW 1: ASSUNTO BADGE + INPUT -->
+                <div class="mailbox-input-block" style="margin-bottom: -1px;">
+                    <div class="mailbox-label-badge" style="padding: 8px 16px; font-size: 14px;">Assunto</div>
+                    <input type="text" class="mailbox-input-field" id="mailbox-subject-input" placeholder="" autocomplete="off" style="padding: 8px 14px; font-size: 14px;">
+                </div>
+
+                <!-- ROW 2: LARGE MESSAGE TEXTAREA COMPOSER BOX WITH CONTINUOUS BORDER -->
+                <div class="mailbox-composer-box">
+                    <textarea class="mailbox-textarea" id="mailbox-message-textarea" placeholder="Escreva sua mensagem aqui..."></textarea>
+                    
+                    <!-- TOOLBAR AT BOTTOM OF TEXTAREA COMPOSER BOX (FIGMA SPECS media__1785358900871.jpg & media__1785358900895.jpg) -->
+                    <div class="mailbox-composer-toolbar">
+                        <!-- LEFT ACTION ICONS: ATTACHMENT (📎), LINK (🔗), EMOJI (😊) -->
+                        <div class="mailbox-toolbar-icons">
+                            <button class="mailbox-tool-icon-btn" id="btn-mailbox-attach" type="button" title="Anexar arquivo">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                            </button>
+                            <input type="file" id="mailbox-file-input" multiple style="display: none;">
+
+                            <button class="mailbox-tool-icon-btn" id="btn-mailbox-link" type="button" title="Inserir link">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                            </button>
+
+                            <button class="mailbox-tool-icon-btn" id="btn-mailbox-emoji" type="button" title="Inserir emoji">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ATTACHED FILES LIST CONTAINER -->
+                    <div id="mailbox-attached-files-list" class="mailbox-attached-files"></div>
+
+                    <!-- EMOJI POPUP GRID CONTAINER -->
+                    <div id="mailbox-emoji-picker" class="mailbox-emoji-popover" style="display: none;">
+                        <span class="emoji-item">😀</span><span class="emoji-item">😊</span><span class="emoji-item">🚀</span>
+                        <span class="emoji-item">✨</span><span class="emoji-item">👍</span><span class="emoji-item">💼</span>
+                        <span class="emoji-item">🎨</span><span class="emoji-item">🔥</span><span class="emoji-item">💡</span>
+                        <span class="emoji-item">❤️</span><span class="emoji-item">🎯</span><span class="emoji-item">⚡</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTON ROW BELOW INPUT (VOLTAR & PRÓXIMO / ENVIAR) -->
+            <div class="mailbox-btn-row">
+                <!-- VOLTAR (BACK) BUTTON (TEXT ONLY, UNDERLINED, HOVER EXPANSION, VISIBLE FROM STEP 2 ONWARDS) -->
+                <button class="mailbox-btn-back" id="btn-mailbox-back" type="button" style="display: none;">Voltar</button>
+
+                <!-- NEXT / SUBMIT BUTTON -->
+                <button class="mailbox-btn-action" id="btn-mailbox-action" type="button">
+                    <span id="txt-mailbox-action">Próximo</span>
+                    <span id="icon-mailbox-action" style="font-size: 11px;">▶</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- UNIFIED 2-ROW THANK YOU OBRIGADO! SCREEN -->
+        <div id="mailbox-success-step" class="mailbox-thanks-viewport" style="display: none;">
+            <div class="mailbox-thanks-wrapper">
+                <!-- ROW 1: ENVIADO + CLOSE BUTTON ✕ FLUSH TO RED LINES -->
+                <div class="mailbox-thanks-top-line">
+                    <span class="mailbox-thanks-sub">Envio concluído.</span>
+                    <button class="mailbox-thanks-close-btn" id="btn-mailbox-thanks-close" title="Fechar (Esc)">✕</button>
+                </div>
+                <!-- ROW 2: OBRIGADO! TITLE -->
+                <h1 class="mailbox-thanks-h1">OBRIGADO!</h1>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
+<!-- PRELOADER SCREEN (MAX 2 SECONDS WITH DEVICE I18N & PIXEL DITHER PROGRESS BAR) -->
+<div id="preloader">
+    <div class="preloader-brand" id="preloader-text">Carregando...</div>
+    <div class="pixel-dither-container">
+        <div class="pixel-dither-fill" id="preloader-bar"></div>
+    </div>
+</div>
+
+<!-- FOLD 1 & FOLD 2: HERO SECTION -->
+<div class="scroll-wrapper">
+    <header id="hero">
+        <div class="grid-bg"></div>
+        <canvas id="canvas"></canvas>
+        <div class="vignette"></div>
+
+        <div class="hero-titles-layer">
+            <div id="sub-title-text">Olá, sou o Gabriel</div>
+            <h1 id="main-title-text">
+                <span id="title-line-1">UX/UI Designer Jr e</span><br>
+                <span id="title-em" class="editorial-em">explorador</span>
+                <span id="title-line-2-post">de inovações</span>
+            </h1>
+            <!-- HERO MOBILE CONTACT BUTTON (VISIBLE ONLY < 768px, EXACT 20px BELOW H1 TITLE) -->
+            <a href="javascript:void(0)" class="hero-mobile-contact-btn" id="btn-hero-contact-mobile">
+                <span class="shimmer-text" id="txt-contact-hero-mobile">Fale comigo</span>
+            </a>
+        </div>
+    </header>
+
+    <nav class="fixed-header" id="header">
+        <!-- LEFT GROUP: Início, Sobre Mim, O que entrego, Theme Lantern Toggle Button with 12px gap -->
+        <div class="nav-group-left">
+            <a href="#hero" class="nav-item" id="nav-home">Início</a>
+            <a href="#sobre-mim" class="nav-item" id="nav-about">Sobre Mim</a>
+            <a href="#entrego" class="nav-item" id="nav-services">O que entrego</a>
+            
+            <!-- THEME TOGGLE PILL BUTTON (FIGMA SPEC MATCHING theme-toggle-dark / theme-toggle-light) -->
+            <button class="bttn-theme-pill" id="btn-theme" title="Alternar tema (Dark / Light)" aria-label="Alternar tema">
+                <div class="theme-pill-track">
+                    <div class="theme-slot left-slot">
+                        <img src="files/imagens/icon-light-theme.svg" alt="Sun" class="theme-icon icon-sun">
+                        <img src="files/imagens/icon-toggle.svg" alt="Dot" class="theme-icon icon-dot-left">
+                    </div>
+                    <div class="theme-slot right-slot">
+                        <img src="files/imagens/icon-dark-theme.svg" alt="Moon" class="theme-icon icon-dark-theme">
+                        <img src="files/imagens/icon-toggle.svg" alt="Dot" class="theme-icon icon-dot-right">
+                    </div>
+                </div>
+            </button>
+        </div>
+
+        <!-- RIGHT GROUP: Projetos, Currículo + icon-download 16x16, Fale comigo (Radius 0px) -->
+        <div class="nav-group-right">
+            <a href="#projetos" class="nav-item" id="nav-projects">Projetos</a>
+            
+            <!-- CURRICULO LINK WITH 16x16 DOWNLOAD ICON TO RIGHT -->
+            <a href="files/Curriculo/pt-br/Curriculo%20Gabriel%20Fonseca.pdf" download="Curriculo Gabriel Fonseca.pdf" target="_blank" class="curriculo-link" id="link-cv">
+                <span id="txt-cv">Currículo</span>
+                <img id="img-cv" src="files/imagens/imagens-dark-mode/icon-download-light.svg" alt="Download">
+            </a>
+
+            <!-- FALE COMIGO BUTTON (CORNER RADIUS: 0px WITH FIXED HOVER VISIBILITY) -->
+            <a href="javascript:void(0)" class="btn-fale-comigo" id="btn-contact">
+                <span id="txt-contact" class="shimmer-text">Fale comigo</span>
+            </a>
+
+            <!-- MOBILE HAMBURGER MENU BUTTON (VISIBLE ONLY <= 768px) -->
+            <button class="mobile-menu-toggle" id="btn-mobile-menu" aria-label="Abrir menu de navegação">
+                <img id="img-mobile-menu" src="files/imagens/imagens-dark-mode/icon-menu-light.svg" alt="Menu">
+            </button>
+        </div>
+    </nav>
+
+    <!-- MOBILE NAVIGATION OVERLAY DRAWER -->
+    <div id="mobile-nav-overlay" class="mobile-nav-overlay" aria-hidden="true">
+        <div class="mobile-nav-drawer">
+            <div class="mobile-nav-links">
+                <a href="#hero" class="mobile-nav-link" id="mobile-nav-home">Início</a>
+                <a href="#sobre-mim" class="mobile-nav-link" id="mobile-nav-about">Sobre Mim</a>
+                <a href="#entrego" class="mobile-nav-link" id="mobile-nav-services">O que entrego</a>
+                <a href="#projetos" class="mobile-nav-link" id="mobile-nav-projects">Projetos</a>
+                <a href="files/Curriculo/pt-br/Curriculo%20Gabriel%20Fonseca.pdf" download="Curriculo Gabriel Fonseca.pdf" target="_blank" class="mobile-nav-link mobile-cv-link" id="mobile-link-cv">
+                    <span class="mobile-cv-wrapper">
+                        <span id="mobile-txt-cv">Currículo</span>
+                        <img id="mobile-img-cv" src="files/imagens/imagens-dark-mode/icon-download-light.svg" alt="Download" class="mobile-cv-icon">
+                    </span>
+                </a>
+                <!-- CLOSE BUTTON PLACED BELOW CURRÍCULO BUTTON, CENTERED WITH X ICON -->
+                <button class="mobile-close-nav-btn" id="btn-mobile-nav-close" title="Fechar menu">
+                    <span id="mobile-txt-close">Fechar</span>
+                    <span class="mobile-close-x-icon">✕</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TRANSLATE ICON BUTTON (16x16 ICON, POSITIONS EXACTLY 12px TO RIGHT OF CENTER LOGO IN HEADER) -->
+    <button class="header-translate-btn" id="btn-translate" title="Alternar idioma (PT / EN)">
+        <img id="img-translate" src="files/imagens/imagens-dark-mode/icon-translate-light.svg" alt="Traduzir">
+    </button>
+
+    <div class="logo-wrapper" id="logo-wrapper">
+        <div class="resize-border" id="resize-ui"></div>
+        <img src="files/imagens/imagens-dark-mode/logo-gabux-light.svg" alt="Logo" id="logo-img">
+        <div class="handle nw"></div><div class="handle ne"></div>
+        <div class="handle sw"></div><div class="handle se"></div>
+    </div>
+</div>
+
+<!-- FOLD 3: SOBRE MIM SECTION WITH CHROMA BACKGROUND & PINNED TEXT DECRYPT -->
+<div class="sobre-mim-scroll-wrapper" id="sobre-mim-wrapper">
+    <section id="sobre-mim">
+        <!-- TOP SECTION HEADER FOR SOBRE MIM (REPLICATED LINE + LEFT TITLE ATTRACTED TO SCROLL) -->
+        <div class="sobre-mim-header-wrapper" id="sobre-mim-header">
+            <h3 class="sobre-mim-title" id="txt-sobre-mim-header-title">Sobre mim</h3>
+            <div class="sobre-mim-top-line"></div>
+        </div>
+
+        <div id="chroma-canvas"></div>
+
+        <div class="sobre-mim-content">
+            <div class="hero-portrait-row">
+                <div class="sobre-mim-label left" id="lbl-sobre-pt">Sobre mim</div>
+                <div class="portrait-img-box">
+                    <img src="files/imagens/img-sobre-mim.svg" alt="Gabux - Sobre Mim">
+                </div>
+                <div class="sobre-mim-label right" id="lbl-sobre-en">About me</div>
+            </div>
+
+            <h2 class="decrypt-heading" id="decrypt-text">
+                CONSTRUO SOLUÇÕES EM UX E UI ALIADO AO VIBE CODE EM UM WORKFLOW COMPLETO COM FOCO EM RESULTADOS E PRODUTOS DE ALTO VALOR.
+            </h2>
+
+            <!-- VERTICAL TOOLS LIST (ICON 22x22 MATCHING LANTERN ICON SIZE) -->
+            <div class="tools-vertical-list">
+                <div class="tool-vertical-item">
+                    <img id="icon-figma" src="files/imagens/imagens-dark-mode/icon-figma-light.svg" alt="Figma">
+                    <span>Figma</span>
+                </div>
+                <div class="tool-vertical-item">
+                    <img id="icon-framer" src="files/imagens/imagens-dark-mode/icon-framer-light.svg" alt="Framer">
+                    <span>Framer</span>
+                </div>
+                <div class="tool-vertical-item">
+                    <img id="icon-code" src="files/imagens/imagens-dark-mode/icon-code-light.svg" alt="VibeCode">
+                    <span>VibeCode</span>
+                </div>
+                <div class="tool-vertical-item">
+                    <img id="icon-ai" src="files/imagens/imagens-dark-mode/icon-ai-light.svg" alt="IA">
+                    <span>IA</span>
+                </div>
+                <div class="tool-vertical-item">
+                    <img id="icon-ps" src="files/imagens/imagens-dark-mode/icon-photoshop-light.svg" alt="Photoshop">
+                    <span>Photoshop</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- FOLD 4: SECTION "O QUE ENTREGO" WITH ANIMATED 45% MICRO NOISE GRAIN, 3D LOGOS ABOVE RECTANGLES, EXACT SCREENSHOT TEXTS -->
+<section id="entrego">
+    <!-- ANIMATED MICRO-NOISE GRAIN CANVAS (45% OPACITY WITH FLICKERING NOISE) -->
+    <canvas id="entrego-grain-canvas"></canvas>
+
+    <!-- 3D GLASSMOPHISM VECTOR LOGOS WITH SCROLL PARALLAX (Z-INDEX 50: FLOATING ABOVE RECTANGLES) -->
+    <div class="glass-3d-logo" id="logo-figma-3d">
+        <img src="files/imagens/new-figma 1.svg" alt="Figma 3D">
+    </div>
+    <div class="glass-3d-logo" id="logo-claude-3d">
+        <img src="files/imagens/new-claude 1.svg" alt="ClaudeCode 3D">
+    </div>
+    <div class="glass-3d-logo" id="logo-framer-3d">
+        <img src="files/imagens/new-framer2 1.svg" alt="Framer 3D">
+    </div>
+
+    <!-- TOP SECTION HEADER: LEFT ALIGNED TITLE (1rem / 16px) ABOVE 100% EXPANDING LINE ON SCROLL -->
+    <div class="entrego-header-wrapper" id="entrego-header">
+        <h3 class="entrego-title" id="txt-entrego-title">O que entrego</h3>
+        <div class="entrego-top-line"></div>
+    </div>
+
+    <!-- DELIVERABLE PHRASES WITH CENTER EXPANDING HOVER RECTANGLES & EXACT SCREENSHOT TEXTS -->
+    <div class="deliverables-list">
+        <!-- ROW 1 -->
+        <div class="deliverable-row" data-row="1">
+            <div class="hover-expand-rect"></div>
+            <div class="deliverable-main-content">
+                <span class="deliverable-text" id="deliv-line-1">SAAS & MICRO SAAS</span>
+                <span class="btn-expand-toggle" id="btn-toggle-1">expandir</span>
+                <button class="mobile-chevron-btn" type="button" aria-label="Expandir">
+                    <svg class="chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m6 9 6 6 6-6"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="deliverable-subtext-container">
+                <p class="deliverable-subtext" id="deliv-sub-1">
+                    Entrego interfaces de SaaS e Micro SaaS, bem como a possibilidade do uso de Vibe Code para criar a versão inicial em código, acelerando o processo de desenvolvimento.
+                </p>
+            </div>
+        </div>
+
+        <!-- ROW 2 -->
+        <div class="deliverable-row" data-row="2">
+            <div class="hover-expand-rect"></div>
+            <div class="deliverable-main-content">
+                <span class="deliverable-text" id="deliv-line-2">LANDING PAGES & S.P.As</span>
+                <span class="btn-expand-toggle" id="btn-toggle-2">expandir</span>
+                <button class="mobile-chevron-btn" type="button" aria-label="Expandir">
+                    <svg class="chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m6 9 6 6 6-6"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="deliverable-subtext-container">
+                <p class="deliverable-subtext" id="deliv-sub-2">
+                    Crio Landing Pages e Single Page Applications que vão do simples ao avançado, do estático à animações complexas com funcionalidades que agregam valor ao produto.
+                </p>
+            </div>
+        </div>
+
+        <!-- ROW 3 -->
+        <div class="deliverable-row" data-row="3">
+            <div class="hover-expand-rect"></div>
+            <div class="deliverable-main-content">
+                <span class="deliverable-text" id="deliv-line-3">SITES E APPS WEB & MOBILE</span>
+                <span class="btn-expand-toggle" id="btn-toggle-3">expandir</span>
+                <button class="mobile-chevron-btn" type="button" aria-label="Expandir">
+                    <svg class="chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m6 9 6 6 6-6"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="deliverable-subtext-container">
+                <p class="deliverable-subtext" id="deliv-sub-3">
+                    Desenvolvo layouts de sites e aplicações web e mobile completos, incluindo com um workflow completo que envolve Figma/Framer + IA Vibe Coding.
+                </p>
+            </div>
+        </div>
+
+        <!-- ROW 4 -->
+        <div class="deliverable-row" data-row="4">
+            <div class="hover-expand-rect"></div>
+            <div class="deliverable-main-content">
+                <span class="deliverable-text" id="deliv-line-4">DASHBOARDS, CRMs APPS</span>
+                <span class="btn-expand-toggle" id="btn-toggle-4">expandir</span>
+                <button class="mobile-chevron-btn" type="button" aria-label="Expandir">
+                    <svg class="chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m6 9 6 6 6-6"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="deliverable-subtext-container">
+                <p class="deliverable-subtext" id="deliv-sub-4">
+                    Estruturo e desenvolvo interfaces para Dashboards e CRMs de qualquer segmento.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM SUB-HEADING TEXT BELOW THE 4 LINES (PP EDITORIAL NEW EXTRA LIGHT) -->
+    <p class="entrego-bottom-text" id="txt-entrego-bottom">
+        Tudo com a agilidade e qualidade que só um UX/UI Designer com skills de Design Engineer consegue entregar.
+    </p>
+</section>
+
+<!-- FOLD 5: SECTION "PROJETOS" (PINNED STICKY SCROLL CONTAINER WITH EXACT 345x440 COLOR CARDS & PARALLAX ENTRY/EXIT) -->
+<div class="projetos-scroll-wrapper" id="projetos-wrapper">
+    <section id="projetos">
+        <!-- ANIMATED RANDOM NOISE GRAIN BACKGROUND CANVAS FOR PROJETOS (45% OPACITY FLICKERING) -->
+        <canvas id="projetos-grain-canvas"></canvas>
+
+        <!-- TOP SECTION HEADER FOR PROJETOS (REPLICATED LINE + LEFT TITLE SCROLL ANIMATION) -->
+        <div class="projetos-header-wrapper" id="projetos-header">
+            <h3 class="projetos-title" id="txt-projetos-header-title">Projetos</h3>
+            <div class="projetos-top-line"></div>
+        </div>
+
+        <!-- STACKED PROJECT STAGE CONTAINER -->
+        <div class="projects-stage">
+            <!-- PROJETO 1: TRAVEL (#6661FF) -->
+            <div class="project-card-item" data-project="1">
+                <div class="project-col-left">
+                    <span class="project-sub-label" id="proj1-sub">Projeto de estudo</span>
+                    <h3 class="project-title-name" id="proj1-name">Travel</h3>
+                </div>
+                <div class="project-col-center">
+                    <div class="project-glow-aura"></div>
+                    <div class="project-color-card" style="background-color: #6661FF;">
+                        <img src="files/logos-projetos/logo-travel.svg" alt="Travel Logo" class="project-card-logo">
+                    </div>
+                </div>
+                <div class="project-col-right">
+                    <p class="project-desc-text" id="proj1-desc">
+                        App mobile de viagens onde o usuário pode fazer reservas em hospedagens parceiras.
+                    </p>
+                    <a href="projeto-travel.html" class="btn-visualizar-projeto" id="btn-proj-1">
+                        <span id="txt-btn-proj-1">Visualizar Projeto</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- PROJETO 2: MEGA VAREJO (#F4841A) -->
+            <div class="project-card-item" data-project="2">
+                <div class="project-col-left">
+                    <span class="project-sub-label" id="proj2-sub">Projeto de estudo</span>
+                    <h3 class="project-title-name" id="proj2-name">Mega<br>Varejo</h3>
+                </div>
+                <div class="project-col-center">
+                    <div class="project-glow-aura"></div>
+                    <div class="project-color-card" style="background-color: #F4841A;">
+                        <img src="files/logos-projetos/logo-mega-varejo.svg" alt="Mega Varejo Logo" class="project-card-logo">
+                    </div>
+                </div>
+                <div class="project-col-right">
+                    <p class="project-desc-text" id="proj2-desc">
+                        Aplicação Web e Mobile de compra e venda com opção de loja local.
+                    </p>
+                    <a href="projeto-megavarejo.html" class="btn-visualizar-projeto" id="btn-proj-2">
+                        <span id="txt-btn-proj-2">Visualizar Projeto</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- PROJETO 3: SPARK (#0066FF) -->
+            <div class="project-card-item" data-project="3">
+                <div class="project-col-left">
+                    <span class="project-sub-label" id="proj3-sub">Projeto de estudo</span>
+                    <h3 class="project-title-name" id="proj3-name">Spark</h3>
+                </div>
+                <div class="project-col-center">
+                    <div class="project-glow-aura"></div>
+                    <div class="project-color-card" style="background-color: #0066FF;">
+                        <img src="files/logos-projetos/logo-spark.svg" alt="Spark Logo" class="project-card-logo">
+                    </div>
+                </div>
+                <div class="project-col-right">
+                    <p class="project-desc-text" id="proj3-desc">
+                        Aplicação Web e Mobile de gerenciamento e agendamento de vagas em estacionamentos.
+                    </p>
+                    <a href="projeto-spark.html" class="btn-visualizar-projeto" id="btn-proj-3">
+                        <span id="txt-btn-proj-3">Visualizar Projeto</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- PROJETO 4: SAFEROUT (#CEDDF2) -->
+            <div class="project-card-item" data-project="4">
+                <div class="project-col-left">
+                    <span class="project-sub-label" id="proj4-sub">Projeto Real - Freelance</span>
+                    <h3 class="project-title-name" id="proj4-name">Safer<br>Out</h3>
+                </div>
+                <div class="project-col-center">
+                    <div class="project-glow-aura"></div>
+                    <div class="project-color-card" style="background-color: #CEDDF2;">
+                        <img src="files/logos-projetos/logo-saferout.svg" alt="SaferOut Logo" class="project-card-logo">
+                    </div>
+                </div>
+                <div class="project-col-right">
+                    <p class="project-desc-text" id="proj4-desc">
+                        Aplicativo mobile de monitoramento urbano em tempo real
+                    </p>
+                    <a href="projeto-saferout.html" class="btn-visualizar-projeto" id="btn-proj-4">
+                        <span id="txt-btn-proj-4">Visualizar Projeto</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- FOLD 6: SECTION "FOOTER" (FIGMA SECTION 5-FOOTER-MAIN / FRAME FOOTER) -->
+<footer id="contato" class="footer-section">
+    <!-- ANIMATED NOISE GRAIN CANVAS FOR FOOTER BACKGROUND (MOBILE ONLY < 841px) -->
+    <canvas id="footer-grain-canvas" class="section-grain-canvas"></canvas>
+
+    <!-- TOP SECTION BORDER LINE -->
+    <div class="footer-top-line"></div>
+
+    <!-- DESKTOP CONTAINER (>= 841px): 2 COLUMNS LEFT (TEXT/CTA/BOTTOM-BAR) & RIGHT (FULL-HEIGHT ASCII CANVAS) -->
+    <div class="footer-desktop-view">
+        <div class="footer-col-left">
+            <div class="footer-main-content">
+                <div class="footer-bar-ascii" aria-hidden="true">+===================================+</div>
+                <p class="footer-secondary-title" id="txt-footer-secondary">
+                    Que tal criarmos algo incrível juntos?
+                </p>
+
+                <a href="javascript:void(0)" class="footer-cta-container" id="btn-footer-cta">
+                    <div class="footer-cta-row">
+                        <svg class="footer-cta-arrow-left" viewBox="0 0 110 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 20H96M96 20L78 4M96 20L78 36" stroke="currentColor" stroke-width="3.5" stroke-linecap="square"/>
+                        </svg>
+                        <h1 class="footer-cta-h1" id="footer-cta-text">VAMOS CONVERSAR</h1>
+                        <svg class="footer-cta-arrow-right" viewBox="0 0 110 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 20H96M96 20L78 4M96 20L78 36" stroke="currentColor" stroke-width="3.5" stroke-linecap="square"/>
+                        </svg>
+                    </div>
+                    <div class="footer-cta-lines">
+                        <span class="footer-cta-line-thin"></span>
+                        <span class="footer-cta-line-thick"></span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="footer-bottom-bar">
+                <div class="footer-social-group">
+                    <span class="footer-social-label" id="txt-footer-social-label">Me siga nas minhas redes:</span>
+                    <a href="https://www.linkedin.com/in/gabux/" target="_blank" class="footer-social-icon-btn" title="LinkedIn">
+                        <img id="img-linkedin" class="img-linkedin-icon" src="files/imagens/imagens-dark-mode/logo-linkedin-light.svg" alt="LinkedIn">
+                    </a>
+                    <a href="https://www.behance.net/gabfiles" target="_blank" class="footer-social-icon-btn" title="Behance">
+                        <img id="img-behance" class="img-behance-icon" src="files/imagens/imagens-dark-mode/logo-behance-light.svg" alt="Behance">
+                    </a>
+                </div>
+
+                <p class="footer-copyright" id="txt-footer-rights">
+                    ©2026. Desenvolvido por gab.ux. Todos os direitos reservados.
+                </p>
+            </div>
+        </div>
+
+        <div class="footer-col-right">
+            <div class="ascii-shader-wrapper">
+                <canvas id="ascii-shader-canvas-desktop"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE CONTAINER (< 841px): STACKED WITH ASCII AT BOTTOM & COPYRIGHT OVER IT -->
+    <div class="footer-mobile-view">
+        <div class="footer-top-block">
+            <div class="footer-bar-ascii" aria-hidden="true">+===================================+</div>
+            <p class="footer-secondary-title" id="mobile-txt-footer-secondary">
+                Que tal criarmos algo incrível juntos?
+            </p>
+
+            <a href="javascript:void(0)" class="footer-cta-container" id="btn-footer-cta-mobile">
+                <div class="footer-cta-row">
+                    <svg class="footer-cta-arrow-left" viewBox="0 0 110 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 20H96M96 20L78 4M96 20L78 36" stroke="currentColor" stroke-width="3.5" stroke-linecap="square"/>
+                    </svg>
+                    <h1 class="footer-cta-h1" id="mobile-footer-cta-text">VAMOS CONVERSAR</h1>
+                    <svg class="footer-cta-arrow-right" viewBox="0 0 110 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 20H96M96 20L78 4M96 20L78 36" stroke="currentColor" stroke-width="3.5" stroke-linecap="square"/>
+                    </svg>
+                </div>
+                <div class="footer-cta-lines">
+                    <span class="footer-cta-line-thin"></span>
+                    <span class="footer-cta-line-thick"></span>
+                </div>
+            </a>
+        </div>
+
+        <div class="footer-middle-divider"></div>
+
+        <div class="footer-bottom-block">
+            <div class="footer-social-group">
+                <span class="footer-social-label" id="mobile-txt-footer-social-label">Me siga nas minhas redes:</span>
+                <a href="https://www.linkedin.com/in/gabux/" target="_blank" class="footer-social-icon-btn" title="LinkedIn">
+                    <img class="img-linkedin-icon" src="files/imagens/imagens-dark-mode/logo-linkedin-light.svg" alt="LinkedIn">
+                </a>
+                <a href="https://www.behance.net/gabfiles" target="_blank" class="footer-social-icon-btn" title="Behance">
+                    <img class="img-behance-icon" src="files/imagens/imagens-dark-mode/logo-behance-light.svg" alt="Behance">
+                </a>
+            </div>
+
+            <div class="ascii-shader-wrapper">
+                <canvas id="ascii-shader-canvas-mobile"></canvas>
+                <p class="footer-copyright" id="mobile-txt-footer-rights">
+                    ©2026. Desenvolvido por gab.ux. Todos os direitos reservados.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="script.js" defer></script>
+</body>
+</html>
