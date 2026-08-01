@@ -75,10 +75,6 @@ function runPreloader() {
             if (typeof ScrollTrigger !== 'undefined') {
                 ScrollTrigger.refresh();
             }
-            const projetosEl = document.getElementById('projetos-wrapper') || document.getElementById('projetos');
-            if (projetosEl) {
-                projetosEl.scrollIntoView({ behavior: 'auto' });
-            }
         }, 150);
         return;
     }
