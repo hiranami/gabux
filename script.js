@@ -6,7 +6,12 @@ if (typeof Lenis !== 'undefined') {
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true
     });
-    lenis.stop(); // Locked until preloader finishes
+    window.lenis = lenis;
+    if (document.getElementById('preloader')) {
+        lenis.stop();
+    } else {
+        lenis.start();
+    }
     function raf(time) {
         lenis.raf(time);
         requestAnimationFrame(raf);

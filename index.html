@@ -153,19 +153,24 @@
         if (b) b.style.width = '100%';
     }, 50);
 
+    function unlockAndStartLenis() {
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+        if (window.lenis) window.lenis.start();
+        setTimeout(function() { if (window.lenis) window.lenis.start(); }, 300);
+        setTimeout(function() { if (window.lenis) window.lenis.start(); }, 800);
+    }
+
     setTimeout(function() {
         if (p) {
             p.style.opacity = '0';
             p.style.pointerEvents = 'none';
             setTimeout(function() {
                 if (p.parentNode) p.remove();
-                document.documentElement.style.overflow = '';
-                document.body.style.overflow = '';
-                if (window.lenis) window.lenis.start();
+                unlockAndStartLenis();
             }, 500);
         } else {
-            document.documentElement.style.overflow = '';
-            document.body.style.overflow = '';
+            unlockAndStartLenis();
         }
     }, 1800);
 })();
