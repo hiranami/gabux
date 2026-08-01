@@ -1905,32 +1905,23 @@ function initMailboxOverlay() {
 }
 
 // --- 11. SECURED REAL-TIME PERSISTENT COUNTER SYSTEM ---
-let realVisitCount = 0;
+let realVisitCount = 1;
 let realClapCount = 0;
 let isVisitorSlotTriggered = false;
 
 async function fetchLiveCounterData(isNewSession = false) {
     const ts = Date.now();
-    let visits = realVisitCount || 0;
-    let claps = realClapCount || 0;
-
     try {
         const actionUrl = isNewSession ? `/api/counter?action=visit&t=${ts}` : `/api/counter?t=${ts}`;
         const res = await fetch(actionUrl, { cache: 'no-store' });
         if (res.ok) {
             const data = await res.json();
             if (data && typeof data.visits === 'number') {
-                visits = Math.max(visits, data.visits);
-                claps = Math.max(claps, data.claps);
-                if (data.hasClapped) {
-                    localStorage.setItem('gabux_user_clapped', 'true');
-                }
+                realVisitCount = data.visits;
+                realClapCount = data.claps;
             }
         }
     } catch(err) {}
-
-    realVisitCount = Math.max(0, visits);
-    realClapCount = Math.max(0, claps);
 
     updateClapUI();
     if (isVisitorSlotTriggered) {
@@ -1939,9 +1930,10 @@ async function fetchLiveCounterData(isNewSession = false) {
 }
 
 async function initVisitorAndClapSystem() {
-    const isNewSession = !sessionStorage.getItem('gabux_db_session_v1012');
+    // Check if this device has counted a visit in this browser session
+    const isNewSession = !sessionStorage.getItem('gabux_v1012_device_session');
     if (isNewSession) {
-        sessionStorage.setItem('gabux_db_session_v1012', 'true');
+        sessionStorage.setItem('gabux_v1012_device_session', 'true');
     }
 
     await fetchLiveCounterData(isNewSession);
@@ -1949,14 +1941,14 @@ async function initVisitorAndClapSystem() {
     setupClapButtonListeners();
     observeFooterForCasinoSlot();
 
-    // Poll live updates every 1.2s for instant multi-device synchronization
+    // Poll live updates every 1.5s for instant multi-device synchronization
     setInterval(() => {
         fetchLiveCounterData(false);
-    }, 1200);
+    }, 1500);
 }
 
 function updateClapUI() {
-    const isClapped = localStorage.getItem('gabux_user_clapped') === 'true';
+    const isClapped = localStorage.getItem('gabux_device_clapped') === 'true';
     document.querySelectorAll('.visitor-clap-btn').forEach(btn => {
         if (isClapped) btn.classList.add('clapped');
         else btn.classList.remove('clapped');
@@ -1976,21 +1968,36 @@ function setupClapButtonListeners() {
                 e.stopPropagation();
             }
 
-            const isClapped = localStorage.getItem('gabux_user_clapped') === 'true';
+            const isClapped = localStorage.getItem('gabux_device_clapped') === 'true';
             const clickX = (e && e.clientX) ? e.clientX : (window.innerWidth / 2);
             const clickY = (e && e.clientY) ? e.clientY : (window.innerHeight / 2);
-
-            // Always trigger particles feedback on click
-            spawnClapParticles(clickX, clickY);
+            const ts = Date.now();
 
             if (!isClapped) {
-                localStorage.setItem('gabux_user_clapped', 'true');
+                // Like / Clap action (Device-based)
+                localStorage.setItem('gabux_device_clapped', 'true');
                 realClapCount += 1;
+                spawnClapParticles(clickX, clickY);
                 updateClapUI();
 
-                const ts = Date.now();
                 try {
-                    const res = await fetch(`/api/counter?action=clap&t=${ts}`, { cache: 'no-store' });
+                    const res = await fetch(`/api/counter?action=clap_up&t=${ts}`, { cache: 'no-store' });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && typeof data.claps === 'number') {
+                            realClapCount = data.claps;
+                            updateClapUI();
+                        }
+                    }
+                } catch(err) {}
+            } else {
+                // Unlike / Unclap action (Device-based like button behavior)
+                localStorage.removeItem('gabux_device_clapped');
+                realClapCount = Math.max(0, realClapCount - 1);
+                updateClapUI();
+
+                try {
+                    const res = await fetch(`/api/counter?action=clap_down&t=${ts}`, { cache: 'no-store' });
                     if (res.ok) {
                         const data = await res.json();
                         if (data && typeof data.claps === 'number') {

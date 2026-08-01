@@ -1,10 +1,9 @@
-// Vercel Serverless Function: Guaranteed 100% Persistent Real-Time Counter API
-let globalVisits = 0;
-let globalClaps = 0;
-const visitedIPs = new Set();
-const clappedIPs = new Set();
+// Vercel Serverless Function: Guaranteed Persistent Real-Time Counter API
+const DB_NAME = 'gabux_v1012_official_prod';
+const DB_BASE_URL = `https://api.counterapi.dev/v1/${DB_NAME}`;
 
-const DB_NAMESPACE = 'gabux_v1012_zero_final_prod';
+let serverVisitsCache = null;
+let serverClapsCache = null;
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -19,54 +18,46 @@ export default async function handler(req, res) {
     const { action } = req.query || {};
     const ts = Date.now();
 
-    // Extract client IP address
-    const rawIp = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket?.remoteAddress || '127.0.0.1';
-    const clientIp = rawIp.split(',')[0].trim();
-
     try {
         if (action === 'visit') {
-            if (!visitedIPs.has(clientIp)) {
-                visitedIPs.add(clientIp);
-                globalVisits++;
-                fetch(`https://api.counterapi.dev/v1/${DB_NAMESPACE}/visits/up?t=${ts}`, { cache: 'no-store' }).then(r => r.json()).then(d => {
-                    if (d && typeof d.count === 'number') globalVisits = Math.max(globalVisits, d.count);
-                }).catch(() => {});
+            const r = await fetch(`${DB_BASE_URL}/visits/up?t=${ts}`, { cache: 'no-store' });
+            if (r.ok) {
+                const data = await r.json();
+                if (data && typeof data.count === 'number') serverVisitsCache = data.count;
             }
-        } else if (action === 'clap') {
-            if (!clappedIPs.has(clientIp)) {
-                clappedIPs.add(clientIp);
-                globalClaps++;
-                fetch(`https://api.counterapi.dev/v1/${DB_NAMESPACE}/claps/up?t=${ts}`, { cache: 'no-store' }).then(r => r.json()).then(d => {
-                    if (d && typeof d.count === 'number') globalClaps = Math.max(globalClaps, d.count);
-                }).catch(() => {});
+        } else if (action === 'clap_up') {
+            const r = await fetch(`${DB_BASE_URL}/claps/up?t=${ts}`, { cache: 'no-store' });
+            if (r.ok) {
+                const data = await r.json();
+                if (data && typeof data.count === 'number') serverClapsCache = data.count;
             }
-        } else if (action === 'reset') {
-            globalVisits = 0;
-            globalClaps = 0;
-            visitedIPs.clear();
-            clappedIPs.clear();
+        } else if (action === 'clap_down') {
+            const r = await fetch(`${DB_BASE_URL}/claps/down?t=${ts}`, { cache: 'no-store' });
+            if (r.ok) {
+                const data = await r.json();
+                if (data && typeof data.count === 'number') serverClapsCache = Math.max(0, data.count);
+            }
         }
 
-        // Background query to stay 100% in sync with persistent DB
-        if (globalVisits === 0 && action !== 'visit') {
-            const rV = await fetch(`https://api.counterapi.dev/v1/${DB_NAMESPACE}/visits?t=${ts}`, { cache: 'no-store' });
+        // Always query current counts if cache is empty or for general poll
+        if (serverVisitsCache === null || action !== 'visit') {
+            const rV = await fetch(`${DB_BASE_URL}/visits?t=${ts}`, { cache: 'no-store' });
             if (rV.ok) {
                 const dV = await rV.json();
-                if (dV && typeof dV.count === 'number') globalVisits = dV.count;
+                if (dV && typeof dV.count === 'number') serverVisitsCache = dV.count;
             }
         }
-        if (globalClaps === 0 && action !== 'clap') {
-            const rC = await fetch(`https://api.counterapi.dev/v1/${DB_NAMESPACE}/claps?t=${ts}`, { cache: 'no-store' });
+        if (serverClapsCache === null || (action !== 'clap_up' && action !== 'clap_down')) {
+            const rC = await fetch(`${DB_BASE_URL}/claps?t=${ts}`, { cache: 'no-store' });
             if (rC.ok) {
                 const dC = await rC.json();
-                if (dC && typeof dC.count === 'number') globalClaps = dC.count;
+                if (dC && typeof dC.count === 'number') serverClapsCache = Math.max(0, dC.count);
             }
         }
     } catch (err) {}
 
     return res.status(200).json({
-        visits: Math.max(0, globalVisits),
-        claps: Math.max(0, globalClaps),
-        hasClapped: clappedIPs.has(clientIp)
+        visits: serverVisitsCache !== null ? serverVisitsCache : 1,
+        claps: serverClapsCache !== null ? serverClapsCache : 0
     });
 }
