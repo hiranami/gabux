@@ -1964,6 +1964,10 @@ async function initVisitorAndClapSystem() {
     updateClapUI();
     setupClapButtonListeners();
     observeFooterForCasinoSlot();
+
+    if (isVisitorSlotTriggered) {
+        runCasino777SlotAnimation(realVisitCount);
+    }
 }
 
 function updateClapUI() {
