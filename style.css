@@ -2566,11 +2566,12 @@ body.light-theme #mailbox-overlay {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     z-index: 1000;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 0 4%;
     box-sizing: border-box;
+    gap: 16px;
     transition: background-color 0.4s ease, border-color 0.4s ease;
 }
 
@@ -2578,6 +2579,8 @@ body.light-theme #mailbox-overlay {
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    flex-shrink: 1;
+    min-width: 0;
 }
 
 /* --- PÁGINA ANTERIOR BUTTON (SOLID CONTRAST BOX WITH ZERO BORDER RADIUS & THEME REACTIVE) --- */
@@ -2589,6 +2592,7 @@ body.light-theme #mailbox-overlay {
     font-family: 'PP Mori', sans-serif !important;
     font-size: 14px !important;
     font-weight: 600 !important;
+    white-space: nowrap !important;          /* PREVENT TEXT WRAPPING AT ALL SCREEN SIZES */
     color: #0A0A0A !important;              /* Dark text in Dark theme */
     background-color: #F6FBFF !important;    /* Solid Light button box in Dark theme */
     text-decoration: none !important;
@@ -2597,6 +2601,7 @@ body.light-theme #mailbox-overlay {
     border-radius: 0px !important;           /* ZERO BORDER RADIUS AS REQUESTED */
     box-sizing: border-box !important;
     cursor: pointer !important;
+    flex-shrink: 0 !important;
     transition: background-color 0.25s ease, color 0.25s ease, opacity 0.2s ease, transform 0.2s ease !important;
 }
 
@@ -3021,11 +3026,15 @@ html[data-theme="light"] .btn-circle-top-mobile img {
 
     .project-detail-header {
         height: 60px;
-        padding: 0 16px;
+        padding: 0 12px;
+        gap: 10px; /* Safety margin guaranteeing button NEVER touches logo */
     }
     .btn-back-home {
-        font-size: 12px;
-        padding: 6px 12px;
+        font-size: clamp(10px, 3.2vw, 12px) !important;
+        padding: clamp(4px, 1.5vw, 6px) clamp(6px, 2vw, 10px) !important;
+        gap: 4px !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
     }
     .project-detail-container {
         padding: 24px 16px 40px 16px;
