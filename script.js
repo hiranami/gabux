@@ -1920,8 +1920,8 @@ async function fetchLiveCounterData(isNewSession = false) {
         if (res.ok) {
             const data = await res.json();
             if (data && typeof data.visits === 'number') {
-                visits = data.visits;
-                claps = data.claps;
+                visits = Math.max(visits, data.visits);
+                claps = Math.max(claps, data.claps);
                 if (data.hasClapped) {
                     localStorage.setItem('gabux_user_clapped', 'true');
                 }
