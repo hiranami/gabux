@@ -1904,67 +1904,80 @@ function initMailboxOverlay() {
     });
 }
 
-// --- 11. REAL-TIME VISITOR COUNTER & CASINO 777 SLOT MACHINE REEL ENGINE ---
+// --- 11. REAL-TIME PERSISTENT COUNTER & SERVERLESS DB ENGINE ---
 let realVisitCount = 0;
 let realClapCount = 0;
 let isVisitorSlotTriggered = false;
-const COUNTER_NAMESPACE = 'gabux_v1012_live_sync';
+const COUNTER_NAMESPACE = 'gabux_v1012_db_sync';
 
-async function initVisitorAndClapSystem() {
-    // Clear all legacy local storage counter caches to prevent device desync
-    localStorage.removeItem('gabux_visits');
-    localStorage.removeItem('gabux_claps');
-    localStorage.removeItem('gabux_v1012_visits');
-    localStorage.removeItem('gabux_v1012_claps');
-
-    let visits = 1;
-    let claps = 0;
-
+async function fetchLiveCounterData(isNewSession = false) {
     const ts = Date.now();
-    const isNewSession = !sessionStorage.getItem('gabux_live_session_v1012');
-    if (isNewSession) {
-        sessionStorage.setItem('gabux_live_session_v1012', 'true');
-        try {
-            const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/visits/up?t=${ts}`, { cache: 'no-store' });
-            if (res.ok) {
-                const data = await res.json();
-                if (data && typeof data.count === 'number') {
-                    visits = data.count;
-                }
+    let visits = realVisitCount || 1;
+    let claps = realClapCount || 0;
+
+    // 1. Try Vercel Serverless Function /api/counter
+    try {
+        const actionUrl = isNewSession ? `/api/counter?action=visit&t=${ts}` : `/api/counter?t=${ts}`;
+        const res = await fetch(actionUrl, { cache: 'no-store' });
+        if (res.ok) {
+            const data = await res.json();
+            if (data && typeof data.visits === 'number') {
+                visits = data.visits;
+                claps = data.claps;
             }
-        } catch(e) {}
-    } else {
+        } else {
+            throw new Error('Fallback to direct DB');
+        }
+    } catch(err) {
+        // Fallback to direct serverless DB API
         try {
-            const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/visits?t=${ts}`, { cache: 'no-store' });
-            if (res.ok) {
-                const data = await res.json();
-                if (data && typeof data.count === 'number') {
-                    visits = data.count;
-                }
+            const vUrl = isNewSession 
+                ? `https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/visits/up?t=${ts}`
+                : `https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/visits?t=${ts}`;
+            const vRes = await fetch(vUrl, { cache: 'no-store' });
+            if (vRes.ok) {
+                const vData = await vRes.json();
+                if (vData && typeof vData.count === 'number') visits = vData.count;
+            }
+
+            const cRes = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps?t=${ts}`, { cache: 'no-store' });
+            if (cRes.ok) {
+                const cData = await cRes.json();
+                if (cData && typeof cData.count === 'number') claps = cData.count;
             }
         } catch(e) {}
     }
-
-    try {
-        const cRes = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps?t=${ts}`, { cache: 'no-store' });
-        if (cRes.ok) {
-            const cData = await cRes.json();
-            if (cData && typeof cData.count === 'number') {
-                claps = cData.count;
-            }
-        }
-    } catch(e) {}
 
     realVisitCount = Math.max(1, visits);
     realClapCount = Math.max(0, claps);
 
     updateClapUI();
-    setupClapButtonListeners();
-    observeFooterForCasinoSlot();
-
     if (isVisitorSlotTriggered) {
         runCasino777SlotAnimation(realVisitCount);
     }
+}
+
+async function initVisitorAndClapSystem() {
+    // Clear all legacy device caches
+    localStorage.removeItem('gabux_visits');
+    localStorage.removeItem('gabux_claps');
+    localStorage.removeItem('gabux_v1012_visits');
+    localStorage.removeItem('gabux_v1012_claps');
+
+    const isNewSession = !sessionStorage.getItem('gabux_db_session_v1012');
+    if (isNewSession) {
+        sessionStorage.setItem('gabux_db_session_v1012', 'true');
+    }
+
+    await fetchLiveCounterData(isNewSession);
+
+    setupClapButtonListeners();
+    observeFooterForCasinoSlot();
+
+    // Real-time polling every 4s so PC and Mobile sync live across all devices
+    setInterval(() => {
+        fetchLiveCounterData(false);
+    }, 4000);
 }
 
 function updateClapUI() {
@@ -1989,13 +2002,15 @@ function setupClapButtonListeners() {
                 spawnClapParticles(e.clientX, e.clientY);
                 updateClapUI();
                 try {
-                    const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps/up?t=${ts}`, { cache: 'no-store' });
+                    const res = await fetch(`/api/counter?action=clap_up&t=${ts}`, { cache: 'no-store' });
                     if (res.ok) {
                         const data = await res.json();
-                        if (data && typeof data.count === 'number') {
-                            realClapCount = data.count;
+                        if (data && typeof data.claps === 'number') {
+                            realClapCount = data.claps;
                             updateClapUI();
                         }
+                    } else {
+                        await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps/up?t=${ts}`, { cache: 'no-store' });
                     }
                 } catch(err) {}
             } else {
@@ -2003,13 +2018,15 @@ function setupClapButtonListeners() {
                 realClapCount = Math.max(0, realClapCount - 1);
                 updateClapUI();
                 try {
-                    const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps/down?t=${ts}`, { cache: 'no-store' });
+                    const res = await fetch(`/api/counter?action=clap_down&t=${ts}`, { cache: 'no-store' });
                     if (res.ok) {
                         const data = await res.json();
-                        if (data && typeof data.count === 'number') {
-                            realClapCount = data.count;
+                        if (data && typeof data.claps === 'number') {
+                            realClapCount = data.claps;
                             updateClapUI();
                         }
+                    } else {
+                        await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps/down?t=${ts}`, { cache: 'no-store' });
                     }
                 } catch(err) {}
             }
