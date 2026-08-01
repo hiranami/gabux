@@ -1908,58 +1908,55 @@ function initMailboxOverlay() {
 let realVisitCount = 0;
 let realClapCount = 0;
 let isVisitorSlotTriggered = false;
-const COUNTER_NAMESPACE = 'gabux_v1_0_1_2_prod';
+const COUNTER_NAMESPACE = 'gabux_v1012_live_sync';
 
 async function initVisitorAndClapSystem() {
-    // Clear legacy test keys from localStorage
+    // Clear all legacy local storage counter caches to prevent device desync
     localStorage.removeItem('gabux_visits');
     localStorage.removeItem('gabux_claps');
+    localStorage.removeItem('gabux_v1012_visits');
+    localStorage.removeItem('gabux_v1012_claps');
 
-    let visits = parseInt(localStorage.getItem('gabux_v1012_visits') || '0', 10);
-    let claps = parseInt(localStorage.getItem('gabux_v1012_claps') || '0', 10);
+    let visits = 1;
+    let claps = 0;
 
-    // Count session visit once per browser session
-    if (!sessionStorage.getItem('gabux_v1012_session_counted')) {
-        sessionStorage.setItem('gabux_v1012_session_counted', 'true');
-        visits += 1;
-        localStorage.setItem('gabux_v1012_visits', visits);
-
+    const ts = Date.now();
+    const isNewSession = !sessionStorage.getItem('gabux_live_session_v1012');
+    if (isNewSession) {
+        sessionStorage.setItem('gabux_live_session_v1012', 'true');
         try {
-            const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/visits/up`);
+            const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/visits/up?t=${ts}`, { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 if (data && typeof data.count === 'number') {
                     visits = data.count;
-                    localStorage.setItem('gabux_v1012_visits', visits);
                 }
             }
         } catch(e) {}
     } else {
         try {
-            const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/visits`);
+            const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/visits?t=${ts}`, { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 if (data && typeof data.count === 'number') {
                     visits = data.count;
-                    localStorage.setItem('gabux_v1012_visits', visits);
                 }
             }
         } catch(e) {}
     }
 
     try {
-        const cRes = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps`);
+        const cRes = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps?t=${ts}`, { cache: 'no-store' });
         if (cRes.ok) {
             const cData = await cRes.json();
             if (cData && typeof cData.count === 'number') {
                 claps = cData.count;
-                localStorage.setItem('gabux_v1012_claps', claps);
             }
         }
     } catch(e) {}
 
-    realVisitCount = visits;
-    realClapCount = claps;
+    realVisitCount = Math.max(1, visits);
+    realClapCount = Math.max(0, claps);
 
     updateClapUI();
     setupClapButtonListeners();
@@ -1983,24 +1980,39 @@ function updateClapUI() {
 
 function setupClapButtonListeners() {
     document.querySelectorAll('.visitor-clap-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
             const isClapped = localStorage.getItem('gabux_user_clapped') === 'true';
+            const ts = Date.now();
             if (!isClapped) {
                 localStorage.setItem('gabux_user_clapped', 'true');
                 realClapCount++;
                 spawnClapParticles(e.clientX, e.clientY);
+                updateClapUI();
                 try {
-                    fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps/up`);
+                    const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps/up?t=${ts}`, { cache: 'no-store' });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && typeof data.count === 'number') {
+                            realClapCount = data.count;
+                            updateClapUI();
+                        }
+                    }
                 } catch(err) {}
             } else {
                 localStorage.removeItem('gabux_user_clapped');
                 realClapCount = Math.max(0, realClapCount - 1);
+                updateClapUI();
                 try {
-                    fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps/down`);
+                    const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps/down?t=${ts}`, { cache: 'no-store' });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && typeof data.count === 'number') {
+                            realClapCount = data.count;
+                            updateClapUI();
+                        }
+                    }
                 } catch(err) {}
             }
-            localStorage.setItem('gabux_v1012_claps', realClapCount);
-            updateClapUI();
         });
     });
 }

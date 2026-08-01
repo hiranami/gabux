@@ -2243,12 +2243,29 @@ html[data-theme="light"] .visitor-counter-pill {
 
 .footer-mobile-row-top {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    gap: 16px;
+    gap: 8px;
     margin-bottom: 24px;
+    box-sizing: border-box;
+}
+
+.footer-mobile-view .footer-social-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    margin-bottom: 0 !important;
+    flex-shrink: 1;
+}
+
+.footer-mobile-view .footer-social-label {
+    font-size: 11px;
+    white-space: nowrap;
 }
 
 /* --- MOBILE STACKED 2-TIER VISITOR COUNTER CARD (< 841px) --- */
@@ -2263,7 +2280,9 @@ html[data-theme="light"] .visitor-counter-pill {
     color: var(--text-color);
     overflow: hidden;
     user-select: none;
-    min-width: 140px;
+    min-width: 130px;
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
 body.light-theme .visitor-counter-card-mobile,
