@@ -1,9 +1,35 @@
-// --- PRELOADER WITH DEVICE LANGUAGE DETECTION & SCROLL LOCK (VISIBILITY PRESERVED) ---
-// Ensure scrollbar is 100% visible on screen
+// --- 0. INITIALIZE LENIS SMOOTH SCROLL ---
+let lenis;
+if (typeof Lenis !== 'undefined') {
+    lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true
+    });
+    window.lenis = lenis;
+    
+    // Check if we should skip preloader immediately
+    const checkSkip = sessionStorage.getItem('skip_preloader') === 'true' || 
+                      window.location.hash === '#projetos' || 
+                      window.location.search.includes('skip_preloader') ||
+                      !document.getElementById('preloader');
+    if (checkSkip) {
+        lenis.start();
+    } else {
+        lenis.stop();
+    }
+
+    function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+}
+
+// --- PRELOADER WITH DEVICE LANGUAGE DETECTION & SCROLL LOCK ---
 document.documentElement.style.overflowY = 'scroll';
 document.body.style.overflowY = 'scroll';
 
-// Intercept and prevent scroll inputs during preloader loading phase
 function preventPreloaderScroll(e) {
     e.preventDefault();
 }
@@ -38,7 +64,6 @@ function runPreloader() {
         document.body.style.overflowY = '';
         sessionStorage.removeItem('skip_preloader');
 
-        // UNLOCK LENIS SMOOTH SCROLL IMMEDIATELY ON RETURN FROM PRESENTATION PAGE
         if (typeof lenis !== 'undefined' && lenis) {
             lenis.start();
         }
@@ -47,11 +72,14 @@ function runPreloader() {
             if (typeof lenis !== 'undefined' && lenis) {
                 lenis.start();
             }
+            if (typeof ScrollTrigger !== 'undefined') {
+                ScrollTrigger.refresh();
+            }
             const projetosEl = document.getElementById('projetos-wrapper') || document.getElementById('projetos');
             if (projetosEl) {
                 projetosEl.scrollIntoView({ behavior: 'auto' });
             }
-        }, 100);
+        }, 150);
         return;
     }
 
@@ -73,14 +101,14 @@ function runPreloader() {
             preloader.style.opacity = '0';
             preloader.style.pointerEvents = 'none';
             setTimeout(() => {
-                preloader.remove();
-                // Remove scroll interception listeners once preloader is fully removed
+                if (preloader.parentNode) preloader.remove();
                 window.removeEventListener('wheel', preventPreloaderScroll);
                 window.removeEventListener('touchmove', preventPreloaderScroll);
                 window.removeEventListener('keydown', preventPreloaderKeys);
                 document.documentElement.style.overflowY = '';
                 document.body.style.overflowY = '';
                 if (typeof lenis !== 'undefined' && lenis) lenis.start();
+                if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
             }, 500);
         }
     }, 1800);
@@ -90,22 +118,6 @@ if (document.readyState === 'loading') {
     window.addEventListener('DOMContentLoaded', runPreloader);
 } else {
     runPreloader();
-}
-
-// --- 0. INITIALIZE LENIS SMOOTH SCROLL ---
-let lenis;
-if (typeof Lenis !== 'undefined') {
-    lenis = new Lenis({
-        duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smoothWheel: true
-    });
-    lenis.stop(); // Locked until preloader finishes
-    function raf(time) {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
 }
 
 // --- 1. TRANSLATION DICTIONARY (PT <-> EN FULL INTERFACE) ---
