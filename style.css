@@ -2174,6 +2174,28 @@ footer.footer-section {
     #footer-grain-canvas {
         display: block !important;
     }
+    /* Disable CTA button push-to-right animation on mobile (< 841px) to prevent text clipping */
+    .footer-mobile-view .footer-cta-container:hover .footer-cta-h1,
+    .footer-mobile-view .footer-cta-container:active .footer-cta-h1,
+    #btn-footer-cta-mobile:hover .footer-cta-h1,
+    #btn-footer-cta-mobile:active .footer-cta-h1 {
+        transform: none !important;
+    }
+    .footer-mobile-view .footer-cta-container:hover .footer-cta-arrow-left,
+    .footer-mobile-view .footer-cta-container:active .footer-cta-arrow-left,
+    #btn-footer-cta-mobile:hover .footer-cta-arrow-left,
+    #btn-footer-cta-mobile:active .footer-cta-arrow-left {
+        display: none !important;
+        opacity: 0 !important;
+        transform: translateY(-50%) translateX(-100px) !important;
+    }
+    .footer-mobile-view .footer-cta-container:hover .footer-cta-arrow-right,
+    .footer-mobile-view .footer-cta-container:active .footer-cta-arrow-right,
+    #btn-footer-cta-mobile:hover .footer-cta-arrow-right,
+    #btn-footer-cta-mobile:active .footer-cta-arrow-right {
+        transform: none !important;
+        opacity: 1 !important;
+    }
 }
 
 .ascii-shader-wrapper {
