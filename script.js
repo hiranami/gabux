@@ -1,3 +1,97 @@
+// --- PRELOADER WITH DEVICE LANGUAGE DETECTION & SCROLL LOCK (VISIBILITY PRESERVED) ---
+// Ensure scrollbar is 100% visible on screen
+document.documentElement.style.overflowY = 'scroll';
+document.body.style.overflowY = 'scroll';
+
+// Intercept and prevent scroll inputs during preloader loading phase
+function preventPreloaderScroll(e) {
+    e.preventDefault();
+}
+
+function preventPreloaderKeys(e) {
+    const scrollKeys = ['Space', 'PageUp', 'PageDown', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+    if (scrollKeys.includes(e.code)) {
+        e.preventDefault();
+    }
+}
+
+window.addEventListener('wheel', preventPreloaderScroll, { passive: false });
+window.addEventListener('touchmove', preventPreloaderScroll, { passive: false });
+window.addEventListener('keydown', preventPreloaderKeys, { passive: false });
+
+function runPreloader() {
+    const shouldSkipPreloader = sessionStorage.getItem('skip_preloader') === 'true' || 
+                                window.location.hash === '#projetos' || 
+                                window.location.search.includes('skip_preloader');
+
+    const preloader = document.getElementById('preloader');
+
+    if (shouldSkipPreloader) {
+        if (preloader) {
+            preloader.style.display = 'none';
+            preloader.remove();
+        }
+        window.removeEventListener('wheel', preventPreloaderScroll);
+        window.removeEventListener('touchmove', preventPreloaderScroll);
+        window.removeEventListener('keydown', preventPreloaderKeys);
+        document.documentElement.style.overflowY = '';
+        document.body.style.overflowY = '';
+        sessionStorage.removeItem('skip_preloader');
+
+        // UNLOCK LENIS SMOOTH SCROLL IMMEDIATELY ON RETURN FROM PRESENTATION PAGE
+        if (typeof lenis !== 'undefined' && lenis) {
+            lenis.start();
+        }
+
+        setTimeout(() => {
+            if (typeof lenis !== 'undefined' && lenis) {
+                lenis.start();
+            }
+            const projetosEl = document.getElementById('projetos-wrapper') || document.getElementById('projetos');
+            if (projetosEl) {
+                projetosEl.scrollIntoView({ behavior: 'auto' });
+            }
+        }, 100);
+        return;
+    }
+
+    const userLang = navigator.language || navigator.userLanguage || 'pt';
+    const isPt = userLang.toLowerCase().startsWith('pt');
+    const preloaderText = document.getElementById('preloader-text');
+    if (preloaderText) {
+        preloaderText.innerText = isPt ? 'Carregando...' : 'Loading...';
+    }
+
+    const barFill = document.getElementById('preloader-bar');
+
+    setTimeout(() => {
+        if (barFill) barFill.style.width = '100%';
+    }, 50);
+
+    setTimeout(() => {
+        if (preloader) {
+            preloader.style.opacity = '0';
+            preloader.style.pointerEvents = 'none';
+            setTimeout(() => {
+                preloader.remove();
+                // Remove scroll interception listeners once preloader is fully removed
+                window.removeEventListener('wheel', preventPreloaderScroll);
+                window.removeEventListener('touchmove', preventPreloaderScroll);
+                window.removeEventListener('keydown', preventPreloaderKeys);
+                document.documentElement.style.overflowY = '';
+                document.body.style.overflowY = '';
+                if (typeof lenis !== 'undefined' && lenis) lenis.start();
+            }, 500);
+        }
+    }, 1800);
+}
+
+if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', runPreloader);
+} else {
+    runPreloader();
+}
+
 // --- 0. INITIALIZE LENIS SMOOTH SCROLL ---
 let lenis;
 if (typeof Lenis !== 'undefined') {
@@ -6,12 +100,7 @@ if (typeof Lenis !== 'undefined') {
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true
     });
-    window.lenis = lenis;
-    if (document.getElementById('preloader')) {
-        lenis.stop();
-    } else {
-        lenis.start();
-    }
+    lenis.stop(); // Locked until preloader finishes
     function raf(time) {
         lenis.raf(time);
         requestAnimationFrame(raf);
@@ -113,80 +202,76 @@ const imgBackTop = document.getElementById('img-back-top');
 const imgMobileMenu = document.getElementById('img-mobile-menu');
 const mobileImgCv = document.getElementById('mobile-img-cv');
 
-function setElText(id, text) {
-    const el = typeof id === 'string' ? document.getElementById(id) : id;
-    if (el) el.innerText = text;
-}
-
-function setElSrc(id, src) {
-    const el = typeof id === 'string' ? document.getElementById(id) : id;
-    if (el) el.src = src;
-}
-
 function updateThemeAssets() {
     const data = i18n[currentLang];
     if (currentTheme === 'dark') {
         document.body.classList.remove('light-theme');
         document.body.classList.add('dark-theme');
-        setElSrc(logoImg, "files/imagens/imagens-dark-mode/logo-gabux-light.svg");
-        setElSrc(imgLantern, "files/imagens/bttn-lantern-off-dark.svg");
-        setElText(txtLanternStatus, data.themeDark);
-        setElSrc(imgTranslate, "files/imagens/imagens-dark-mode/icon-translate-light.svg");
-        setElSrc(imgCv, "files/imagens/imagens-dark-mode/icon-download-light.svg");
+        logoImg.src = "files/imagens/imagens-dark-mode/logo-gabux-light.svg";
+        if (imgLantern) imgLantern.src = "files/imagens/bttn-lantern-off-dark.svg";
+        if (txtLanternStatus) txtLanternStatus.innerText = data.themeDark;
+        imgTranslate.src = "files/imagens/imagens-dark-mode/icon-translate-light.svg";
+        imgCv.src = "files/imagens/imagens-dark-mode/icon-download-light.svg";
 
-        setElSrc(iconFigma, "files/imagens/imagens-dark-mode/icon-figma-light.svg");
-        setElSrc(iconFramer, "files/imagens/imagens-dark-mode/icon-framer-light.svg");
-        setElSrc(iconCode, "files/imagens/imagens-dark-mode/icon-code-light.svg");
-        setElSrc(iconAi, "files/imagens/imagens-dark-mode/icon-ai-light.svg");
-        setElSrc(iconPs, "files/imagens/imagens-dark-mode/icon-photoshop-light.svg");
+        iconFigma.src = "files/imagens/imagens-dark-mode/icon-figma-light.svg";
+        iconFramer.src = "files/imagens/imagens-dark-mode/icon-framer-light.svg";
+        iconCode.src = "files/imagens/imagens-dark-mode/icon-code-light.svg";
+        iconAi.src = "files/imagens/imagens-dark-mode/icon-ai-light.svg";
+        iconPs.src = "files/imagens/imagens-dark-mode/icon-photoshop-light.svg";
 
         document.querySelectorAll('.img-linkedin-icon').forEach(el => el.src = "files/imagens/imagens-dark-mode/logo-linkedin-light.svg");
         document.querySelectorAll('.img-behance-icon').forEach(el => el.src = "files/imagens/imagens-dark-mode/logo-behance-light.svg");
-        setElSrc(imgEnviar, "files/imagens/imagens-dark-mode/icon-enviar-light.svg");
-        setElSrc(imgBackTop, "files/imagens/imagens-dark-mode/icon-topo-página.svg");
+        if (imgEnviar) imgEnviar.src = "files/imagens/imagens-dark-mode/icon-enviar-light.svg";
+        if (imgBackTop) imgBackTop.src = "files/imagens/imagens-dark-mode/icon-topo-página.svg";
 
-        setElSrc(imgMobileMenu, "files/imagens/imagens-dark-mode/icon-menu-light.svg");
-        setElSrc(mobileImgCv, "files/imagens/imagens-dark-mode/icon-download-light.svg");
+        if (imgMobileMenu) imgMobileMenu.src = "files/imagens/imagens-dark-mode/icon-menu-light.svg";
+        if (mobileImgCv) mobileImgCv.src = "files/imagens/imagens-dark-mode/icon-download-light.svg";
     } else {
         document.body.classList.remove('dark-theme');
         document.body.classList.add('light-theme');
-        setElSrc(logoImg, "files/imagens/imagens-light-mode/logo-gabux-dark.svg");
-        setElSrc(imgLantern, "files/imagens/bttn-lantern-on-light.svg");
-        setElText(txtLanternStatus, data.themeLight);
-        setElSrc(imgTranslate, "files/imagens/imagens-light-mode/icon-translate-dark.svg");
-        setElSrc(imgCv, "files/imagens/imagens-light-mode/icon-download-dark.svg");
+        logoImg.src = "files/imagens/imagens-light-mode/logo-gabux-dark.svg";
+        if (imgLantern) imgLantern.src = "files/imagens/bttn-lantern-on-light.svg";
+        if (txtLanternStatus) txtLanternStatus.innerText = data.themeLight;
+        imgTranslate.src = "files/imagens/imagens-light-mode/icon-translate-dark.svg";
+        imgCv.src = "files/imagens/imagens-light-mode/icon-download-dark.svg";
 
-        setElSrc(iconFigma, "files/imagens/imagens-light-mode/icon-figma-dark.svg");
-        setElSrc(iconFramer, "files/imagens/imagens-light-mode/icon-framer-dark.svg");
-        setElSrc(iconCode, "files/imagens/imagens-light-mode/icon-code-dark.svg");
-        setElSrc(iconAi, "files/imagens/imagens-light-mode/icon-ai-dark.svg");
-        setElSrc(iconPs, "files/imagens/imagens-light-mode/icon-photoshop-dark.svg");
+        iconFigma.src = "files/imagens/imagens-light-mode/icon-figma-dark.svg";
+        iconFramer.src = "files/imagens/imagens-light-mode/icon-framer-dark.svg";
+        iconCode.src = "files/imagens/imagens-light-mode/icon-code-dark.svg";
+        iconAi.src = "files/imagens/imagens-light-mode/icon-ai-dark.svg";
+        iconPs.src = "files/imagens/imagens-light-mode/icon-photoshop-dark.svg";
 
         document.querySelectorAll('.img-linkedin-icon').forEach(el => el.src = "files/imagens/imagens-light-mode/logo-linkedin-dark.svg");
         document.querySelectorAll('.img-behance-icon').forEach(el => el.src = "files/imagens/imagens-light-mode/logo-behance-dark.svg");
-        setElSrc(imgEnviar, "files/imagens/imagens-light-mode/icon-enviar-dark.svg");
-        setElSrc(imgBackTop, "files/imagens/imagens-light-mode/icon-topo-página.svg");
+        if (imgEnviar) imgEnviar.src = "files/imagens/imagens-light-mode/icon-enviar-dark.svg";
+        if (imgBackTop) imgBackTop.src = "files/imagens/imagens-light-mode/icon-topo-página.svg";
 
-        setElSrc(imgMobileMenu, "files/imagens/imagens-light-mode/icon-menu-dark.svg");
-        setElSrc(mobileImgCv, "files/imagens/imagens-light-mode/icon-download-dark.svg");
+        if (imgMobileMenu) imgMobileMenu.src = "files/imagens/imagens-light-mode/icon-menu-dark.svg";
+        if (mobileImgCv) mobileImgCv.src = "files/imagens/imagens-light-mode/icon-download-dark.svg";
     }
 }
 
 function updateLanguageTexts() {
     const data = i18n[currentLang];
-    setElText('nav-home', data.navHome);
-    setElText('nav-about', data.navAbout);
-    setElText('nav-services', data.navServices);
-    setElText('nav-projects', data.navProjects);
-    setElText('txt-cv', data.txtCv);
-    setElText('txt-contact', data.txtContact);
+    document.getElementById('nav-home').innerText = data.navHome;
+    document.getElementById('nav-about').innerText = data.navAbout;
+    document.getElementById('nav-services').innerText = data.navServices;
+    document.getElementById('nav-projects').innerText = data.navProjects;
+    document.getElementById('txt-cv').innerText = data.txtCv;
+    document.getElementById('txt-contact').innerText = data.txtContact;
 
-    setElText('mobile-nav-home', data.navHome);
-    setElText('mobile-nav-about', data.navAbout);
-    setElText('mobile-nav-services', data.navServices);
-    setElText('mobile-nav-projects', data.navProjects);
-    setElText('mobile-txt-cv', data.txtCv);
-    setElText('txt-contact-hero-mobile', data.txtContact);
+    const mobileNavHome = document.getElementById('mobile-nav-home');
+    const mobileNavAbout = document.getElementById('mobile-nav-about');
+    const mobileNavServices = document.getElementById('mobile-nav-services');
+    const mobileNavProjects = document.getElementById('mobile-nav-projects');
+    const mobileTxtCv = document.getElementById('mobile-txt-cv');
+    const txtContactHeroMobile = document.getElementById('txt-contact-hero-mobile');
+    if (mobileNavHome) mobileNavHome.innerText = data.navHome;
+    if (mobileNavAbout) mobileNavAbout.innerText = data.navAbout;
+    if (mobileNavServices) mobileNavServices.innerText = data.navServices;
+    if (mobileNavProjects) mobileNavProjects.innerText = data.navProjects;
+    if (mobileTxtCv) mobileTxtCv.innerText = data.txtCv;
+    if (txtContactHeroMobile) txtContactHeroMobile.innerText = data.txtContact;
 
     // Dynamic CV PDF download path switching based on active language (pt-br / eng)
     const cvLinkDesktop = document.getElementById('link-cv');
@@ -209,58 +294,67 @@ function updateLanguageTexts() {
         cvLinkMobile.setAttribute('download', pdfFilename);
     }
 
-    setElText('sub-title-text', data.heroH5);
-    setElText('title-line-1', data.heroLine1);
-    setElText('title-em', data.heroH1Em);
-    setElText('title-line-2-post', data.heroLine2Post);
-    setElText('lbl-sobre-pt', data.lblSobrePt);
-    setElText('lbl-sobre-en', data.lblSobreEn);
-    setElText('txt-sobre-mim-header-title', data.lblSobrePt);
+    document.getElementById('sub-title-text').innerText = data.heroH5;
+    document.getElementById('title-line-1').innerText = data.heroLine1;
+    document.getElementById('title-em').innerText = data.heroH1Em;
+    document.getElementById('title-line-2-post').innerText = data.heroLine2Post;
+    document.getElementById('lbl-sobre-pt').innerText = data.lblSobrePt;
+    document.getElementById('lbl-sobre-en').innerText = data.lblSobreEn;
+    document.getElementById('txt-sobre-mim-header-title').innerText = data.lblSobrePt;
     rawDecryptTargetText = data.decryptText;
 
     // Section "O que entrego" texts update
-    setElText('txt-entrego-title', data.entregoTitle);
-    setElText('deliv-line-1', data.delivLine1);
-    setElText('deliv-sub-1', data.delivSub1);
-    setElText('deliv-line-2', data.delivLine2);
-    setElText('deliv-sub-2', data.delivSub2);
-    setElText('deliv-line-3', data.delivLine3);
-    setElText('deliv-sub-3', data.delivSub3);
-    setElText('deliv-line-4', data.delivLine4);
-    setElText('deliv-sub-4', data.delivSub4);
-    setElText('txt-entrego-bottom', data.entregoBottom);
+    document.getElementById('txt-entrego-title').innerText = data.entregoTitle;
+    document.getElementById('deliv-line-1').innerText = data.delivLine1;
+    document.getElementById('deliv-sub-1').innerText = data.delivSub1;
+    document.getElementById('deliv-line-2').innerText = data.delivLine2;
+    document.getElementById('deliv-sub-2').innerText = data.delivSub2;
+    document.getElementById('deliv-line-3').innerText = data.delivLine3;
+    document.getElementById('deliv-sub-3').innerText = data.delivSub3;
+    document.getElementById('deliv-line-4').innerText = data.delivLine4;
+    document.getElementById('deliv-sub-4').innerText = data.delivSub4;
+    document.getElementById('txt-entrego-bottom').innerText = data.entregoBottom;
 
     // Section "Projetos" texts update
-    setElText('txt-projetos-header-title', data.projetosTitle);
-    setElText('proj1-sub', data.projStudySub);
-    setElText('proj2-sub', data.projStudySub);
-    setElText('proj3-sub', data.projStudySub);
-    setElText('proj4-sub', data.projFreelanceSub);
+    document.getElementById('txt-projetos-header-title').innerText = data.projetosTitle;
+    document.getElementById('proj1-sub').innerText = data.projStudySub;
+    document.getElementById('proj2-sub').innerText = data.projStudySub;
+    document.getElementById('proj3-sub').innerText = data.projStudySub;
+    document.getElementById('proj4-sub').innerText = data.projFreelanceSub;
 
-    setElText('proj1-desc', data.proj1Desc);
-    setElText('proj2-desc', data.proj2Desc);
-    setElText('proj3-desc', data.proj3Desc);
-    setElText('proj4-desc', data.proj4Desc);
+    document.getElementById('proj1-desc').innerText = data.proj1Desc;
+    document.getElementById('proj2-desc').innerText = data.proj2Desc;
+    document.getElementById('proj3-desc').innerText = data.proj3Desc;
+    document.getElementById('proj4-desc').innerText = data.proj4Desc;
 
     [1, 2, 3, 4].forEach(id => {
-        setElText(`txt-btn-proj-${id}`, data.btnVisualizarProjeto);
+        const btnTxt = document.getElementById(`txt-btn-proj-${id}`);
+        if (btnTxt) btnTxt.innerText = data.btnVisualizarProjeto;
     });
 
     // Section "Footer" texts update
-    setElText('txt-footer-secondary', data.footerSecondaryTitle);
-    setElText('mobile-txt-footer-secondary', data.footerSecondaryTitle);
+    const txtFooterSec = document.getElementById('txt-footer-secondary');
+    if (txtFooterSec) txtFooterSec.innerText = data.footerSecondaryTitle;
+
+    const mobileTxtFooterSec = document.getElementById('mobile-txt-footer-secondary');
+    if (mobileTxtFooterSec) mobileTxtFooterSec.innerText = data.footerSecondaryTitle;
 
     // Re-wrap CTA text with per-letter spans for shutter wave blink
     if (typeof rewrapFooterCtaText === 'function') {
         rewrapFooterCtaText(data.footerCtaBtn);
     }
 
-    setElText('txt-footer-rights', data.footerRights);
-    setElText('mobile-txt-footer-rights', data.footerRights);
+    const txtRights = document.getElementById('txt-footer-rights');
+    if (txtRights) txtRights.innerText = data.footerRights;
 
-    const txtSocialLabel = data.footerSocialLabel || (currentLang === 'pt' ? 'Me siga nas minhas redes:' : 'Follow me on my social media:');
-    setElText('txt-footer-social-label', txtSocialLabel);
-    setElText('mobile-txt-footer-social-label', txtSocialLabel);
+    const mobileTxtRights = document.getElementById('mobile-txt-footer-rights');
+    if (mobileTxtRights) mobileTxtRights.innerText = data.footerRights;
+
+    const txtSocialLabel = document.getElementById('txt-footer-social-label');
+    if (txtSocialLabel) txtSocialLabel.innerText = data.footerSocialLabel || (currentLang === 'pt' ? 'Me siga nas minhas redes:' : 'Follow me on my social media:');
+
+    const mobileTxtSocialLabel = document.getElementById('mobile-txt-footer-social-label');
+    if (mobileTxtSocialLabel) mobileTxtSocialLabel.innerText = data.footerSocialLabel || (currentLang === 'pt' ? 'Me siga nas minhas redes:' : 'Follow me on my social media:');
 
     // Toggle buttons text update
     [1, 2, 3, 4].forEach(id => {
@@ -274,27 +368,21 @@ function updateLanguageTexts() {
     });
 
     // Update Theme status text according to active language
-    setElText(txtLanternStatus, currentTheme === 'dark' ? data.themeDark : data.themeLight);
+    txtLanternStatus.innerText = currentTheme === 'dark' ? data.themeDark : data.themeLight;
 
     // REALTIME DECRYPT UPDATE matching current scroll position immediately!
-    if (typeof updateTextDecryptOnScroll === 'function') {
-        updateTextDecryptOnScroll();
-    }
+    updateTextDecryptOnScroll();
 }
 
-if (btnTheme) {
-    btnTheme.addEventListener('click', () => {
-        currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        updateThemeAssets();
-    });
-}
+btnTheme.addEventListener('click', () => {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    updateThemeAssets();
+});
 
-if (btnTranslate) {
-    btnTranslate.addEventListener('click', () => {
-        currentLang = currentLang === 'pt' ? 'en' : 'pt';
-        updateLanguageTexts();
-    });
-}
+btnTranslate.addEventListener('click', () => {
+    currentLang = currentLang === 'pt' ? 'en' : 'pt';
+    updateLanguageTexts();
+});
 
 // --- MOBILE NAVIGATION OVERLAY DRAWER LOGIC ---
 const btnMobileMenu = document.getElementById('btn-mobile-menu');

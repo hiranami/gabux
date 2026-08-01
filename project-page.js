@@ -172,7 +172,8 @@ function initCarousels() {
     });
 }
 
-function initProjectPage() {
+// DOM Init
+document.addEventListener('DOMContentLoaded', () => {
     applyTheme('dark'); // Always default to Dark theme when opening project presentation pages
     applyLanguage(currentLang);
     initCarousels();
@@ -210,10 +211,4 @@ function initProjectPage() {
             });
         }
     });
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initProjectPage);
-} else {
-    initProjectPage();
-}
+});
