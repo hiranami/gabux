@@ -153,7 +153,8 @@ const i18n = {
         footerSecondaryTitle: "Que tal criarmos algo incrível juntos?",
         footerCtaBtn: "Vamos conversar",
         footerBackTop: "Voltar ao topo",
-        footerRights: "©2026. Desenvolvido por gab.ux. Todos os direitos reservados."
+        footerRights: "©2026. Desenvolvido por gab.ux. Todos os direitos reservados.",
+        mobileClose: "Fechar"
     },
     en: {
         navHome: "Home", navAbout: "About Me", navServices: "Services",
@@ -185,7 +186,8 @@ const i18n = {
         footerSecondaryTitle: "Let's create something incredible together?",
         footerCtaBtn: "Let's talk",
         footerBackTop: "Back to top",
-        footerRights: "©2026. Developed by gab.ux. All rights reserved."
+        footerRights: "©2026. Developed by gab.ux. All rights reserved.",
+        mobileClose: "Close"
     }
 };
 
@@ -288,6 +290,7 @@ function updateLanguageTexts() {
     setElText('mobile-nav-services', data.navServices);
     setElText('mobile-nav-projects', data.navProjects);
     setElText('mobile-txt-cv', data.txtCv);
+    setElText('mobile-txt-close', data.mobileClose);
     setElText('txt-contact-hero-mobile', data.txtContact);
 
     // Dynamic CV PDF download path switching based on active language (pt-br / eng)

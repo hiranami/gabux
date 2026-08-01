@@ -73,13 +73,15 @@ const pageTranslations = {
         btnBack: "Página Anterior",
         txtFooterRights: "©2026. Desenvolvido por gab.ux. Todos os direitos reservados.",
         btnBehance: "OUTROS DETALHES NO",
-        btnBackToTop: "voltar ao topo"
+        btnBackToTop: "voltar ao topo",
+        mobileClose: "Fechar"
     },
     en: {
         btnBack: "Previous Page",
         txtFooterRights: "©2026. Developed by gab.ux. All rights reserved.",
         btnBehance: "OTHER DETAILS ON",
-        btnBackToTop: "back to top"
+        btnBackToTop: "back to top",
+        mobileClose: "Close"
     }
 };
 
@@ -100,6 +102,9 @@ function applyLanguage(lang) {
 
     const elTopTxt = document.getElementById('txt-back-top-label');
     if (elTopTxt) elTopTxt.innerText = t.btnBackToTop;
+
+    const elMobileClose = document.getElementById('mobile-txt-close');
+    if (elMobileClose) elMobileClose.innerText = t.mobileClose || (lang === 'pt' ? 'Fechar' : 'Close');
 
     // Elements with data-pt and data-en
     document.querySelectorAll('[data-pt]').forEach(el => {

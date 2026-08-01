@@ -222,15 +222,16 @@ body.light-theme .icon-dot-right { opacity: 1; transform: scale(1) rotate(0deg);
     transition: opacity 0.3s ease, transform 0.25s ease;
 }
 .header-translate-btn:hover { transform: translateY(-50%) scale(1.08) !important; }
-.header-translate-btn img { width: 16px; height: 16px; display: block; object-fit: contain; }
+.header-translate-btn img { width: 24px; height: 24px; display: block; object-fit: contain; }
 
 .curriculo-link {
-    display: inline-flex; align-items: center; gap: 6px; color: var(--text-color);
-    text-decoration: none; font-size: 14px; opacity: 0.75; 
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: var(--text-color);
+    text-decoration: none; font-size: 14px; line-height: 1; opacity: 0.75; 
     transition: transform 0.25s ease, opacity 0.25s ease; cursor: pointer;
 }
+.curriculo-link span { display: inline-flex; align-items: center; line-height: 1; }
 .curriculo-link:hover { opacity: 1; transform: scale(1.08); }
-.curriculo-link img { width: 16px; height: 16px; display: block; object-fit: contain; }
+.curriculo-link img { width: 24px; height: 24px; display: block; object-fit: contain; flex-shrink: 0; }
 
 .btn-fale-comigo {
     background: var(--btn-bg); color: var(--btn-text);
@@ -389,8 +390,8 @@ html[data-theme="light"] .mobile-nav-overlay {
     left: calc(100% + 8px) !important; /* Positioned exactly 8px to the right of Currículo text */
     top: 50% !important;
     transform: translateY(-50%) !important;
-    width: 14px !important;
-    height: 14px !important;
+    width: 16px !important;
+    height: 16px !important;
     flex-shrink: 0 !important;
     margin: 0 !important;
     display: inline-block !important;
@@ -2997,6 +2998,17 @@ html[data-theme="light"] .btn-circle-top-mobile img {
 }
 
 @media (max-width: 840px) {
+    /* Standard 16px icon size for mobile interfaces (< 841px) */
+    .curriculo-link img,
+    #img-cv,
+    #mobile-img-cv,
+    .mobile-cv-icon,
+    .header-translate-btn img,
+    .mobile-menu-toggle img {
+        width: 16px !important;
+        height: 16px !important;
+    }
+
     .btn-back-to-top {
         display: none !important;
     }
