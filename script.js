@@ -1991,46 +1991,67 @@ function updateClapUI() {
     });
 }
 
+async function sendClapAction(actionType) {
+    const ts = Date.now();
+    try {
+        const res = await fetch(`/api/counter?action=${actionType}&t=${ts}`, { cache: 'no-store' });
+        if (res.ok) {
+            const data = await res.json();
+            if (data && typeof data.claps === 'number') {
+                return data.claps;
+            }
+        }
+    } catch(e) {}
+
+    try {
+        const endpoint = actionType === 'clap_up' ? 'up' : 'down';
+        const res = await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps/${endpoint}?t=${ts}`, { cache: 'no-store' });
+        if (res.ok) {
+            const data = await res.json();
+            if (data && typeof data.count === 'number') {
+                return data.count;
+            }
+        }
+    } catch(e) {}
+
+    return null;
+}
+
 function setupClapButtonListeners() {
     document.querySelectorAll('.visitor-clap-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
+        btn.onclick = async (e) => {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
             const isClapped = localStorage.getItem('gabux_user_clapped') === 'true';
-            const ts = Date.now();
+            const clickX = (e && e.clientX) ? e.clientX : (window.innerWidth / 2);
+            const clickY = (e && e.clientY) ? e.clientY : (window.innerHeight / 2);
+
             if (!isClapped) {
                 localStorage.setItem('gabux_user_clapped', 'true');
-                realClapCount++;
-                spawnClapParticles(e.clientX, e.clientY);
+                realClapCount += 1;
+                spawnClapParticles(clickX, clickY);
                 updateClapUI();
-                try {
-                    const res = await fetch(`/api/counter?action=clap_up&t=${ts}`, { cache: 'no-store' });
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data && typeof data.claps === 'number') {
-                            realClapCount = data.claps;
-                            updateClapUI();
-                        }
-                    } else {
-                        await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps/up?t=${ts}`, { cache: 'no-store' });
-                    }
-                } catch(err) {}
+
+                const updatedClaps = await sendClapAction('clap_up');
+                if (typeof updatedClaps === 'number') {
+                    realClapCount = updatedClaps;
+                    updateClapUI();
+                }
             } else {
                 localStorage.removeItem('gabux_user_clapped');
                 realClapCount = Math.max(0, realClapCount - 1);
                 updateClapUI();
-                try {
-                    const res = await fetch(`/api/counter?action=clap_down&t=${ts}`, { cache: 'no-store' });
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data && typeof data.claps === 'number') {
-                            realClapCount = data.claps;
-                            updateClapUI();
-                        }
-                    } else {
-                        await fetch(`https://api.counterapi.dev/v1/${COUNTER_NAMESPACE}/claps/down?t=${ts}`, { cache: 'no-store' });
-                    }
-                } catch(err) {}
+
+                const updatedClaps = await sendClapAction('clap_down');
+                if (typeof updatedClaps === 'number') {
+                    realClapCount = updatedClaps;
+                    updateClapUI();
+                }
             }
-        });
+        };
     });
 }
 
