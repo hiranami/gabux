@@ -1949,10 +1949,10 @@ async function initVisitorAndClapSystem() {
     setupClapButtonListeners();
     observeFooterForCasinoSlot();
 
-    // Poll live updates every 2s for instant multi-device synchronization
+    // Poll live updates every 1.2s for instant multi-device synchronization
     setInterval(() => {
         fetchLiveCounterData(false);
-    }, 2000);
+    }, 1200);
 }
 
 function updateClapUI() {
