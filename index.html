@@ -124,6 +124,52 @@
         <div class="pixel-dither-fill" id="preloader-bar"></div>
     </div>
 </div>
+<script>
+(function() {
+    var p = document.getElementById('preloader');
+    var b = document.getElementById('preloader-bar');
+    var t = document.getElementById('preloader-text');
+    
+    // Lock scroll immediately while preloader is active
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+
+    var skip = sessionStorage.getItem('skip_preloader') === 'true' || 
+               window.location.hash === '#projetos' || 
+               window.location.search.indexOf('skip_preloader') !== -1;
+
+    if (skip) {
+        if (p) p.remove();
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+        sessionStorage.removeItem('skip_preloader');
+        return;
+    }
+
+    var lang = (navigator.language || navigator.userLanguage || 'pt').toLowerCase();
+    if (t) t.innerText = lang.indexOf('pt') === 0 ? 'Carregando...' : 'Loading...';
+
+    setTimeout(function() {
+        if (b) b.style.width = '100%';
+    }, 50);
+
+    setTimeout(function() {
+        if (p) {
+            p.style.opacity = '0';
+            p.style.pointerEvents = 'none';
+            setTimeout(function() {
+                if (p.parentNode) p.remove();
+                document.documentElement.style.overflow = '';
+                document.body.style.overflow = '';
+                if (window.lenis) window.lenis.start();
+            }, 500);
+        } else {
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+        }
+    }, 1800);
+})();
+</script>
 
 <!-- FOLD 1 & FOLD 2: HERO SECTION -->
 <div class="scroll-wrapper">
