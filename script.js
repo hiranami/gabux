@@ -19,7 +19,7 @@ window.addEventListener('wheel', preventPreloaderScroll, { passive: false });
 window.addEventListener('touchmove', preventPreloaderScroll, { passive: false });
 window.addEventListener('keydown', preventPreloaderKeys, { passive: false });
 
-window.addEventListener('DOMContentLoaded', () => {
+function runPreloader() {
     const shouldSkipPreloader = sessionStorage.getItem('skip_preloader') === 'true' || 
                                 window.location.hash === '#projetos' || 
                                 window.location.search.includes('skip_preloader');
@@ -84,7 +84,13 @@ window.addEventListener('DOMContentLoaded', () => {
             }, 500);
         }
     }, 1800);
-});
+}
+
+if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', runPreloader);
+} else {
+    runPreloader();
+}
 
 // --- 0. INITIALIZE LENIS SMOOTH SCROLL ---
 let lenis;
@@ -1805,11 +1811,17 @@ function initMailboxOverlay() {
 }
 
 // Initialize Chroma Shader, ASCII Shader, Footer CTA, Mailbox & Initial Text State
-window.addEventListener('DOMContentLoaded', () => {
+function initApp() {
     initChromaShader();
     initAsciiShader();
     initFooterCtaShutter();
     initMailboxOverlay();
     updateLanguageTexts();
     updateThemeAssets();
-});
+}
+
+if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
