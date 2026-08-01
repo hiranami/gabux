@@ -1,96 +1,70 @@
-// --- PRELOADER WITH DEVICE LANGUAGE DETECTION & SCROLL LOCK (VISIBILITY PRESERVED) ---
-// Ensure scrollbar is 100% visible on screen
-document.documentElement.style.overflowY = 'scroll';
-document.body.style.overflowY = 'scroll';
+// --- PRELOADER & SCROLL LOCK LOGIC ---
+(function initPreloaderSystem() {
+    const preloader = document.getElementById('preloader');
+    const barFill = document.getElementById('preloader-bar');
+    const preloaderText = document.getElementById('preloader-text');
 
-// Intercept and prevent scroll inputs during preloader loading phase
-function preventPreloaderScroll(e) {
-    e.preventDefault();
-}
-
-function preventPreloaderKeys(e) {
-    const scrollKeys = ['Space', 'PageUp', 'PageDown', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
-    if (scrollKeys.includes(e.code)) {
-        e.preventDefault();
-    }
-}
-
-window.addEventListener('wheel', preventPreloaderScroll, { passive: false });
-window.addEventListener('touchmove', preventPreloaderScroll, { passive: false });
-window.addEventListener('keydown', preventPreloaderKeys, { passive: false });
-
-function runPreloader() {
     const shouldSkipPreloader = sessionStorage.getItem('skip_preloader') === 'true' || 
                                 window.location.hash === '#projetos' || 
                                 window.location.search.includes('skip_preloader');
 
-    const preloader = document.getElementById('preloader');
+    function lockScroll() {
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function unlockScroll() {
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+        if (typeof lenis !== 'undefined' && lenis) {
+            lenis.start();
+        }
+    }
 
     if (shouldSkipPreloader) {
         if (preloader) {
             preloader.style.display = 'none';
             preloader.remove();
         }
-        window.removeEventListener('wheel', preventPreloaderScroll);
-        window.removeEventListener('touchmove', preventPreloaderScroll);
-        window.removeEventListener('keydown', preventPreloaderKeys);
-        document.documentElement.style.overflowY = '';
-        document.body.style.overflowY = '';
         sessionStorage.removeItem('skip_preloader');
-
-        // UNLOCK LENIS SMOOTH SCROLL IMMEDIATELY ON RETURN FROM PRESENTATION PAGE
-        if (typeof lenis !== 'undefined' && lenis) {
-            lenis.start();
-        }
-
+        unlockScroll();
         setTimeout(() => {
-            if (typeof lenis !== 'undefined' && lenis) {
-                lenis.start();
-            }
+            if (typeof lenis !== 'undefined' && lenis) lenis.start();
             const projetosEl = document.getElementById('projetos-wrapper') || document.getElementById('projetos');
-            if (projetosEl) {
-                projetosEl.scrollIntoView({ behavior: 'auto' });
-            }
+            if (projetosEl) projetosEl.scrollIntoView({ behavior: 'auto' });
         }, 100);
         return;
     }
 
+    // Lock scroll while preloader screen is active
+    lockScroll();
+
+    // Set device language text
     const userLang = navigator.language || navigator.userLanguage || 'pt';
     const isPt = userLang.toLowerCase().startsWith('pt');
-    const preloaderText = document.getElementById('preloader-text');
     if (preloaderText) {
         preloaderText.innerText = isPt ? 'Carregando...' : 'Loading...';
     }
 
-    const barFill = document.getElementById('preloader-bar');
-
+    // Animate progress bar fill
     setTimeout(() => {
         if (barFill) barFill.style.width = '100%';
     }, 50);
 
+    // Complete preloader after 1.8 seconds
     setTimeout(() => {
         if (preloader) {
             preloader.style.opacity = '0';
             preloader.style.pointerEvents = 'none';
             setTimeout(() => {
-                preloader.remove();
-                // Remove scroll interception listeners once preloader is fully removed
-                window.removeEventListener('wheel', preventPreloaderScroll);
-                window.removeEventListener('touchmove', preventPreloaderScroll);
-                window.removeEventListener('keydown', preventPreloaderKeys);
-                document.documentElement.style.overflowY = '';
-                document.body.style.overflowY = '';
-                if (typeof lenis !== 'undefined' && lenis) lenis.start();
+                if (preloader.parentNode) preloader.remove();
+                unlockScroll();
             }, 500);
+        } else {
+            unlockScroll();
         }
     }, 1800);
-}
-
-if (document.readyState === 'loading') {
-    window.addEventListener('DOMContentLoaded', runPreloader);
-} else {
-    runPreloader();
-}
+})();
 
 // --- 0. INITIALIZE LENIS SMOOTH SCROLL ---
 let lenis;
