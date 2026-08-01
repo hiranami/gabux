@@ -2472,7 +2472,7 @@ body.light-theme #mailbox-overlay {
     justify-content: space-between;
     align-items: flex-end;
     width: 100%;
-    margin-bottom: 6px;
+    margin-bottom: 14px;
     box-sizing: border-box;
 }
 
