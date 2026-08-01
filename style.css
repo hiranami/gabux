@@ -2029,21 +2029,23 @@ footer.footer-section {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid var(--nav-border);
-    border-radius: 4px;
-    transition: transform 0.25s ease, background-color 0.25s ease;
+    width: 22px;
+    height: 22px;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
     text-decoration: none;
+    opacity: 0.85;
 }
 .footer-social-icon-btn:hover {
-    transform: scale(1.1);
-    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.15);
+    opacity: 1;
+    background: transparent !important;
 }
 .footer-social-icon-btn img {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     object-fit: contain;
 }
 

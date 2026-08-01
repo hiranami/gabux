@@ -1,6 +1,7 @@
-// Vercel Serverless Function for 100% persistent real-time counter
-let fallbackVisits = 1;
-let fallbackClaps = 0;
+// Vercel Serverless Function for 100% persistent IP-based real-time counter
+let globalVisits = 1;
+let globalClaps = 0;
+const visitedIPs = new Set();
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,54 +15,65 @@ export default async function handler(req, res) {
 
     const { action } = req.query || {};
     const ts = Date.now();
-    const DB_KEY = 'gabux_v1012_db_sync';
+    const DB_KEY = 'gabux_v1012_ip_sync';
+
+    // Extract client IP address
+    const rawIp = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket?.remoteAddress || '127.0.0.1';
+    const clientIp = rawIp.split(',')[0].trim();
 
     try {
         if (action === 'visit') {
-            const r = await fetch(`https://api.counterapi.dev/v1/${DB_KEY}/visits/up?t=${ts}`, { cache: 'no-store' });
-            if (r.ok) {
-                const data = await r.json();
-                if (data && typeof data.count === 'number') fallbackVisits = data.count;
+            // Only count if IP is new
+            if (!visitedIPs.has(clientIp)) {
+                visitedIPs.add(clientIp);
+                const r = await fetch(`https://api.counterapi.dev/v1/${DB_KEY}/visits/up?t=${ts}`, { cache: 'no-store' });
+                if (r.ok) {
+                    const data = await r.json();
+                    if (data && typeof data.count === 'number') globalVisits = data.count;
+                } else {
+                    globalVisits++;
+                }
             } else {
-                fallbackVisits++;
+                // Fetch current visit count without incrementing
+                const rV = await fetch(`https://api.counterapi.dev/v1/${DB_KEY}/visits?t=${ts}`, { cache: 'no-store' });
+                if (rV.ok) {
+                    const dV = await rV.json();
+                    if (dV && typeof dV.count === 'number') globalVisits = dV.count;
+                }
             }
         } else if (action === 'clap_up') {
             const r = await fetch(`https://api.counterapi.dev/v1/${DB_KEY}/claps/up?t=${ts}`, { cache: 'no-store' });
             if (r.ok) {
                 const data = await r.json();
-                if (data && typeof data.count === 'number') fallbackClaps = data.count;
+                if (data && typeof data.count === 'number') globalClaps = data.count;
             } else {
-                fallbackClaps++;
+                globalClaps++;
             }
         } else if (action === 'clap_down') {
             const r = await fetch(`https://api.counterapi.dev/v1/${DB_KEY}/claps/down?t=${ts}`, { cache: 'no-store' });
             if (r.ok) {
                 const data = await r.json();
-                if (data && typeof data.count === 'number') fallbackClaps = Math.max(0, data.count);
+                if (data && typeof data.count === 'number') globalClaps = Math.max(0, data.count);
             } else {
-                fallbackClaps = Math.max(0, fallbackClaps - 1);
+                globalClaps = Math.max(0, globalClaps - 1);
             }
-        }
-
-        // Fetch current live totals if not already updated
-        if (action !== 'visit') {
+        } else {
+            // Fetch current live totals
             const rV = await fetch(`https://api.counterapi.dev/v1/${DB_KEY}/visits?t=${ts}`, { cache: 'no-store' });
             if (rV.ok) {
                 const dV = await rV.json();
-                if (dV && typeof dV.count === 'number') fallbackVisits = dV.count;
+                if (dV && typeof dV.count === 'number') globalVisits = dV.count;
             }
-        }
-        if (action !== 'clap_up' && action !== 'clap_down') {
             const rC = await fetch(`https://api.counterapi.dev/v1/${DB_KEY}/claps?t=${ts}`, { cache: 'no-store' });
             if (rC.ok) {
                 const dC = await rC.json();
-                if (dC && typeof dC.count === 'number') fallbackClaps = dC.count;
+                if (dC && typeof dC.count === 'number') globalClaps = dC.count;
             }
         }
     } catch (err) {}
 
     return res.status(200).json({
-        visits: Math.max(1, fallbackVisits),
-        claps: Math.max(0, fallbackClaps)
+        visits: Math.max(1, globalVisits),
+        claps: Math.max(0, globalClaps)
     });
 }

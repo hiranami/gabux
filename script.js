@@ -1974,10 +1974,10 @@ async function initVisitorAndClapSystem() {
     setupClapButtonListeners();
     observeFooterForCasinoSlot();
 
-    // Real-time polling every 4s so PC and Mobile sync live across all devices
+    // Real-time polling every 2.5s so PC and Mobile sync live across all devices
     setInterval(() => {
         fetchLiveCounterData(false);
-    }, 4000);
+    }, 2500);
 }
 
 function updateClapUI() {
@@ -2097,9 +2097,21 @@ function observeFooterForCasinoSlot() {
     }
 }
 
+let lastDisplayedVisitCount = -1;
+
 function runCasino777SlotAnimation(targetNumber) {
-    const numStr = String(targetNumber).padStart(3, '0');
     const slotBoxes = document.querySelectorAll('.visitor-slot-box');
+    if (!slotBoxes.length) return;
+
+    // Prevent continuous spinning if target count has not changed
+    const firstBox = slotBoxes[0];
+    const hasReels = firstBox && firstBox.querySelector('.slot-reel-container') !== null;
+    if (hasReels && targetNumber === lastDisplayedVisitCount) {
+        return;
+    }
+
+    lastDisplayedVisitCount = targetNumber;
+    const numStr = String(targetNumber).padStart(3, '0');
 
     slotBoxes.forEach(box => {
         box.innerHTML = '';
