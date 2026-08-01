@@ -1911,7 +1911,7 @@ let isVisitorSlotTriggered = false;
 
 async function fetchLiveCounterData(isNewSession = false) {
     const ts = Date.now();
-    let visits = realVisitCount || 1;
+    let visits = realVisitCount || 0;
     let claps = realClapCount || 0;
 
     try {
@@ -1929,7 +1929,7 @@ async function fetchLiveCounterData(isNewSession = false) {
         }
     } catch(err) {}
 
-    realVisitCount = Math.max(1, visits);
+    realVisitCount = Math.max(0, visits);
     realClapCount = Math.max(0, claps);
 
     updateClapUI();

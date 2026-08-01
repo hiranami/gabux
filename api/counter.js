@@ -1,28 +1,12 @@
-// Vercel Serverless Function: Secured & Protected Real-Time Counter API (Instant Response)
-let globalVisits = 1;
+// Vercel Serverless Function: Secured & Protected Real-Time Counter API (Zero Reset)
+let globalVisits = 0;
 let globalClaps = 0;
 const visitedIPs = new Set();
 const clappedIPs = new Set();
 
-// External persistent DB endpoint kept strictly server-side (hidden from client)
-const DB_NAME = 'gabux_v1012_ip_sync';
+// Fresh zero-based database namespace
+const DB_NAME = 'gabux_v1012_zero_reset_prod';
 const DB_BASE_URL = `https://api.counterapi.dev/v1/${DB_NAME}`;
-
-// Initial background sync on server cold start
-(async () => {
-    try {
-        const rV = await fetch(`${DB_BASE_URL}/visits`, { cache: 'no-store' });
-        if (rV.ok) {
-            const dV = await rV.json();
-            if (dV && typeof dV.count === 'number') globalVisits = Math.max(globalVisits, dV.count);
-        }
-        const rC = await fetch(`${DB_BASE_URL}/claps`, { cache: 'no-store' });
-        if (rC.ok) {
-            const dC = await rC.json();
-            if (dC && typeof dC.count === 'number') globalClaps = Math.max(globalClaps, dC.count);
-        }
-    } catch (e) {}
-})();
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -59,11 +43,15 @@ export default async function handler(req, res) {
                 if (data && typeof data.count === 'number') globalClaps = Math.max(globalClaps, data.count);
             }).catch(() => {});
         }
+    } else if (action === 'reset') {
+        globalVisits = 0;
+        globalClaps = 0;
+        visitedIPs.clear();
+        clappedIPs.clear();
     }
 
-    // Return instant HTTP 200 response with zero network delay
     return res.status(200).json({
-        visits: Math.max(1, globalVisits),
+        visits: Math.max(0, globalVisits),
         claps: Math.max(0, globalClaps),
         hasClapped: clappedIPs.has(clientIp)
     });
