@@ -159,7 +159,8 @@ const i18n = {
         footerCtaBtn: "Vamos conversar",
         footerBackTop: "Voltar ao topo",
         footerRights: "©2026. Desenvolvido por gab.ux. Todos os direitos reservados.",
-        mobileClose: "Fechar"
+        mobileClose: "Fechar",
+        lblVisitors: "N de Visitantes"
     },
     en: {
         navHome: "Home", navAbout: "About Me", navServices: "Services",
@@ -192,7 +193,8 @@ const i18n = {
         footerCtaBtn: "Let's talk",
         footerBackTop: "Back to top",
         footerRights: "©2026. Developed by gab.ux. All rights reserved.",
-        mobileClose: "Close"
+        mobileClose: "Close",
+        lblVisitors: "Visitors"
     }
 };
 
@@ -371,6 +373,9 @@ function updateLanguageTexts() {
     const txtSocialLabel = data.footerSocialLabel || (currentLang === 'pt' ? 'Me siga nas minhas redes:' : 'Follow me on my social media:');
     setElText('txt-footer-social-label', txtSocialLabel);
     setElText('mobile-txt-footer-social-label', txtSocialLabel);
+
+    setElText('lbl-visitor-title', data.lblVisitors || "N de Visitantes");
+    setElText('mobile-lbl-visitor-title', data.lblVisitors || "N de Visitantes");
 
     // Toggle buttons text update
     [1, 2, 3, 4].forEach(id => {
@@ -1162,7 +1167,8 @@ function updateProjetosStickyParallaxScroll() {
     }
 
     const totalScrollable = wrapper.offsetHeight - winHeight;
-    const scrolled = Math.max(0, -rect.top);
+    const offsetLead = winHeight * 0.18;
+    const scrolled = Math.max(0, -rect.top + offsetLead);
     const progress = Math.max(0, Math.min(1, scrolled / (totalScrollable || 1)));
 
     const projectItems = document.querySelectorAll('.project-card-item');
@@ -1898,12 +1904,165 @@ function initMailboxOverlay() {
     });
 }
 
-// Initialize Chroma Shader, ASCII Shader, Footer CTA, Mailbox & Initial Text State
+// --- 11. REAL-TIME VISITOR COUNTER & CASINO 777 SLOT MACHINE REEL ENGINE ---
+let realVisitCount = 0;
+let realClapCount = 0;
+let isVisitorSlotTriggered = false;
+
+async function initVisitorAndClapSystem() {
+    let visits = 142;
+    let claps = 18;
+
+    const cachedVisits = localStorage.getItem('gabux_visits');
+    const cachedClaps = localStorage.getItem('gabux_claps');
+    if (cachedVisits) visits = parseInt(cachedVisits, 10) + 1;
+    else visits = 142;
+
+    if (cachedClaps) claps = parseInt(cachedClaps, 10);
+    else claps = 18;
+
+    localStorage.setItem('gabux_visits', visits);
+    realVisitCount = visits;
+    realClapCount = claps;
+
+    try {
+        const res = await fetch('https://api.counterapi.dev/v1/gabux_portfolio/visits/up');
+        if (res.ok) {
+            const data = await res.json();
+            if (data && typeof data.count === 'number') {
+                realVisitCount = data.count;
+                localStorage.setItem('gabux_visits', realVisitCount);
+            }
+        }
+    } catch(e) {}
+
+    try {
+        const cRes = await fetch('https://api.counterapi.dev/v1/gabux_portfolio/claps');
+        if (cRes.ok) {
+            const cData = await cRes.json();
+            if (cData && typeof cData.count === 'number') {
+                realClapCount = cData.count;
+                localStorage.setItem('gabux_claps', realClapCount);
+            }
+        }
+    } catch(e) {}
+
+    updateClapUI();
+    setupClapButtonListeners();
+    observeFooterForCasinoSlot();
+}
+
+function updateClapUI() {
+    const isClapped = localStorage.getItem('gabux_user_clapped') === 'true';
+    document.querySelectorAll('.visitor-clap-btn').forEach(btn => {
+        if (isClapped) btn.classList.add('clapped');
+        else btn.classList.remove('clapped');
+    });
+    document.querySelectorAll('.clap-count').forEach(el => {
+        el.innerText = realClapCount;
+    });
+}
+
+function setupClapButtonListeners() {
+    document.querySelectorAll('.visitor-clap-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const isClapped = localStorage.getItem('gabux_user_clapped') === 'true';
+            if (!isClapped) {
+                localStorage.setItem('gabux_user_clapped', 'true');
+                realClapCount++;
+                spawnClapParticles(e.clientX, e.clientY);
+                try {
+                    fetch('https://api.counterapi.dev/v1/gabux_portfolio/claps/up');
+                } catch(err) {}
+            } else {
+                localStorage.removeItem('gabux_user_clapped');
+                realClapCount = Math.max(0, realClapCount - 1);
+                try {
+                    fetch('https://api.counterapi.dev/v1/gabux_portfolio/claps/down');
+                } catch(err) {}
+            }
+            localStorage.setItem('gabux_claps', realClapCount);
+            updateClapUI();
+        });
+    });
+}
+
+function spawnClapParticles(originX, originY) {
+    for (let i = 0; i < 7; i++) {
+        const particle = document.createElement('span');
+        particle.className = 'clap-particle';
+        particle.innerText = '👏';
+        const dx = (Math.random() - 0.5) * 80;
+        const rot = (Math.random() - 0.5) * 60;
+        particle.style.setProperty('--dx', `${dx}px`);
+        particle.style.setProperty('--rot', `${rot}deg`);
+        particle.style.left = `${originX + (Math.random() - 0.5) * 20}px`;
+        particle.style.top = `${originY - 10}px`;
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 1200);
+    }
+}
+
+function observeFooterForCasinoSlot() {
+    const footer = document.querySelector('.footer-desktop-view') || document.querySelector('.footer-mobile-view');
+    if (!footer) return;
+
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !isVisitorSlotTriggered) {
+                    isVisitorSlotTriggered = true;
+                    runCasino777SlotAnimation(realVisitCount);
+                }
+            });
+        }, { threshold: 0.1 });
+        observer.observe(footer);
+    } else {
+        runCasino777SlotAnimation(realVisitCount);
+    }
+}
+
+function runCasino777SlotAnimation(targetNumber) {
+    const numStr = String(targetNumber).padStart(3, '0');
+    const slotBoxes = document.querySelectorAll('.visitor-slot-box');
+
+    slotBoxes.forEach(box => {
+        box.innerHTML = '';
+        const reelContainer = document.createElement('div');
+        reelContainer.className = 'slot-reel-container';
+
+        for (let i = 0; i < numStr.length; i++) {
+            const digitChar = parseInt(numStr[i], 10);
+            const col = document.createElement('div');
+            col.className = 'slot-digit-column';
+
+            const stripCount = 10 + digitChar;
+            for (let k = 0; k <= stripCount; k++) {
+                const node = document.createElement('span');
+                node.className = 'slot-digit-node';
+                node.innerText = k % 10;
+                col.appendChild(node);
+            }
+
+            reelContainer.appendChild(col);
+
+            setTimeout(() => {
+                const targetY = -(stripCount * 16);
+                col.style.transform = `translateY(${targetY}px)`;
+            }, 100 + i * 180);
+        }
+
+        box.appendChild(reelContainer);
+    });
+}
+
+// Initialize Chroma Shader, ASCII Shader, Footer CTA, Mailbox, Visitor Counter & Initial Text State
 function initApp() {
     initChromaShader();
     initAsciiShader();
     initFooterCtaShutter();
     initMailboxOverlay();
+    initVisitorAndClapSystem();
     updateLanguageTexts();
     updateThemeAssets();
 }

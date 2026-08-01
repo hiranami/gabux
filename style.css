@@ -2141,6 +2141,136 @@ footer.footer-section {
     }
 }
 
+/* --- VISITOR COUNTER & CLAP PILL (MATCHING USER MOCKUPS) --- */
+.visitor-counter-pill {
+    display: inline-flex;
+    align-items: center;
+    height: 28px;
+    border: 1px solid var(--nav-border);
+    border-radius: 0px;
+    background: rgba(255, 255, 255, 0.03);
+    box-sizing: border-box;
+    font-family: 'PP Mori', sans-serif;
+    font-size: 11px;
+    color: var(--text-color);
+    overflow: hidden;
+    user-select: none;
+}
+
+body.light-theme .visitor-counter-pill,
+html[data-theme="light"] .visitor-counter-pill {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.visitor-label {
+    padding: 0 10px;
+    font-weight: 500;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+    color: var(--text-color);
+}
+
+.visitor-divider {
+    width: 1px;
+    height: 100%;
+    background: var(--nav-border);
+    display: block;
+}
+
+.visitor-slot-box {
+    padding: 0 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    min-width: 32px;
+}
+
+.slot-reel-container {
+    display: inline-flex;
+    height: 16px;
+    overflow: hidden;
+    position: relative;
+}
+
+.slot-digit-column {
+    display: inline-block;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    transition: transform 1.2s cubic-bezier(0.15, 0.85, 0.35, 1.2);
+}
+
+.slot-digit-node {
+    display: block;
+    height: 16px;
+    line-height: 16px;
+}
+
+.visitor-clap-btn {
+    padding: 0 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--text-color);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    height: 100%;
+    position: relative;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.visitor-clap-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.visitor-clap-btn.clapped {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.visitor-clap-btn:active {
+    transform: scale(0.95);
+}
+
+.footer-mobile-row-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+/* Floating Emoji Particle Animation */
+.clap-particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 99999;
+    font-size: 18px;
+    animation: clapBurst 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes clapBurst {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--dx), -70px) scale(1.4) rotate(var(--rot));
+    }
+}
+
 @media (max-width: 840px) {
     .footer-desktop-view {
         display: none !important;
