@@ -85,9 +85,14 @@ function runPreloader() {
 
     const userLang = navigator.language || navigator.userLanguage || 'pt';
     const isPt = userLang.toLowerCase().startsWith('pt');
-    const preloaderText = document.getElementById('preloader-text');
-    if (preloaderText) {
-        preloaderText.innerText = isPt ? 'Carregando...' : 'Loading...';
+    const preloaderLabel = document.getElementById('preloader-label');
+    if (preloaderLabel) {
+        preloaderLabel.innerText = isPt ? 'Carregando' : 'Loading';
+    } else {
+        const preloaderText = document.getElementById('preloader-text');
+        if (preloaderText) {
+            preloaderText.innerHTML = (isPt ? 'Carregando' : 'Loading') + '<span class="preloader-dots"><span>.</span><span>.</span><span>.</span></span>';
+        }
     }
 
     const barFill = document.getElementById('preloader-bar');
