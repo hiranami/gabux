@@ -66,7 +66,8 @@ function applyTheme(theme) {
 }
 
 // 2. Language Management
-let currentLang = localStorage.getItem('portfolio_lang') || 'pt';
+// Project pages always open in pt-br by default, regardless of any previously saved preference.
+let currentLang = 'pt';
 
 const pageTranslations = {
     pt: {
