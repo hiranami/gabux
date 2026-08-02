@@ -1005,28 +1005,36 @@ function initChromaShader() {
     scene.add(mesh);
 
     let isChromaVisible = true;
+    let chromaRafId = null;
+
+    const startTime = performance.now();
+    function animateChroma(currentTime) {
+        if (!isChromaVisible) return;
+        material.uniforms.uTime.value = (currentTime - startTime) * 0.001;
+        renderer.render(scene, camera);
+        chromaRafId = requestAnimationFrame(animateChroma);
+    }
+
     if ('IntersectionObserver' in window && container) {
         const chromaObs = new IntersectionObserver((entries) => {
-            entries.forEach(e => isChromaVisible = e.isIntersecting);
+            entries.forEach(e => {
+                const wasVisible = isChromaVisible;
+                isChromaVisible = e.isIntersecting;
+                if (isChromaVisible && !wasVisible) {
+                    chromaRafId = requestAnimationFrame(animateChroma);
+                }
+            });
         }, { threshold: 0.01 });
         chromaObs.observe(container);
     }
 
-    const startTime = performance.now();
-    function animateChroma(currentTime) {
-        if (isChromaVisible) {
-            material.uniforms.uTime.value = (currentTime - startTime) * 0.001;
-            renderer.render(scene, camera);
-        }
-        requestAnimationFrame(animateChroma);
-    }
-    requestAnimationFrame(animateChroma);
+    chromaRafId = requestAnimationFrame(animateChroma);
 
     window.addEventListener('resize', () => {
         if (!container) return;
         renderer.setSize(container.clientWidth, container.clientHeight);
         material.uniforms.uResolution.value.set(container.clientWidth, container.clientHeight);
-    });
+    }, { passive: true });
 }
 
 // --- 6. SCROLL-TRIGGERED PINNED TEXT DECRYPT EFFECT FOR FOLD 3 ---
@@ -1345,22 +1353,14 @@ function initAsciiShader() {
         const redRamp = ["i", "!", "|", "║", "!"];
         const matrixGlyphs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "@", "#", "$", "%", "&", "*", "+", "=", "?", "X", "Z", "¥", "§", "¶", "µ", "∆", "Ω"];
         let isAsciiVisible = true;
-        if ('IntersectionObserver' in window && canvas.parentElement) {
-            const asciiObs = new IntersectionObserver((entries) => {
-                entries.forEach(e => isAsciiVisible = e.isIntersecting);
-            }, { threshold: 0.01 });
-            asciiObs.observe(canvas.parentElement);
-        }
+        let asciiRafId = null;
 
         function renderAsciiFrame(now) {
-            if (!isAsciiVisible) {
-                requestAnimationFrame(renderAsciiFrame);
-                return;
-            }
+            if (!isAsciiVisible) return;
             const width = canvas.clientWidth || (canvas.parentElement ? canvas.parentElement.clientWidth : 0);
             const height = canvas.clientHeight || (canvas.parentElement ? canvas.parentElement.clientHeight : 0);
             if (width === 0 || height === 0) {
-                requestAnimationFrame(renderAsciiFrame);
+                asciiRafId = requestAnimationFrame(renderAsciiFrame);
                 return;
             }
 
@@ -1435,10 +1435,23 @@ function initAsciiShader() {
                 }
             }
 
-            requestAnimationFrame(renderAsciiFrame);
+            asciiRafId = requestAnimationFrame(renderAsciiFrame);
         }
 
-        requestAnimationFrame(renderAsciiFrame);
+        if ('IntersectionObserver' in window && canvas.parentElement) {
+            const asciiObs = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    const wasVisible = isAsciiVisible;
+                    isAsciiVisible = e.isIntersecting;
+                    if (isAsciiVisible && !wasVisible) {
+                        asciiRafId = requestAnimationFrame(renderAsciiFrame);
+                    }
+                });
+            }, { threshold: 0.01 });
+            asciiObs.observe(canvas.parentElement);
+        }
+
+        asciiRafId = requestAnimationFrame(renderAsciiFrame);
     });
 }
 
@@ -1450,9 +1463,27 @@ if (btnBackTop) {
     });
 }
 
-window.addEventListener('scroll', () => {
+let isScrollTicking = false;
+function handleGlobalScrollTick() {
     updateTextDecryptOnScroll();
-});
+    isScrollTicking = false;
+}
+
+window.addEventListener('scroll', () => {
+    if (!isScrollTicking) {
+        isScrollTicking = true;
+        requestAnimationFrame(handleGlobalScrollTick);
+    }
+}, { passive: true });
+
+if (typeof lenis !== 'undefined' && lenis) {
+    lenis.on('scroll', () => {
+        if (!isScrollTicking) {
+            isScrollTicking = true;
+            requestAnimationFrame(handleGlobalScrollTick);
+        }
+    });
+}
 
 // --- FOOTER CTA: TEXT SHUTTER WAVE BLINK ANIMATION ---
 function wrapTextInLetterSpans(h1El, text) {
