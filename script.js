@@ -1661,8 +1661,8 @@ function initMailboxOverlay() {
         }
     }, { passive: false });
 
-    // --- Mobile Virtual Keyboard Auto-Offset Engine ---
-    // Inputs remain absolute centered, and ONLY shift up if mobile keyboard overlaps them.
+    // --- Instant Mobile Virtual Keyboard Auto-Offset Engine ---
+    // Inputs & Action Buttons remain centered, and ONLY shift up immediately if mobile keyboard overlaps them.
     function updateMobileKeyboardOffset() {
         if (!modalContainer) return;
 
@@ -1677,15 +1677,19 @@ function initMailboxOverlay() {
             const keyboardHeight = Math.max(0, windowHeight - viewportHeight);
 
             if (keyboardHeight > 50) {
+                // Measure lowest bottom edge of modal container AND action button row
                 const modalRect = modalContainer.getBoundingClientRect();
+                const btnRow = modalContainer.querySelector('.mailbox-btn-row');
+                const btnRowRect = btnRow ? btnRow.getBoundingClientRect() : null;
+
+                const bottomEdge = btnRowRect ? Math.max(modalRect.bottom, btnRowRect.bottom) : modalRect.bottom;
                 const keyboardTop = viewportHeight;
-                const safePadding = 16;
-                const overlap = modalRect.bottom - keyboardTop + safePadding;
+                const safePadding = 20; // Ensure 20px space above keyboard for inputs and action buttons
+
+                const overlap = bottomEdge - keyboardTop + safePadding;
 
                 if (overlap > 0) {
                     modalContainer.style.transform = `translateY(-${Math.round(overlap)}px)`;
-                } else {
-                    modalContainer.style.transform = 'none';
                 }
             } else {
                 modalContainer.style.transform = 'none';
@@ -1702,7 +1706,17 @@ function initMailboxOverlay() {
     mailboxInputs.forEach(elem => {
         elem.addEventListener('focus', () => {
             if (window.innerWidth <= 840) {
-                setTimeout(updateMobileKeyboardOffset, 200);
+                // Immediate execution + multi-frame animation checks during keyboard slide-up
+                updateMobileKeyboardOffset();
+                let frames = 0;
+                function checkFrame() {
+                    updateMobileKeyboardOffset();
+                    frames++;
+                    if (frames < 25) {
+                        requestAnimationFrame(checkFrame);
+                    }
+                }
+                requestAnimationFrame(checkFrame);
             }
         });
         elem.addEventListener('blur', () => {
