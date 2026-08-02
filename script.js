@@ -1663,6 +1663,20 @@ function initMailboxOverlay() {
 
     // --- Instant Mobile Virtual Keyboard Auto-Offset Engine ---
     // Inputs & Action Buttons remain centered, and ONLY shift up immediately if mobile keyboard overlaps them.
+    function triggerKeyboardOffsetLoop() {
+        if (window.innerWidth > 840) return;
+        updateMobileKeyboardOffset();
+        let frames = 0;
+        function checkFrame() {
+            updateMobileKeyboardOffset();
+            frames++;
+            if (frames < 30) {
+                requestAnimationFrame(checkFrame);
+            }
+        }
+        requestAnimationFrame(checkFrame);
+    }
+
     function updateMobileKeyboardOffset() {
         if (!modalContainer) return;
 
@@ -1677,14 +1691,19 @@ function initMailboxOverlay() {
             const keyboardHeight = Math.max(0, windowHeight - viewportHeight);
 
             if (keyboardHeight > 50) {
-                // Measure lowest bottom edge of modal container AND action button row
+                // Measure lowest bottom edge of modal container, action button row, AND active input element
                 const modalRect = modalContainer.getBoundingClientRect();
                 const btnRow = modalContainer.querySelector('.mailbox-btn-row');
                 const btnRowRect = btnRow ? btnRow.getBoundingClientRect() : null;
+                const activeEl = document.activeElement;
+                const activeRect = (activeEl && modalContainer.contains(activeEl)) ? activeEl.getBoundingClientRect() : null;
 
-                const bottomEdge = btnRowRect ? Math.max(modalRect.bottom, btnRowRect.bottom) : modalRect.bottom;
+                let bottomEdge = modalRect.bottom;
+                if (btnRowRect) bottomEdge = Math.max(bottomEdge, btnRowRect.bottom);
+                if (activeRect) bottomEdge = Math.max(bottomEdge, activeRect.bottom);
+
                 const keyboardTop = viewportHeight;
-                const safePadding = 20; // Ensure 20px space above keyboard for inputs and action buttons
+                const safePadding = 20; // 20px gap above keyboard top margin
 
                 const overlap = bottomEdge - keyboardTop + safePadding;
 
@@ -1704,25 +1723,16 @@ function initMailboxOverlay() {
 
     const mailboxInputs = [inputField, subjectInput, messageTextarea].filter(Boolean);
     mailboxInputs.forEach(elem => {
-        elem.addEventListener('focus', () => {
-            if (window.innerWidth <= 840) {
-                // Immediate execution + multi-frame animation checks during keyboard slide-up
-                updateMobileKeyboardOffset();
-                let frames = 0;
-                function checkFrame() {
-                    updateMobileKeyboardOffset();
-                    frames++;
-                    if (frames < 25) {
-                        requestAnimationFrame(checkFrame);
-                    }
-                }
-                requestAnimationFrame(checkFrame);
-            }
-        });
+        elem.addEventListener('focus', triggerKeyboardOffsetLoop);
+        elem.addEventListener('click', triggerKeyboardOffsetLoop);
+        elem.addEventListener('input', updateMobileKeyboardOffset);
         elem.addEventListener('blur', () => {
             if (window.innerWidth <= 840) {
                 setTimeout(() => {
-                    if (modalContainer) modalContainer.style.transform = 'none';
+                    const active = document.activeElement;
+                    if (modalContainer && active !== inputField && active !== subjectInput && active !== messageTextarea) {
+                        modalContainer.style.transform = 'none';
+                    }
                 }, 150);
             }
         });
@@ -1743,7 +1753,8 @@ function initMailboxOverlay() {
             actionIcon.innerHTML = '▶';
             setTimeout(() => {
                 if (inputField) inputField.focus({ preventScroll: true });
-            }, 100);
+                triggerKeyboardOffsetLoop();
+            }, 50);
         } else if (currentStep === 2) {
             singleInputStep.style.display = 'block';
             step3Composer.style.display = 'none';
@@ -1755,7 +1766,8 @@ function initMailboxOverlay() {
             actionIcon.innerHTML = '▶';
             setTimeout(() => {
                 if (inputField) inputField.focus({ preventScroll: true });
-            }, 100);
+                triggerKeyboardOffsetLoop();
+            }, 50);
         } else if (currentStep === 3) {
             singleInputStep.style.display = 'none';
             step3Composer.style.display = 'block';
@@ -1764,7 +1776,8 @@ function initMailboxOverlay() {
             actionIcon.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
             setTimeout(() => {
                 if (subjectInput) subjectInput.focus({ preventScroll: true });
-            }, 100);
+                triggerKeyboardOffsetLoop();
+            }, 50);
         }
     }
 
