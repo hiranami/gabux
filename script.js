@@ -1682,6 +1682,7 @@ function initMailboxOverlay() {
 
         if (window.innerWidth > 840) {
             modalContainer.style.transform = 'none';
+            if (messageTextarea) messageTextarea.style.height = '';
             return;
         }
 
@@ -1691,27 +1692,48 @@ function initMailboxOverlay() {
             const keyboardHeight = Math.max(0, windowHeight - viewportHeight);
 
             if (keyboardHeight > 50) {
-                // Measure lowest bottom edge of modal container, action button row, AND active input element
+                // --- Step 3 (composer): shrink textarea so Enviar button fits above keyboard ---
+                const step3Active = step3Composer && step3Composer.style.display !== 'none';
+                if (step3Active && messageTextarea) {
+                    // Available height = viewport height (above keyboard) minus all other modal elements
+                    const btnRow = modalContainer.querySelector('.mailbox-btn-row');
+                    const subjectBlock = step3Composer.querySelector('.mailbox-input-block');
+                    const toolbar = step3Composer.querySelector('.mailbox-composer-toolbar');
+                    const closeBtnEl = modalContainer.querySelector('.mailbox-close-btn');
+
+                    const btnRowH = btnRow ? btnRow.getBoundingClientRect().height : 50;
+                    const subjectH = subjectBlock ? subjectBlock.getBoundingClientRect().height : 45;
+                    const toolbarH = toolbar ? toolbar.getBoundingClientRect().height : 44;
+                    const closeBtnH = closeBtnEl ? closeBtnEl.getBoundingClientRect().height + 12 : 40;
+
+                    // Total vertical space consumed by fixed elements (all except textarea)
+                    const fixedHeight = closeBtnH + subjectH + toolbarH + btnRowH;
+                    const safePadding = 24; // breathing room above keyboard
+
+                    // Max textarea height = viewport above keyboard minus all fixed content
+                    const maxTextareaH = Math.max(60, viewportHeight - fixedHeight - safePadding);
+                    messageTextarea.style.height = Math.round(maxTextareaH) + 'px';
+                }
+
+                // Now compute bottom edge and shift modal up if still overlapping
                 const modalRect = modalContainer.getBoundingClientRect();
                 const btnRow = modalContainer.querySelector('.mailbox-btn-row');
                 const btnRowRect = btnRow ? btnRow.getBoundingClientRect() : null;
-                const activeEl = document.activeElement;
-                const activeRect = (activeEl && modalContainer.contains(activeEl)) ? activeEl.getBoundingClientRect() : null;
 
                 let bottomEdge = modalRect.bottom;
                 if (btnRowRect) bottomEdge = Math.max(bottomEdge, btnRowRect.bottom);
-                if (activeRect) bottomEdge = Math.max(bottomEdge, activeRect.bottom);
 
                 const keyboardTop = viewportHeight;
-                const safePadding = 20; // 20px gap above keyboard top margin
-
+                const safePadding = 20;
                 const overlap = bottomEdge - keyboardTop + safePadding;
 
                 if (overlap > 0) {
                     modalContainer.style.transform = `translateY(-${Math.round(overlap)}px)`;
                 }
             } else {
+                // Keyboard closed: restore textarea original height
                 modalContainer.style.transform = 'none';
+                if (messageTextarea) messageTextarea.style.height = '';
             }
         }
     }
