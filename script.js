@@ -1630,6 +1630,11 @@ function initMailboxOverlay() {
         overlay.classList.add('active');
         overlay.setAttribute('aria-hidden', 'false');
         document.body.classList.add('mailbox-open');
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+        if (typeof lenis !== 'undefined' && lenis) {
+            lenis.stop();
+        }
 
         setTimeout(() => {
             if (inputField) inputField.focus({ preventScroll: true });
@@ -1640,8 +1645,74 @@ function initMailboxOverlay() {
         overlay.classList.remove('active');
         overlay.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('mailbox-open');
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+        if (typeof lenis !== 'undefined' && lenis) {
+            lenis.start();
+        }
+        if (modalContainer) modalContainer.style.transform = 'none';
         resetMailboxForm();
     }
+
+    // --- Prevent background page touch scrolling while overlay is open ---
+    overlay.addEventListener('touchmove', (e) => {
+        if (!modalContainer || !modalContainer.contains(e.target)) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    // --- Mobile Virtual Keyboard Auto-Offset Engine ---
+    // Inputs remain absolute centered, and ONLY shift up if mobile keyboard overlaps them.
+    function updateMobileKeyboardOffset() {
+        if (!modalContainer) return;
+
+        if (window.innerWidth > 840) {
+            modalContainer.style.transform = 'none';
+            return;
+        }
+
+        if (window.visualViewport) {
+            const viewportHeight = window.visualViewport.height;
+            const windowHeight = window.innerHeight;
+            const keyboardHeight = Math.max(0, windowHeight - viewportHeight);
+
+            if (keyboardHeight > 50) {
+                const modalRect = modalContainer.getBoundingClientRect();
+                const keyboardTop = viewportHeight;
+                const safePadding = 16;
+                const overlap = modalRect.bottom - keyboardTop + safePadding;
+
+                if (overlap > 0) {
+                    modalContainer.style.transform = `translateY(-${Math.round(overlap)}px)`;
+                } else {
+                    modalContainer.style.transform = 'none';
+                }
+            } else {
+                modalContainer.style.transform = 'none';
+            }
+        }
+    }
+
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', updateMobileKeyboardOffset);
+        window.visualViewport.addEventListener('scroll', updateMobileKeyboardOffset);
+    }
+
+    const mailboxInputs = [inputField, subjectInput, messageTextarea].filter(Boolean);
+    mailboxInputs.forEach(elem => {
+        elem.addEventListener('focus', () => {
+            if (window.innerWidth <= 840) {
+                setTimeout(updateMobileKeyboardOffset, 200);
+            }
+        });
+        elem.addEventListener('blur', () => {
+            if (window.innerWidth <= 840) {
+                setTimeout(() => {
+                    if (modalContainer) modalContainer.style.transform = 'none';
+                }, 150);
+            }
+        });
+    });
 
     function updateStepView() {
         if (emailError) emailError.style.display = 'none';

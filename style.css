@@ -631,6 +631,13 @@ body.light-theme #chroma-canvas {
         max-width: 80vw !important;
     }
 
+    /* Set 16px font size on mobile input fields to prevent iOS Safari auto-zoom */
+    .mailbox-input-field,
+    #mailbox-subject-input,
+    #mailbox-message-textarea {
+        font-size: 16px !important;
+    }
+
 
 
     .sobre-mim-content {
@@ -2257,15 +2264,19 @@ footer.footer-section {
     left: 0;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     z-index: 10000;
     background: rgba(10, 10, 10, 0.80);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.35s ease;
+    overflow: hidden;
 }
 
 body.light-theme #mailbox-overlay {
@@ -2279,6 +2290,11 @@ body.light-theme #mailbox-overlay {
     pointer-events: auto;
 }
 
+body.mailbox-open {
+    overflow: hidden !important;
+    touch-action: none !important;
+}
+
 .mailbox-modal-container {
     position: relative;
     width: 100%;
@@ -2289,6 +2305,7 @@ body.light-theme #mailbox-overlay {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
 }
 
 .mailbox-close-btn {
