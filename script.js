@@ -629,8 +629,9 @@ const headerEl = document.getElementById('header');
 const subTitleText = document.getElementById('sub-title-text');
 const mainTitleText = document.getElementById('main-title-text');
 
-let targetLogoWidth = 300;
-let currentLogoWidth = 300;
+const defaultLogoW = window.innerWidth <= 840 ? Math.min(260, Math.floor(window.innerWidth * 0.70)) : 300;
+let targetLogoWidth = defaultLogoW;
+let currentLogoWidth = defaultLogoW;
 let isResizing = false;
 
 function initResize(e) {
