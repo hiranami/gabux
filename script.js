@@ -45,6 +45,31 @@ window.addEventListener('wheel', preventPreloaderScroll, { passive: false });
 window.addEventListener('touchmove', preventPreloaderScroll, { passive: false });
 window.addEventListener('keydown', preventPreloaderKeys, { passive: false });
 
+function revealHeroTitles() {
+    const subTitleText = document.getElementById('sub-title-text');
+    const mainTitleText = document.getElementById('main-title-text');
+    const btnHeroContactMobile = document.getElementById('btn-hero-contact-mobile');
+
+    setTimeout(() => {
+        if (subTitleText) {
+            subTitleText.style.opacity = '1';
+            subTitleText.style.transform = 'translateY(0)';
+        }
+    }, 120);
+
+    setTimeout(() => {
+        if (mainTitleText) {
+            mainTitleText.style.opacity = '1';
+            mainTitleText.style.transform = 'translateY(0)';
+        }
+        if (btnHeroContactMobile) {
+            btnHeroContactMobile.style.opacity = '1';
+            btnHeroContactMobile.style.transform = 'translateY(0)';
+            btnHeroContactMobile.style.pointerEvents = 'auto';
+        }
+    }, 350);
+}
+
 function runPreloader() {
     const shouldSkipPreloader = sessionStorage.getItem('skip_preloader') === 'true' || 
                                 window.location.hash === '#projetos' || 
@@ -67,6 +92,8 @@ function runPreloader() {
         if (typeof lenis !== 'undefined' && lenis) {
             lenis.start();
         }
+
+        revealHeroTitles();
 
         setTimeout(() => {
             if (typeof lenis !== 'undefined' && lenis) {
@@ -101,6 +128,7 @@ function runPreloader() {
         if (preloader) {
             preloader.style.opacity = '0';
             preloader.style.pointerEvents = 'none';
+            revealHeroTitles();
             setTimeout(() => {
                 sessionStorage.setItem('site_visited', 'true');
                 if (preloader.parentNode) preloader.remove();
@@ -127,21 +155,19 @@ const i18n = {
     pt: {
         navHome: "Início", navAbout: "Sobre Mim", navServices: "O que entrego",
         navProjects: "Projetos", txtCv: "Currículo", txtContact: "Fale comigo",
-        heroH5: "Olá, sou o Gabriel",
-        heroLine1: "UX/UI Designer Jr e", heroH1Em: "explorador", heroLine2Post: "de inovações",
+        heroH5: "Olá, me chamo Gabriel, sou",
+        heroLine1: "UX/UI Designer e transformo ideias complexas em interfaces ", heroH1Em: "funcionais e escaláveis", heroLine2Post: " de alta conversão com Figma e Inteligência Artificial.",
         lblSobrePt: "Sobre mim", lblSobreEn: "About me",
-        decryptText: "CONSTRUO SOLUÇÕES EM UX E UI ALIADO AO VIBE CODE EM UM WORKFLOW COMPLETO COM FOCO EM RESULTADOS E PRODUTOS DE ALTO VALOR.",
+        decryptText: "Agilizo a criação de protótipos e produtos sem abrir mão da consistência visual, acessibilidade, hierarquia de informação e usabilidade, unindo Figma e Desenvolvimento com IA.",
         themeDark: "desligado", themeLight: "ligado",
         entregoTitle: "O que entrego",
         delivLine1: "SAAS & MICRO SAAS",
-        delivSub1: "Entrego interfaces de SaaS e Micro SaaS, bem como a possibilidade do uso de Vibe Code para criar a versão inicial em código, acelerando o processo de desenvolvimento.",
-        delivLine2: "LANDING PAGES & S.P.As",
-        delivSub2: "Crio Landing Pages e Single Page Applications que vão do simples ao avançado, do estático à animações complexas com funcionalidades que agregam valor ao produto.",
-        delivLine3: "SITES E APPS WEB & MOBILE",
-        delivSub3: "Desenvolvo layouts de sites e aplicações web e mobile completos, incluindo com um workflow completo que envolve Figma/Framer + IA Vibe Coding.",
-        delivLine4: "DASHBOARDS, CRMs APPS",
-        delivSub4: "Estruturo e desenvolvo interfaces para Dashboards e CRMs de qualquer segmento.",
-        entregoBottom: "Tudo com a agilidade e qualidade que só um UX/UI Designer com skills de Design Engineer consegue entregar.",
+        delivSub1: "Arquitetura de informação e interfaces completas para SaaS de educação, saúde, fintechs e RH com foco em experiência e eficiência. Reduzo a taxa de abandono (churn) criando fluxos de onboarding simples, fluxos claros e protótipos em código para validação rápida com investidores e usuários.",
+        delivLine2: "PÁGINAS FOCADAS EM CONVERSÃO",
+        delivSub2: "Desenvolvo Landing Pages estáticas ou animadas (Framer/Next.js/React/GSAP) para startups em fase de captação, validação ou lançamento otimizado para SEO, carregamento rápido e integração com ferramentas de métricas e analytics.",
+        delivLine3: "DASHBOARDS & CRMS",
+        delivSub3: "Estruturação de sistemas de gestão e análise de dados como os de setores de logística, financeiro e pessoal, com foco em hierarquia visual, contexto, e fácil usabilidade.",
+        entregoBottom: "Atuo com métodos ágeis, sem ignorar etapas cruciais, e utilizando uma stack atualizada com Figma e Framer aliados com programação por IA, do início ao fim.",
         txtExpand: "expandir", txtHide: "ocultar",
         projetosTitle: "Projetos",
         projStudySub: "Projeto de estudo",
@@ -150,7 +176,7 @@ const i18n = {
         proj2Desc: "Aplicação Web e Mobile de compra e venda com opção de loja local.",
         proj3Desc: "Aplicação Web e Mobile de gerenciamento e agendamento de vagas em estacionamentos.",
         proj4Desc: "Aplicativo mobile de monitoramento urbano em tempo real",
-        btnVisualizarProjeto: "Visualizar Projeto",
+        btnVisualizarProjeto: "Ver detalhes",
         footerSecondaryTitle: "Que tal criarmos algo incrível juntos?",
         footerCtaBtn: "Vamos conversar",
         footerBackTop: "Voltar ao topo",
@@ -161,21 +187,19 @@ const i18n = {
     en: {
         navHome: "Home", navAbout: "About Me", navServices: "Services",
         navProjects: "Projects", txtCv: "CV", txtContact: "Contact Me",
-        heroH5: "Hello, I'm Gabriel",
-        heroLine1: "UX/UI Designer Jr and", heroH1Em: "explorer", heroLine2Post: "of innovations",
+        heroH5: "Hello, I'm Gabriel, I'm a",
+        heroLine1: "UX/UI Designer turning complex ideas into ", heroH1Em: "functional and scalable", heroLine2Post: " high-converting interfaces with Figma and AI.",
         lblSobrePt: "Sobre mim", lblSobreEn: "About me",
-        decryptText: "BUILDING UX & UI SOLUTIONS COMBINED WITH VIBE CODE IN A COMPLETE WORKFLOW FOCUSED ON RESULTS AND HIGH-VALUE PRODUCTS.",
+        decryptText: "I accelerate prototype and product creation without sacrificing visual consistency, accessibility, information hierarchy, and usability, combining Figma and AI Development.",
         themeDark: "off", themeLight: "on",
         entregoTitle: "What I deliver",
         delivLine1: "SAAS & MICRO SAAS",
-        delivSub1: "I deliver SaaS and Micro SaaS interfaces, as well as the possibility of using Vibe Code to create the initial version in code, accelerating the development process.",
-        delivLine2: "LANDING PAGES & S.P.As",
-        delivSub2: "I create Landing Pages and Single Page Applications ranging from simple to advanced, from static to complex animations with features that add value to the product.",
-        delivLine3: "WEBSITES & WEB/MOBILE APPS",
-        delivSub3: "I develop complete website layouts and web/mobile apps, including a complete workflow involving Figma/Framer + AI Vibe Coding.",
-        delivLine4: "DASHBOARDS, CRMs & APPS",
-        delivSub4: "I structure and develop interfaces for Dashboards and CRMs across any industry.",
-        entregoBottom: "All with the speed and quality that only a UX/UI Designer with Design Engineer skills can deliver.",
+        delivSub1: "Information architecture and complete interfaces for education, healthcare, fintech, and HR SaaS focused on experience and efficiency. I reduce churn rate by creating simple onboarding flows, clear user journeys, and coded prototypes for fast validation with investors and users.",
+        delivLine2: "CONVERSION-FOCUSED PAGES",
+        delivSub2: "Static or animated development (Framer/Next.js/React/GSAP) of Landing Pages for startups in fundraising, validation, or launch phases optimized for SEO, fast loading, and integration with analytics tools.",
+        delivLine3: "DASHBOARDS & CRMS",
+        delivSub3: "Structuring management systems and data analytics for logistics, financial, and HR sectors, focusing on visual hierarchy, context, and effortless usability.",
+        entregoBottom: "I work with agile methodologies without skipping crucial steps, using an updated stack with Figma and Framer combined with AI coding from start to finish.",
         txtExpand: "expand", txtHide: "hide",
         projetosTitle: "Projects",
         projStudySub: "Study project",
@@ -184,7 +208,7 @@ const i18n = {
         proj2Desc: "Web and Mobile e-commerce application with local store option.",
         proj3Desc: "Web and Mobile application for parking space management and booking.",
         proj4Desc: "Mobile application for real-time urban monitoring",
-        btnVisualizarProjeto: "View Project",
+        btnVisualizarProjeto: "View details",
         footerSecondaryTitle: "Let's create something incredible together?",
         footerCtaBtn: "Let's talk",
         footerBackTop: "Back to top",
@@ -334,8 +358,6 @@ function updateLanguageTexts() {
     setElText('deliv-sub-2', data.delivSub2);
     setElText('deliv-line-3', data.delivLine3);
     setElText('deliv-sub-3', data.delivSub3);
-    setElText('deliv-line-4', data.delivLine4);
-    setElText('deliv-sub-4', data.delivSub4);
     setElText('txt-entrego-bottom', data.entregoBottom);
 
     // Section "Projetos" texts update
@@ -470,8 +492,8 @@ const navLinkBindings = [
     { id: 'mobile-nav-about', action: () => { closeMobileNav(); scrollToSectionId('sobre-mim-wrapper'); } },
     { id: 'nav-services', action: () => scrollToSectionId('entrego') },
     { id: 'mobile-nav-services', action: () => { closeMobileNav(); scrollToSectionId('entrego'); } },
-    { id: 'nav-projects', action: () => scrollToSectionId('projetos-wrapper') },
-    { id: 'mobile-nav-projects', action: () => { closeMobileNav(); scrollToSectionId('projetos-wrapper'); } }
+    { id: 'nav-projects', action: () => scrollToSectionId('projetos') },
+    { id: 'mobile-nav-projects', action: () => { closeMobileNav(); scrollToSectionId('projetos'); } }
 ];
 
 navLinkBindings.forEach(binding => {
@@ -722,15 +744,13 @@ function restorePortfolioState() {
             }
         }, 30);
     } else {
-        const savedY = sessionStorage.getItem('portfolio_scroll_y');
-        if (savedY !== null && !isNaN(parseFloat(savedY))) {
-            const val = parseFloat(savedY);
-            curScroll = val;
-            tarScroll = val;
-            window.scrollTo(0, val);
-            if (typeof lenis !== 'undefined' && lenis) {
-                lenis.scrollTo(val, { immediate: true });
-            }
+        // Force page to open at the top (Hero section)
+        sessionStorage.removeItem('portfolio_scroll_y');
+        curScroll = 0;
+        tarScroll = 0;
+        window.scrollTo(0, 0);
+        if (typeof lenis !== 'undefined' && lenis) {
+            lenis.scrollTo(0, { immediate: true });
         }
     }
 }
@@ -740,67 +760,11 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function mainLoop() {
-    currentLogoWidth += (targetLogoWidth - currentLogoWidth) * 0.1;
     curScroll += (tarScroll - curScroll) * 0.1;
-
-    const scrollRange = height * 0.6;
-    const pLogo = Math.min(curScroll / scrollRange, 1);
-
-    const isMobile = window.innerWidth <= 840;
-    const headerHeight = isMobile ? 56 : 70;
-    const headerLogoWidth = 65; 
-    const scrollWidth = currentLogoWidth + (headerLogoWidth - currentLogoWidth) * pLogo;
-    const startY = height / 2, endY = headerHeight / 2;
-    const currentY = startY + (endY - startY) * pLogo;
-
-    const translateAlpha = Math.max(0, (pLogo - 0.7) * 3.33);
-    // On mobile: shift logo left by half of (translate icon 16px + gap 8px) = 12px so the pair is centered
-    // On desktop: shift logo left by 16.5px to optically center the pair as before
-    const groupOffset = isMobile
-        ? translateAlpha * 12
-        : translateAlpha * 16.5;
-    const logoCenterX = window.innerWidth / 2 - groupOffset;
-
-    logoWrapper.style.width = scrollWidth + 'px';
-    logoWrapper.style.left = logoCenterX + 'px';
-    logoWrapper.style.top = currentY + 'px';
-    logoWrapper.style.transform = `translate(-50%, -50%)`;
-
-    if (btnTranslate) {
-        const translateLeft = logoCenterX + (scrollWidth / 2) + (isMobile ? 8 : 12);
-        btnTranslate.style.left = translateLeft + 'px';
-        btnTranslate.style.top = currentY + 'px';
-        btnTranslate.style.transform = 'translateY(-50%)';
-        btnTranslate.style.opacity = translateAlpha;
-        btnTranslate.style.pointerEvents = translateAlpha > 0.8 ? "auto" : "none";
-    }
-
-    const uiAlpha = Math.max(0, 1 - (pLogo * 5));
-    resizeUI.style.opacity = uiAlpha;
-    document.querySelectorAll('.handle').forEach(h => h.style.opacity = uiAlpha);
-
-    const subStart = scrollRange;
-    const pSub = Math.max(0, Math.min(1, (curScroll - subStart) / 400));
-    subTitleText.style.opacity = pSub;
-    subTitleText.style.transform = `translateY(${(1-pSub)*20}px)`;
-
-    const h1Start = subStart + (400 * 0.95);
-    const pMain = Math.max(0, Math.min(1, (curScroll - h1Start) / 400));
-    mainTitleText.style.opacity = pMain;
-    mainTitleText.style.transform = `translateY(${(1-pMain)*20}px)`;
-
-    if (btnHeroContactMobile) {
-        btnHeroContactMobile.style.opacity = pMain;
-        btnHeroContactMobile.style.transform = `translateY(${(1-pMain)*20}px)`;
-        btnHeroContactMobile.style.pointerEvents = pMain > 0.8 ? "auto" : "none";
-    }
-
-    headerEl.style.opacity = pLogo > 0.9 ? 1 : 0;
-    headerEl.style.pointerEvents = pLogo > 0.9 ? "auto" : "none";
 
     updateEntregoScrollAnimations();
     updateSobreMimHeaderScroll();
-    updateProjetosStickyParallaxScroll();
+    updateProjetosScrollAnimations();
 
     requestAnimationFrame(mainLoop);
 }
@@ -858,6 +822,7 @@ window.addEventListener('load', () => {
     animateTags();
     mainLoop();
     initSectionGrains();
+    initProjetosList();
     const img = document.getElementById('logo-img');
     img.style.filter = "blur(15px)"; img.style.opacity = "0";
     setTimeout(() => {
@@ -1156,157 +1121,65 @@ document.querySelectorAll('.deliverable-row').forEach(row => {
     });
 });
 
-// --- 9. FOLD 5: SECTION "PROJETOS" STICKY PARALLAX ENGINE ---
-function updateProjetosStickyParallaxScroll() {
-    const wrapper = document.getElementById('projetos-wrapper');
-    const header = document.getElementById('projetos-header');
-    if (!wrapper || !header) return;
+// --- 9. FOLD 5: SECTION "PROJETOS" — TEXT LIST HOVER (DESKTOP) & SCROLL (MOBILE) ---
+const projetosSection = document.getElementById('projetos');
+const projetosHeader  = document.getElementById('projetos-header');
 
-    const rect = wrapper.getBoundingClientRect();
-    const winHeight = window.innerHeight;
+function initProjetosList() {
+    const rows = document.querySelectorAll('.projeto-row');
+    if (rows.length === 0) return;
 
-    if (rect.top <= winHeight * 0.85) {
-        header.classList.add('active');
-    } else {
-        header.classList.remove('active');
+    // Desktop: Hover state activation
+    rows.forEach(row => {
+        row.addEventListener('mouseenter', () => {
+            if (window.innerWidth > 840) {
+                rows.forEach(r => r.classList.remove('active'));
+                row.classList.add('active');
+            }
+        });
+    });
+}
+
+function updateProjetosScrollAnimations() {
+    if (!projetosSection) return;
+
+    if (projetosHeader) {
+        const rect = projetosSection.getBoundingClientRect();
+        if (rect.top <= window.innerHeight * 0.85) {
+            projetosHeader.classList.add('active');
+        } else {
+            projetosHeader.classList.remove('active');
+        }
     }
 
-    const totalScrollable = wrapper.offsetHeight - winHeight;
-    const offsetLead = winHeight * 0.18;
-    const scrolled = Math.max(0, -rect.top + offsetLead);
-    const progress = Math.max(0, Math.min(1, scrolled / (totalScrollable || 1)));
+    // Mobile: Scroll-based activation (closest row to screen center)
+    if (window.innerWidth <= 840) {
+        const rows = projetosSection.querySelectorAll('.projeto-row');
+        const winHeight = window.innerHeight;
+        const screenCenter = winHeight / 2;
+        let closestRow = null;
+        let minDistance = Infinity;
 
-    const projectItems = document.querySelectorAll('.project-card-item');
-    const count = projectItems.length;
-    const isMobile = window.innerWidth <= 840;
-
-    projectItems.forEach((item, index) => {
-        const isFirstCard = index === 0;
-        const isLastCard = index === count - 1;
-        const leftCol   = item.querySelector('.project-col-left');
-        const rightCol  = item.querySelector('.project-col-right');
-        const centerCol = item.querySelector('.project-col-center');
-
-        if (isMobile) {
-            // ── MOBILE: 1-Card-at-a-Time Continuous Parallax (80% Disappearance Rule) ──
-            const segStart = index / count;       // 0.0, 0.25, 0.50, 0.75
-            const segEnd   = (index + 1) / count; // 0.25, 0.50, 0.75, 1.00
-            const segLen   = 1 / count;            // 0.25
-
-            // Local progress t inside this card's segment: 0 at segStart, 1 at segEnd
-            const t = (progress - segStart) / segLen;
-
-            // In-range check: card is active from t = -0.05 to t = 1.05
-            const inRange = isLastCard
-                ? progress >= segStart - 0.02
-                : t >= -0.05 && t <= 1.05;
-
-            if (!inRange) {
-                item.classList.remove('active-project');
-                item.style.opacity = 0;
-                item.style.transform = 'translateY(0)';
-                if (centerCol) centerCol.style.transform = '';
-                if (leftCol)   leftCol.style.transform   = '';
-                if (rightCol)  rightCol.style.transform  = '';
-                return;
+        rows.forEach(row => {
+            const rRect = row.getBoundingClientRect();
+            const rCenter = rRect.top + rRect.height / 2;
+            const dist = Math.abs(rCenter - screenCenter);
+            if (dist < minDistance && rRect.top < winHeight && rRect.bottom > 0) {
+                minDistance = dist;
+                closestRow = row;
             }
+        });
 
-            item.classList.add('active-project');
-
-            const p = Math.max(0, Math.min(1, t));
-
-            // Alpha / Opacity calculation:
-            // Entry: p 0.0 -> 0.35 fades IN (0.0 -> 1.0)
-            // Active: p 0.35 -> 0.65 holds 1.0
-            // Exit: p 0.65 -> 1.00 fades OUT (1.0 -> 0.0), reaching 0.20 opacity (80% disappeared) at p = 0.88!
-            let alpha = 1;
-            if (isLastCard) {
-                if (p < 0.40) alpha = Math.max(0, p / 0.40);
-                else alpha = 1.0;
+        rows.forEach(row => {
+            if (row === closestRow) {
+                row.classList.add('active-scroll');
+                row.classList.add('active');
             } else {
-                if (p < 0.35) {
-                    alpha = Math.max(0, p / 0.35);
-                } else if (p > 0.65) {
-                    alpha = Math.max(0, (1.0 - p) / 0.35);
-                }
+                row.classList.remove('active-scroll');
+                row.classList.remove('active');
             }
-            item.style.opacity = alpha;
-
-            // Clear sub-column transforms so text & button stay in flex layout with card
-            if (leftCol)  leftCol.style.transform  = '';
-            if (rightCol) rightCol.style.transform = '';
-
-            // Smooth 3D tilt directly synchronized with vertical scroll position (no pause!)
-            if (centerCol) {
-                centerCol.style.perspective = '1000px';
-                const rotateY = (0.5 - p) * 20; // +10deg entering -> 0deg flat at p=0.5 -> -10deg exiting
-                const scale   = Math.max(0.90, 1.0 - Math.abs(0.5 - p) * 0.20);
-                centerCol.style.transform = `scale(${scale}) rotateY(${rotateY}deg)`;
-            }
-
-            // Continuous TranslateY synchronized directly with user scroll:
-            // p = 0.0 -> +enterOffsetPx (enters from below)
-            // p = 0.5 -> 0 (centered in stage)
-            // p = 1.0 -> -exitOffsetPx (exits upward, vanishing before title line)
-            const enterOffsetPx = winHeight * 0.32;
-            const exitOffsetPx  = winHeight * 0.18;
-
-            let translateY = 0;
-            if (isLastCard && p >= 0.5) {
-                translateY = 0; // SaferOut locks at center once reached
-            } else {
-                if (p <= 0.5) {
-                    translateY = (1 - (p / 0.5)) * enterOffsetPx;
-                } else {
-                    translateY = -((p - 0.5) / 0.5) * exitOffsetPx;
-                }
-            }
-            item.style.transform = `translateY(${translateY}px)`;
-        } else {
-            // ── DESKTOP: Multi-column 3D Parallax ──
-            const segStart = index / count;
-            const segEnd   = (index + 1) / count;
-            const localProgress = (progress - segStart) / (segEnd - segStart);
-            const isVisible = progress >= (segStart - 0.10) && (isLastCard ? true : progress <= (segEnd + 0.10));
-
-            if (!isVisible) {
-                item.classList.remove('active-project');
-                item.style.opacity = 0;
-                item.style.pointerEvents = 'none';
-                return;
-            }
-            item.classList.add('active-project');
-
-            let p = Math.max(0, Math.min(1, localProgress));
-            if (isLastCard && progress >= 0.90) p = 0.5;
-
-            let alpha = 1;
-            if (isLastCard && progress >= 0.90) {
-                alpha = 1;
-            } else if (p < 0.20) {
-                alpha = Math.max(0, p / 0.20);
-            } else if (p > 0.55) {
-                alpha = Math.max(0, (0.72 - p) / 0.17);
-            }
-            item.style.opacity = alpha;
-            item.style.pointerEvents = alpha > 0.01 ? 'auto' : 'none';
-
-            const centerTY = (0.5 - p) * 110;
-            const textTY   = centerTY;
-            const sideDist = Math.abs(0.5 - p);
-            const winWidth = window.innerWidth;
-            const horizFactor = winWidth < 1108 ? Math.max(25, 80 * ((winWidth - 841) / (1108 - 841))) : 80;
-            const leftTX   = (0.5 - p) * -horizFactor;
-            const rightTX  = (0.5 - p) *  horizFactor;
-            const scale    = Math.max(0.88, 1.04 - sideDist * 0.35);
-            const rotateY  = (0.5 - p) * 20;
-
-            item.style.perspective = '1000px';
-            if (centerCol) centerCol.style.transform = `translate3d(0, ${centerTY}vh, 0) scale(${scale}) rotateY(${rotateY}deg)`;
-            if (leftCol)   leftCol.style.transform   = `translate3d(${leftTX}px, ${textTY}vh, 0)`;
-            if (rightCol)  rightCol.style.transform  = `translate3d(${rightTX}px, ${textTY}vh, 0)`;
-        }
-    });
+        });
+    }
 }
 
 // --- 10. FOLD 6: VERSION 0.1 - MONOCHROME THEME ASCII SHADER ENGINES ---
@@ -1540,11 +1413,8 @@ function initMailboxOverlay() {
     const formStep = document.getElementById('mailbox-form-step');
     const successStep = document.getElementById('mailbox-success-step');
     
-    const singleInputStep = document.getElementById('mailbox-single-input-step');
-    const step3Composer = document.getElementById('mailbox-step3-composer');
-    
-    const labelBadge = document.getElementById('mailbox-label');
-    const inputField = document.getElementById('mailbox-input');
+    const nameInput = document.getElementById('mailbox-name-input');
+    const emailInput = document.getElementById('mailbox-email-input');
     const emailError = document.getElementById('mailbox-email-error');
     
     const subjectInput = document.getElementById('mailbox-subject-input');
@@ -1558,19 +1428,15 @@ function initMailboxOverlay() {
     const btnEmoji = document.getElementById('btn-mailbox-emoji');
     const emojiPicker = document.getElementById('mailbox-emoji-picker');
     
-    const fmtBold = document.getElementById('fmt-bold');
-    const fmtItalic = document.getElementById('fmt-italic');
-    const fmtUnderline = document.getElementById('fmt-underline');
-    
-    const backBtn = document.getElementById('btn-mailbox-back');
     const actionBtn = document.getElementById('btn-mailbox-action');
     const actionTxt = document.getElementById('txt-mailbox-action');
     const actionIcon = document.getElementById('icon-mailbox-action');
 
     const btnContactHeader = document.getElementById('btn-contact');
     const btnFooterCta = document.getElementById('btn-footer-cta');
+    const btnHeroContactMobile = document.getElementById('btn-hero-contact-mobile');
+    const btnFooterCtaMobile = document.getElementById('btn-footer-cta-mobile');
 
-    let currentStep = 1;
     const formData = {
         recipient: 'gabrielrf19@gmail.com',
         name: '',
@@ -1596,37 +1462,37 @@ function initMailboxOverlay() {
     const modalContainer = document.getElementById('mailbox-modal-container');
 
     function resetMailboxForm() {
-        currentStep = 1;
         formData.name = '';
         formData.email = '';
         formData.subject = '';
         formData.message = '';
         formData.files = [];
 
-        if (inputField) inputField.value = '';
-        if (subjectInput) subjectInput.value = '';
-        if (messageTextarea) messageTextarea.value = '';
+        if (nameInput) { nameInput.value = ''; nameInput.style.borderColor = ''; }
+        if (emailInput) { emailInput.value = ''; emailInput.style.borderColor = ''; }
+        if (subjectInput) { subjectInput.value = ''; subjectInput.style.borderColor = ''; }
+        if (messageTextarea) { messageTextarea.value = ''; messageTextarea.style.borderColor = ''; }
         if (fileInput) fileInput.value = '';
         if (attachedFilesList) attachedFilesList.innerHTML = '';
         if (emailError) emailError.style.display = 'none';
         if (emojiPicker) emojiPicker.style.display = 'none';
 
         if (actionBtn) actionBtn.disabled = false;
-        if (actionTxt) actionTxt.textContent = 'Próximo';
+        if (actionTxt) actionTxt.textContent = 'Enviar';
         if (actionIcon) actionIcon.innerHTML = '▶';
 
         if (modalContainer) {
             modalContainer.style.maxWidth = '650px';
             modalContainer.style.alignItems = 'flex-end';
         }
-        formStep.style.display = 'block';
-        successStep.style.display = 'none';
+        if (formStep) formStep.style.display = 'block';
+        if (successStep) successStep.style.display = 'none';
         if (closeBtn) closeBtn.style.display = 'block';
     }
 
     function openMailbox() {
         resetMailboxForm();
-        updateStepView();
+        if (!overlay) return;
         overlay.classList.add('active');
         overlay.setAttribute('aria-hidden', 'false');
         document.body.classList.add('mailbox-open');
@@ -1637,11 +1503,12 @@ function initMailboxOverlay() {
         }
 
         setTimeout(() => {
-            if (inputField) inputField.focus({ preventScroll: true });
+            if (nameInput) nameInput.focus({ preventScroll: true });
         }, 100);
     }
 
     function closeMailbox() {
+        if (!overlay) return;
         overlay.classList.remove('active');
         overlay.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('mailbox-open');
@@ -1654,410 +1521,267 @@ function initMailboxOverlay() {
         resetMailboxForm();
     }
 
-    // --- Prevent background page touch scrolling while overlay is open ---
-    overlay.addEventListener('touchmove', (e) => {
-        if (!modalContainer || !modalContainer.contains(e.target)) {
-            e.preventDefault();
-        }
-    }, { passive: false });
-
-    // --- Instant Mobile Virtual Keyboard Auto-Offset Engine ---
-    // Inputs & Action Buttons remain centered, and ONLY shift up immediately if mobile keyboard overlaps them.
-    function triggerKeyboardOffsetLoop() {
-        if (window.innerWidth > 840) return;
-        updateMobileKeyboardOffset();
-        let frames = 0;
-        function checkFrame() {
-            updateMobileKeyboardOffset();
-            frames++;
-            if (frames < 30) {
-                requestAnimationFrame(checkFrame);
+    if (overlay) {
+        overlay.addEventListener('touchmove', (e) => {
+            if (!modalContainer || !modalContainer.contains(e.target)) {
+                e.preventDefault();
             }
-        }
-        requestAnimationFrame(checkFrame);
+        }, { passive: false });
     }
 
-    function updateMobileKeyboardOffset() {
-        if (!modalContainer) return;
+    function handleSubmitForm() {
+        const nameVal = nameInput ? nameInput.value.trim() : '';
+        const emailVal = emailInput ? emailInput.value.trim() : '';
+        const subjVal = subjectInput ? subjectInput.value.trim() : '';
+        const msgVal = messageTextarea ? messageTextarea.value.trim() : '';
 
-        if (window.innerWidth > 840) {
-            modalContainer.style.transform = 'none';
-            if (messageTextarea) messageTextarea.style.height = '';
+        let hasError = false;
+
+        if (!nameVal || nameVal.length < 2) {
+            if (nameInput) nameInput.style.borderColor = '#FF3300';
+            hasError = true;
+        } else {
+            if (nameInput) nameInput.style.borderColor = '';
+        }
+
+        if (!validateEmail(emailVal)) {
+            if (emailInput) emailInput.style.borderColor = '#FF3300';
+            hasError = true;
+        } else {
+            if (emailInput) emailInput.style.borderColor = '';
+        }
+
+        if (!subjVal) {
+            if (subjectInput) subjectInput.style.borderColor = '#FF3300';
+            hasError = true;
+        } else {
+            if (subjectInput) subjectInput.style.borderColor = '';
+        }
+
+        if (!msgVal) {
+            if (messageTextarea) messageTextarea.style.borderColor = '#FF3300';
+            hasError = true;
+        } else {
+            if (messageTextarea) messageTextarea.style.borderColor = '';
+        }
+
+        if (hasError) {
+            if (emailError) {
+                emailError.textContent = 'Por favor, preencha todos os campos corretamente.';
+                emailError.style.display = 'block';
+            }
+            setTimeout(() => {
+                if (emailError) emailError.style.display = 'none';
+            }, 3000);
             return;
         }
 
-        if (window.visualViewport) {
-            const viewportHeight = window.visualViewport.height;
-            const windowHeight = window.innerHeight;
-            const keyboardHeight = Math.max(0, windowHeight - viewportHeight);
-
-            if (keyboardHeight > 50) {
-                // --- Step 3 (composer): shrink textarea so Enviar button fits above keyboard ---
-                const step3Active = step3Composer && step3Composer.style.display !== 'none';
-                if (step3Active && messageTextarea) {
-                    // Available height = viewport height (above keyboard) minus all other modal elements
-                    const btnRow = modalContainer.querySelector('.mailbox-btn-row');
-                    const subjectBlock = step3Composer.querySelector('.mailbox-input-block');
-                    const toolbar = step3Composer.querySelector('.mailbox-composer-toolbar');
-                    const closeBtnEl = modalContainer.querySelector('.mailbox-close-btn');
-
-                    const btnRowH = btnRow ? btnRow.getBoundingClientRect().height : 50;
-                    const subjectH = subjectBlock ? subjectBlock.getBoundingClientRect().height : 45;
-                    const toolbarH = toolbar ? toolbar.getBoundingClientRect().height : 44;
-                    const closeBtnH = closeBtnEl ? closeBtnEl.getBoundingClientRect().height + 12 : 40;
-
-                    // Total vertical space consumed by fixed elements (all except textarea)
-                    const fixedHeight = closeBtnH + subjectH + toolbarH + btnRowH;
-                    const safePadding = 24; // breathing room above keyboard
-
-                    // Max textarea height = viewport above keyboard minus all fixed content
-                    const maxTextareaH = Math.max(60, viewportHeight - fixedHeight - safePadding);
-                    messageTextarea.style.height = Math.round(maxTextareaH) + 'px';
-                }
-
-                // Now compute bottom edge and shift modal up if still overlapping
-                const modalRect = modalContainer.getBoundingClientRect();
-                const btnRow = modalContainer.querySelector('.mailbox-btn-row');
-                const btnRowRect = btnRow ? btnRow.getBoundingClientRect() : null;
-
-                let bottomEdge = modalRect.bottom;
-                if (btnRowRect) bottomEdge = Math.max(bottomEdge, btnRowRect.bottom);
-
-                const keyboardTop = viewportHeight;
-                const safePadding = 20;
-                const overlap = bottomEdge - keyboardTop + safePadding;
-
-                if (overlap > 0) {
-                    modalContainer.style.transform = `translateY(-${Math.round(overlap)}px)`;
-                }
-            } else {
-                // Keyboard closed: restore textarea original height
-                modalContainer.style.transform = 'none';
-                if (messageTextarea) messageTextarea.style.height = '';
-            }
+        formData.name = nameVal;
+        formData.email = emailVal;
+        formData.subject = subjVal;
+        formData.message = msgVal;
+        
+        if (actionBtn) actionBtn.disabled = true;
+        if (actionTxt) actionTxt.textContent = 'Enviando...';
+        if (actionIcon) actionIcon.innerHTML = '<span class="mailbox-spinner"></span>';
+        
+        let hiddenIframe = document.getElementById('formsubmit-iframe');
+        if (!hiddenIframe) {
+            hiddenIframe = document.createElement('iframe');
+            hiddenIframe.id = 'formsubmit-iframe';
+            hiddenIframe.name = 'formsubmit-iframe';
+            hiddenIframe.style.display = 'none';
+            document.body.appendChild(hiddenIframe);
         }
+
+        let hiddenForm = document.getElementById('formsubmit-form');
+        if (hiddenForm) hiddenForm.remove();
+
+        hiddenForm = document.createElement('form');
+        hiddenForm.id = 'formsubmit-form';
+        hiddenForm.action = 'https://formsubmit.co/gabrielrf19@gmail.com';
+        hiddenForm.method = 'POST';
+        hiddenForm.target = 'formsubmit-iframe';
+        hiddenForm.enctype = 'multipart/form-data';
+        hiddenForm.style.display = 'none';
+
+        const addInput = (name, val) => {
+            const inp = document.createElement('input');
+            inp.type = 'hidden';
+            inp.name = name;
+            inp.value = val;
+            hiddenForm.appendChild(inp);
+        };
+
+        addInput('name', formData.name);
+        addInput('email', formData.email);
+        addInput('_subject', formData.subject);
+        addInput('message', formData.message);
+        addInput('_captcha', 'false');
+        addInput('_template', 'table');
+
+        if (formData.files && formData.files.length > 0) {
+            const fileData = new DataTransfer();
+            formData.files.forEach(f => fileData.items.add(f));
+            const fileInp = document.createElement('input');
+            fileInp.type = 'file';
+            fileInp.name = 'attachment';
+            fileInp.files = fileData.files;
+            hiddenForm.appendChild(fileInp);
+        }
+
+        document.body.appendChild(hiddenForm);
+
+        setTimeout(() => {
+            hiddenForm.submit();
+            setTimeout(() => {
+                if (formStep) formStep.style.display = 'none';
+                if (successStep) successStep.style.display = 'block';
+                if (closeBtn) closeBtn.style.display = 'none';
+            }, 600);
+        }, 100);
     }
 
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', updateMobileKeyboardOffset);
-        window.visualViewport.addEventListener('scroll', updateMobileKeyboardOffset);
-    }
+    if (actionBtn) actionBtn.addEventListener('click', handleSubmitForm);
+    if (closeBtn) closeBtn.addEventListener('click', closeMailbox);
 
-    const mailboxInputs = [inputField, subjectInput, messageTextarea].filter(Boolean);
-    mailboxInputs.forEach(elem => {
-        elem.addEventListener('focus', triggerKeyboardOffsetLoop);
-        elem.addEventListener('click', triggerKeyboardOffsetLoop);
-        elem.addEventListener('input', updateMobileKeyboardOffset);
-        elem.addEventListener('blur', () => {
-            if (window.innerWidth <= 840) {
-                setTimeout(() => {
-                    const active = document.activeElement;
-                    if (modalContainer && active !== inputField && active !== subjectInput && active !== messageTextarea) {
-                        modalContainer.style.transform = 'none';
-                    }
-                }, 150);
-            }
-        });
+    const thanksCloseBtn = document.getElementById('btn-mailbox-thanks-close');
+    if (thanksCloseBtn) thanksCloseBtn.addEventListener('click', closeMailbox);
+
+    [btnContactHeader, btnFooterCta, btnHeroContactMobile, btnFooterCtaMobile].forEach(btn => {
+        if (btn) {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openMailbox();
+            });
+        }
     });
 
-    function updateStepView() {
-        if (emailError) emailError.style.display = 'none';
-        if (closeBtn) closeBtn.style.display = 'block';
-        
-        if (currentStep === 1) {
-            singleInputStep.style.display = 'block';
-            step3Composer.style.display = 'none';
-            labelBadge.textContent = 'Seu nome:';
-            inputField.type = 'text';
-            inputField.value = formData.name;
-            backBtn.style.display = 'none';
-            actionTxt.textContent = 'Próximo';
-            actionIcon.innerHTML = '▶';
-            setTimeout(() => {
-                if (inputField) inputField.focus({ preventScroll: true });
-                triggerKeyboardOffsetLoop();
-            }, 50);
-        } else if (currentStep === 2) {
-            singleInputStep.style.display = 'block';
-            step3Composer.style.display = 'none';
-            labelBadge.textContent = 'Seu e-mail:';
-            inputField.type = 'email';
-            inputField.value = formData.email;
-            backBtn.style.display = 'inline-flex';
-            actionTxt.textContent = 'Próximo';
-            actionIcon.innerHTML = '▶';
-            setTimeout(() => {
-                if (inputField) inputField.focus({ preventScroll: true });
-                triggerKeyboardOffsetLoop();
-            }, 50);
-        } else if (currentStep === 3) {
-            singleInputStep.style.display = 'none';
-            step3Composer.style.display = 'block';
-            backBtn.style.display = 'inline-flex';
-            actionTxt.textContent = 'Enviar';
-            actionIcon.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
-            setTimeout(() => {
-                if (subjectInput) subjectInput.focus({ preventScroll: true });
-                triggerKeyboardOffsetLoop();
-            }, 50);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay && overlay.classList.contains('active')) {
+            closeMailbox();
         }
-    }
+    });
 
-    function handleNextStep() {
-        if (currentStep === 1) {
-            const val = inputField.value.trim();
-            if (!val || val.length < 3) {
-                inputField.style.borderColor = '#FF3300';
-                if (emailError) {
-                    emailError.textContent = 'O nome precisa ter pelo menos 3 caracteres.';
-                    emailError.style.display = 'block';
-                }
-                setTimeout(() => {
-                    inputField.style.borderColor = 'var(--text-color)';
-                    if (emailError) emailError.style.display = 'none';
-                }, 2500);
-                return;
-            }
-            formData.name = val;
-            currentStep = 2;
-            updateStepView();
-        } else if (currentStep === 2) {
-            const emailVal = inputField.value.trim();
-            if (!validateEmail(emailVal)) {
-                if (emailError) {
-                    emailError.textContent = 'Este e-mail não é válido. Por favor, tente novamente.';
-                    emailError.style.display = 'block';
-                }
-                inputField.style.borderColor = '#FF3300';
-                return;
-            }
-            formData.email = emailVal;
-            currentStep = 3;
-            updateStepView();
-        } else if (currentStep === 3) {
-            const subjVal = subjectInput.value.trim();
-            const msgVal = messageTextarea.value.trim();
-            if (!msgVal) {
-                messageTextarea.style.borderColor = '#FF3300';
-                setTimeout(() => messageTextarea.style.borderColor = 'var(--text-color)', 1500);
-                return;
-            }
-            formData.subject = subjVal || `Contato do Portfólio - ${formData.name}`;
-            formData.message = msgVal;
-            
-            actionBtn.disabled = true;
-            actionTxt.textContent = 'Enviando...';
-            actionIcon.innerHTML = '<span class="mailbox-spinner"></span>';
-            
-            let hiddenIframe = document.getElementById('formsubmit-iframe');
-            if (!hiddenIframe) {
-                hiddenIframe = document.createElement('iframe');
-                hiddenIframe.id = 'formsubmit-iframe';
-                hiddenIframe.name = 'formsubmit-iframe';
-                hiddenIframe.style.display = 'none';
-                document.body.appendChild(hiddenIframe);
-            }
-
-            let hiddenForm = document.getElementById('formsubmit-form');
-            if (hiddenForm) hiddenForm.remove();
-
-            hiddenForm = document.createElement('form');
-            hiddenForm.id = 'formsubmit-form';
-            hiddenForm.action = 'https://formsubmit.co/gabrielrf19@gmail.com';
-            hiddenForm.method = 'POST';
-            hiddenForm.target = 'formsubmit-iframe';
-            hiddenForm.enctype = 'multipart/form-data';
-            hiddenForm.style.display = 'none';
-
-            const addInput = (name, val) => {
-                const inp = document.createElement('input');
-                inp.type = 'hidden';
-                inp.name = name;
-                inp.value = val;
-                hiddenForm.appendChild(inp);
-            };
-
-            addInput('name', formData.name);
-            addInput('email', formData.email);
-            addInput('_subject', formData.subject);
-            addInput('message', formData.message);
-            addInput('_captcha', 'false');
-            addInput('_template', 'box');
-
-            if (formData.files && formData.files.length > 0) {
-                formData.files.forEach((file, index) => {
-                    const fileInp = document.createElement('input');
-                    fileInp.type = 'file';
-                    fileInp.name = `attachment${index + 1}`;
-                    
-                    try {
-                        const dt = new DataTransfer();
-                        dt.items.add(file);
-                        fileInp.files = dt.files;
-                        hiddenForm.appendChild(fileInp);
-                    } catch(e) {
-                        console.log('DataTransfer fallback:', e);
-                    }
-                });
-            }
-
-            document.body.appendChild(hiddenForm);
-            hiddenForm.submit();
-
-            setTimeout(() => {
-                if (closeBtn) closeBtn.style.display = 'none';
-                if (modalContainer) {
-                    modalContainer.style.maxWidth = '90vw';
-                    modalContainer.style.alignItems = 'center';
-                }
-                formStep.style.display = 'none';
-                successStep.style.display = 'flex';
-                actionBtn.disabled = false;
-            }, 1500);
-        }
-    }
-
-    function handlePrevStep() {
-        if (currentStep > 1) {
-            currentStep--;
-            updateStepView();
-        }
-    }
-
-    if (inputField) {
-        inputField.addEventListener('input', () => {
-            if (currentStep === 2) {
-                if (validateEmail(inputField.value)) {
-                    if (emailError) emailError.style.display = 'none';
-                    inputField.style.borderColor = 'var(--text-color)';
-                }
-            }
-        });
-    }
-
+    // File upload
     if (btnAttach && fileInput) {
         btnAttach.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', () => {
-            const files = Array.from(fileInput.files);
-            files.forEach(f => {
-                formData.files.push(f);
-                const chip = document.createElement('div');
-                chip.className = 'mailbox-file-chip';
-                chip.innerHTML = `📎 <span>${f.name}</span>`;
-                attachedFilesList.appendChild(chip);
+        fileInput.addEventListener('change', (e) => {
+            const newFiles = Array.from(e.target.files);
+            formData.files = [...formData.files, ...newFiles];
+            renderAttachedFiles();
+        });
+    }
+
+    function renderAttachedFiles() {
+        if (!attachedFilesList) return;
+        attachedFilesList.innerHTML = '';
+        formData.files.forEach((f, idx) => {
+            const chip = document.createElement('div');
+            chip.className = 'mailbox-file-chip';
+            chip.innerHTML = `<span>${f.name}</span><button type="button" data-idx="${idx}">✕</button>`;
+            chip.querySelector('button').addEventListener('click', (e) => {
+                const removeIdx = parseInt(e.target.getAttribute('data-idx'));
+                formData.files.splice(removeIdx, 1);
+                renderAttachedFiles();
             });
+            attachedFilesList.appendChild(chip);
         });
     }
 
-    if (btnLink && messageTextarea) {
-        btnLink.addEventListener('click', () => {
-            const url = prompt('Digite o endereço da URL (ex: https://exemplo.com):');
-            if (url) {
-                const selected = messageTextarea.value.substring(messageTextarea.selectionStart, messageTextarea.selectionEnd) || 'Link';
-                const linkMarkdown = ` [${selected}](${url}) `;
-                const start = messageTextarea.selectionStart;
-                const end = messageTextarea.selectionEnd;
-                messageTextarea.value = messageTextarea.value.substring(0, start) + linkMarkdown + messageTextarea.value.substring(end);
-            }
-        });
-    }
-
+    // Emoji picker
     if (btnEmoji && emojiPicker) {
         btnEmoji.addEventListener('click', (e) => {
             e.stopPropagation();
-            emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'grid' : 'none';
+            const isOpen = emojiPicker.style.display === 'grid' || emojiPicker.style.display === 'flex';
+            emojiPicker.style.display = isOpen ? 'none' : 'grid';
         });
-
         document.addEventListener('click', (e) => {
-            if (!emojiPicker.contains(e.target) && e.target !== btnEmoji) {
+            if (emojiPicker && !emojiPicker.contains(e.target) && e.target !== btnEmoji) {
                 emojiPicker.style.display = 'none';
             }
         });
 
-        emojiPicker.querySelectorAll('.emoji-item').forEach(el => {
-            el.addEventListener('click', () => {
-                messageTextarea.value += el.textContent;
-                messageTextarea.focus();
+        emojiPicker.querySelectorAll('.emoji-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (messageTextarea) {
+                    messageTextarea.value += item.textContent;
+                    messageTextarea.focus();
+                }
+                emojiPicker.style.display = 'none';
             });
         });
     }
+}
 
-    if (fmtBold && messageTextarea) {
-        fmtBold.addEventListener('click', () => {
-            const start = messageTextarea.selectionStart;
-            const end = messageTextarea.selectionEnd;
-            const sel = messageTextarea.value.substring(start, end) || 'texto em negrito';
-            messageTextarea.value = messageTextarea.value.substring(0, start) + `**${sel}**` + messageTextarea.value.substring(end);
-        });
-    }
-    if (fmtItalic && messageTextarea) {
-        fmtItalic.addEventListener('click', () => {
-            const start = messageTextarea.selectionStart;
-            const end = messageTextarea.selectionEnd;
-            const sel = messageTextarea.value.substring(start, end) || 'texto em itálico';
-            messageTextarea.value = messageTextarea.value.substring(0, start) + `*${sel}*` + messageTextarea.value.substring(end);
-        });
-    }
-    if (fmtUnderline && messageTextarea) {
-        fmtUnderline.addEventListener('click', () => {
-            const start = messageTextarea.selectionStart;
-            const end = messageTextarea.selectionEnd;
-            const sel = messageTextarea.value.substring(start, end) || 'texto sublinhado';
-            messageTextarea.value = messageTextarea.value.substring(0, start) + `<u>${sel}</u>` + messageTextarea.value.substring(end);
-        });
-    }
+// --- MOBILE BURGER DRAWER EVENT HANDLERS ---
+function initMobileMenuDrawer() {
+    const btnMobileBurger = document.getElementById('btn-mobile-burger');
+    const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+    const btnMobileNavClose = document.getElementById('btn-mobile-nav-close');
 
-    if (btnContactHeader) {
-        btnContactHeader.addEventListener('click', (e) => {
+    if (btnMobileBurger && mobileNavOverlay) {
+        btnMobileBurger.addEventListener('click', (e) => {
             e.preventDefault();
-            openMailbox();
+            e.stopPropagation();
+            mobileNavOverlay.classList.add('active');
+            mobileNavOverlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
         });
     }
 
-    if (btnFooterCta) {
-        btnFooterCta.addEventListener('click', (e) => {
+    if (btnMobileNavClose && mobileNavOverlay) {
+        btnMobileNavClose.addEventListener('click', (e) => {
             e.preventDefault();
-            openMailbox();
+            mobileNavOverlay.classList.remove('active');
+            mobileNavOverlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
         });
     }
 
-    const btnFooterCtaMobile = document.getElementById('btn-footer-cta-mobile');
-    if (btnFooterCtaMobile) {
-        btnFooterCtaMobile.addEventListener('click', (e) => {
-            e.preventDefault();
-            openMailbox();
-        });
-    }
+    document.querySelectorAll('.mobile-nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
 
-    const thanksCloseBtn = document.getElementById('btn-mailbox-thanks-close');
+            if (mobileNavOverlay) {
+                mobileNavOverlay.classList.remove('active');
+                mobileNavOverlay.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                document.documentElement.style.overflow = '';
+            }
 
-    if (closeBtn) closeBtn.addEventListener('click', closeMailbox);
-    if (thanksCloseBtn) thanksCloseBtn.addEventListener('click', closeMailbox);
-    if (backBtn) backBtn.addEventListener('click', handlePrevStep);
-    if (actionBtn) actionBtn.addEventListener('click', handleNextStep);
-
-    if (inputField) {
-        inputField.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
+            if (href === '#hero' || link.id === 'mobile-nav-home' || href === '/') {
                 e.preventDefault();
-                handleNextStep();
+                curScroll = 0;
+                tarScroll = 0;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (typeof lenis !== 'undefined' && lenis) {
+                    lenis.scrollTo(0);
+                }
+            } else if (href && href.startsWith('#')) {
+                const targetEl = document.querySelector(href);
+                if (targetEl) {
+                    e.preventDefault();
+                    const targetPos = targetEl.offsetTop;
+                    curScroll = targetPos;
+                    tarScroll = targetPos;
+                    window.scrollTo({ top: targetPos, behavior: 'smooth' });
+                    if (typeof lenis !== 'undefined' && lenis) {
+                        lenis.scrollTo(targetPos);
+                    }
+                }
             }
         });
-    }
-
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && overlay.classList.contains('active')) {
-            closeMailbox();
-        }
     });
 }
 
-// Initialize Chroma Shader, ASCII Shader, Footer CTA, Mailbox & Initial Text State
 function initApp() {
     initChromaShader();
     initAsciiShader();
     initFooterCtaShutter();
     initMailboxOverlay();
+    initMobileMenuDrawer();
     updateLanguageTexts();
     updateThemeAssets();
 }

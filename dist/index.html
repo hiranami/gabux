@@ -23,9 +23,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
 
-  <script type="module" crossorigin src="/assets/main-ConMy3Mq.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/style-feYqWfAC.js">
-  <link rel="stylesheet" crossorigin href="/assets/style-CtKw3lL5.css">
+  <script type="module" crossorigin src="/assets/main-CfbULNYw.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/style-DEq6joC6.js">
+  <link rel="stylesheet" crossorigin href="/assets/style-CsA-NFRV.css">
 </head>
 <body class="dark-theme">
 
@@ -36,73 +36,69 @@
         <!-- CLOSE BUTTON AT TOP RIGHT OF INPUT ROW -->
         <button class="mailbox-close-btn" id="btn-mailbox-close" title="Fechar (Esc)">✕</button>
 
-        <!-- MULTI-STEP FORM BODY -->
+        <!-- UNIFIED SINGLE-STEP FORM BODY -->
         <div id="mailbox-form-step" style="width: 100%;">
-            
-            <!-- STEPS 1 & 2: SINGLE LINE INPUT BLOCK (NAME / EMAIL) -->
-            <div id="mailbox-single-input-step">
-                <div class="mailbox-input-block">
-                    <div class="mailbox-label-badge" id="mailbox-label">Seu nome:</div>
-                    <input type="text" class="mailbox-input-field" id="mailbox-input" placeholder="" autocomplete="off">
+            <!-- ROW 1: SEU NOME -->
+            <div class="mailbox-input-block">
+                <div class="mailbox-label-badge" id="mailbox-label-name">Seu nome</div>
+                <input type="text" class="mailbox-input-field" id="mailbox-name-input" placeholder="Seu nome completo" autocomplete="off">
+            </div>
+
+            <!-- ROW 2: SEU E-MAIL -->
+            <div class="mailbox-input-block" style="margin-top: -1px;">
+                <div class="mailbox-label-badge" id="mailbox-label-email">Seu e-mail</div>
+                <input type="email" class="mailbox-input-field" id="mailbox-email-input" placeholder="seuemail@dominio.com" autocomplete="off">
+            </div>
+
+            <!-- REAL-TIME INLINE EMAIL VALIDATION ERROR MESSAGE -->
+            <div id="mailbox-email-error" class="mailbox-email-error" style="display: none;">
+                Por favor, preencha todos os campos corretamente.
+            </div>
+
+            <!-- ROW 3: ASSUNTO -->
+            <div class="mailbox-input-block" style="margin-top: -1px;">
+                <div class="mailbox-label-badge" id="mailbox-label-subject">Assunto</div>
+                <input type="text" class="mailbox-input-field" id="mailbox-subject-input" placeholder="Assunto da mensagem" autocomplete="off">
+            </div>
+
+            <!-- ROW 4: MESSAGE TEXTAREA COMPOSER BOX -->
+            <div class="mailbox-composer-box" style="margin-top: -1px;">
+                <textarea class="mailbox-textarea" id="mailbox-message-textarea" placeholder="Escreva sua mensagem aqui..."></textarea>
+                
+                <!-- TOOLBAR AT BOTTOM OF TEXTAREA COMPOSER BOX -->
+                <div class="mailbox-composer-toolbar">
+                    <div class="mailbox-toolbar-icons">
+                        <button class="mailbox-tool-icon-btn" id="btn-mailbox-attach" type="button" title="Anexar arquivo">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                        </button>
+                        <input type="file" id="mailbox-file-input" multiple style="display: none;">
+
+                        <button class="mailbox-tool-icon-btn" id="btn-mailbox-link" type="button" title="Inserir link">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                        </button>
+
+                        <button class="mailbox-tool-icon-btn" id="btn-mailbox-emoji" type="button" title="Inserir emoji">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                        </button>
+                    </div>
                 </div>
-                <!-- REAL-TIME INLINE EMAIL VALIDATION ERROR MESSAGE -->
-                <div id="mailbox-email-error" class="mailbox-email-error" style="display: none;">
-                    Este e-mail não é válido. Por favor, tente novamente.
+
+                <!-- ATTACHED FILES LIST CONTAINER -->
+                <div id="mailbox-attached-files-list" class="mailbox-attached-files"></div>
+
+                <!-- EMOJI POPUP GRID CONTAINER -->
+                <div id="mailbox-emoji-picker" class="mailbox-emoji-popover" style="display: none;">
+                    <span class="emoji-item">😀</span><span class="emoji-item">😊</span><span class="emoji-item">🚀</span>
+                    <span class="emoji-item">✨</span><span class="emoji-item">👍</span><span class="emoji-item">💼</span>
+                    <span class="emoji-item">🎨</span><span class="emoji-item">🔥</span><span class="emoji-item">💡</span>
+                    <span class="emoji-item">❤️</span><span class="emoji-item">🎯</span><span class="emoji-item">⚡</span>
                 </div>
             </div>
 
-            <!-- STEP 3: FULL COMPOSER MODAL (FIGMA SCREENSHOT media__1785358900834.jpg) -->
-            <div id="mailbox-step3-composer" style="display: none; width: 100%;">
-                <!-- ROW 1: ASSUNTO BADGE + INPUT -->
-                <div class="mailbox-input-block" style="margin-bottom: -1px;">
-                    <div class="mailbox-label-badge" style="padding: 8px 16px; font-size: 14px;">Assunto</div>
-                    <input type="text" class="mailbox-input-field" id="mailbox-subject-input" placeholder="" autocomplete="off" style="padding: 8px 14px; font-size: 14px;">
-                </div>
-
-                <!-- ROW 2: LARGE MESSAGE TEXTAREA COMPOSER BOX WITH CONTINUOUS BORDER -->
-                <div class="mailbox-composer-box">
-                    <textarea class="mailbox-textarea" id="mailbox-message-textarea" placeholder="Escreva sua mensagem aqui..."></textarea>
-                    
-                    <!-- TOOLBAR AT BOTTOM OF TEXTAREA COMPOSER BOX (FIGMA SPECS media__1785358900871.jpg & media__1785358900895.jpg) -->
-                    <div class="mailbox-composer-toolbar">
-                        <!-- LEFT ACTION ICONS: ATTACHMENT (📎), LINK (🔗), EMOJI (😊) -->
-                        <div class="mailbox-toolbar-icons">
-                            <button class="mailbox-tool-icon-btn" id="btn-mailbox-attach" type="button" title="Anexar arquivo">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                            </button>
-                            <input type="file" id="mailbox-file-input" multiple style="display: none;">
-
-                            <button class="mailbox-tool-icon-btn" id="btn-mailbox-link" type="button" title="Inserir link">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                            </button>
-
-                            <button class="mailbox-tool-icon-btn" id="btn-mailbox-emoji" type="button" title="Inserir emoji">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- ATTACHED FILES LIST CONTAINER -->
-                    <div id="mailbox-attached-files-list" class="mailbox-attached-files"></div>
-
-                    <!-- EMOJI POPUP GRID CONTAINER -->
-                    <div id="mailbox-emoji-picker" class="mailbox-emoji-popover" style="display: none;">
-                        <span class="emoji-item">😀</span><span class="emoji-item">😊</span><span class="emoji-item">🚀</span>
-                        <span class="emoji-item">✨</span><span class="emoji-item">👍</span><span class="emoji-item">💼</span>
-                        <span class="emoji-item">🎨</span><span class="emoji-item">🔥</span><span class="emoji-item">💡</span>
-                        <span class="emoji-item">❤️</span><span class="emoji-item">🎯</span><span class="emoji-item">⚡</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ACTION BUTTON ROW BELOW INPUT (VOLTAR & PRÓXIMO / ENVIAR) -->
-            <div class="mailbox-btn-row">
-                <!-- VOLTAR (BACK) BUTTON (TEXT ONLY, UNDERLINED, HOVER EXPANSION, VISIBLE FROM STEP 2 ONWARDS) -->
-                <button class="mailbox-btn-back" id="btn-mailbox-back" type="button" style="display: none;">Voltar</button>
-
-                <!-- NEXT / SUBMIT BUTTON -->
+            <!-- ACTION BUTTON ROW BELOW INPUT (SINGLE ENVIAR BUTTON) -->
+            <div class="mailbox-btn-row" style="justify-content: flex-end; margin-top: 16px;">
                 <button class="mailbox-btn-action" id="btn-mailbox-action" type="button">
-                    <span id="txt-mailbox-action">Próximo</span>
+                    <span id="txt-mailbox-action">Enviar</span>
                     <span id="icon-mailbox-action" style="font-size: 11px;">▶</span>
                 </button>
             </div>
@@ -111,18 +107,16 @@
         <!-- UNIFIED 2-ROW THANK YOU OBRIGADO! SCREEN -->
         <div id="mailbox-success-step" class="mailbox-thanks-viewport" style="display: none;">
             <div class="mailbox-thanks-wrapper">
-                <!-- ROW 1: ENVIADO + CLOSE BUTTON ✕ FLUSH TO RED LINES -->
                 <div class="mailbox-thanks-top-line">
                     <span class="mailbox-thanks-sub">Envio concluído.</span>
                     <button class="mailbox-thanks-close-btn" id="btn-mailbox-thanks-close" title="Fechar (Esc)">✕</button>
                 </div>
-                <!-- ROW 2: OBRIGADO! TITLE -->
                 <h1 class="mailbox-thanks-h1">OBRIGADO!</h1>
             </div>
         </div>
     </div>
 </div>
-    </div>
+</div>
 </div>
 
 <!-- PRELOADER SCREEN (MAX 2 SECONDS WITH DEVICE I18N & PIXEL DITHER PROGRESS BAR) -->
@@ -133,106 +127,73 @@
     </div>
 </div>
 
-<!-- FOLD 1 & FOLD 2: HERO SECTION -->
-<div class="scroll-wrapper">
-    <header id="hero">
-        <div class="grid-bg"></div>
-        <canvas id="canvas"></canvas>
-        <div class="vignette"></div>
+<!-- HERO SECTION (SINGLE FOLD WITH H1 + SUBTITLE) -->
+<header id="hero">
+    <div class="grid-bg"></div>
+    <canvas id="canvas"></canvas>
+    <div class="vignette"></div>
 
-        <div class="hero-titles-layer">
-            <div id="sub-title-text">Olá, sou o Gabriel</div>
-            <h1 id="main-title-text">
-                <span id="title-line-1">UX/UI Designer Jr e</span><br>
-                <span id="title-em" class="editorial-em">explorador</span>
-                <span id="title-line-2-post">de inovações</span>
-            </h1>
-            <!-- HERO MOBILE CONTACT BUTTON (VISIBLE ONLY < 768px, EXACT 20px BELOW H1 TITLE) -->
-            <a href="javascript:void(0)" class="hero-mobile-contact-btn" id="btn-hero-contact-mobile">
-                <span class="shimmer-text" id="txt-contact-hero-mobile">Fale comigo</span>
-            </a>
-        </div>
-    </header>
+    <div class="hero-titles-layer">
+        <div id="sub-title-text">Olá, me chamo Gabriel, sou</div>
+        <h1 id="main-title-text">
+            <span id="title-line-1">UX/UI Designer e transformo ideias complexas em interfaces </span>
+            <span id="title-em" class="editorial-em">funcionais e escaláveis</span>
+            <span id="title-line-2-post"> de alta conversão com Figma e Inteligência Artificial.</span>
+        </h1>
+        <!-- HERO MOBILE CONTACT BUTTON (VISIBLE ONLY < 768px, EXACT 20px BELOW H1 TITLE) -->
+        <a href="javascript:void(0)" class="hero-mobile-contact-btn" id="btn-hero-contact-mobile">
+            <span class="shimmer-text" id="txt-contact-hero-mobile">Fale comigo</span>
+        </a>
+    </div>
+</header>
 
-    <nav class="fixed-header" id="header">
-        <!-- LEFT GROUP: Início, Sobre Mim, O que entrego, Theme Lantern Toggle Button with 12px gap -->
-        <div class="nav-group-left">
-            <a href="#hero" class="nav-item" id="nav-home">Início</a>
-            <a href="#sobre-mim" class="nav-item" id="nav-about">Sobre Mim</a>
-            <a href="#entrego" class="nav-item" id="nav-services">O que entrego</a>
-            
-            <!-- THEME TOGGLE PILL BUTTON (FIGMA SPEC MATCHING theme-toggle-dark / theme-toggle-light) -->
-            <button class="bttn-theme-pill" id="btn-theme" title="Alternar tema (Dark / Light)" aria-label="Alternar tema">
-                <div class="theme-pill-track">
-                    <div class="theme-slot left-slot">
-                        <img src="/assets/icon-light-theme-CTpibAt4.svg" alt="Sun" class="theme-icon icon-sun">
-                        <img src="data:image/svg+xml,%3csvg%20width='16'%20height='16'%20viewBox='0%200%2016%2016'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M8.00078%204.8C9.77145%204.8%2011.2008%206.22934%2011.2008%208C11.2008%209.77067%209.77145%2011.2%208.00078%2011.2C6.23011%2011.2%204.80078%209.77067%204.80078%208C4.80078%206.22934%206.23011%204.8%208.00078%204.8ZM8.00078%206.4C7.11545%206.4%206.40078%207.11467%206.40078%208C6.40078%208.88534%207.11545%209.6%208.00078%209.6C8.88611%209.6%209.60078%208.88534%209.60078%208C9.60078%207.11467%208.88611%206.4%208.00078%206.4Z'%20fill='%230A0A0A'/%3e%3c/svg%3e" alt="Dot" class="theme-icon icon-dot-left">
-                    </div>
-                    <div class="theme-slot right-slot">
-                        <img src="data:image/svg+xml,%3csvg%20width='17'%20height='17'%20viewBox='0%200%2017%2017'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3crect%20x='0.25'%20y='0.25'%20width='16.5'%20height='16.5'%20rx='8.25'%20stroke='%230A0A0A'%20stroke-width='0.5'/%3e%3cpath%20opacity='0.5'%20fill-rule='evenodd'%20clip-rule='evenodd'%20d='M15.1673%208.50001C15.1673%2012.182%2012.1827%2015.1667%208.50066%2015.1667C7.7467%2015.1674%206.99809%2015.0403%206.28666%2014.7907C5.98722%2014.0641%205.83342%2013.2858%205.83399%2012.5C5.83216%2011.0774%206.33752%209.70083%207.25932%208.61734C7.65743%209.1979%208.19098%209.67273%208.81382%2010.0008C9.43666%2010.3288%2010.13%2010.5001%2010.834%2010.5C11.5807%2010.5001%2012.3148%2010.3073%2012.9651%209.94015C13.6153%209.57303%2014.1597%209.04411%2014.5453%208.40467C14.7053%208.14067%2015.1673%208.19134%2015.1673%208.50001Z'%20fill='%230A0A0A'/%3e%3cpath%20d='M1.83398%208.49999C1.83398%2011.406%203.69332%2013.8773%206.28665%2014.79C5.9873%2014.0637%205.8335%2013.2856%205.83398%2012.5C5.83398%2011.0193%206.37065%209.66399%207.25932%208.61733C6.76373%207.89629%206.49914%207.04159%206.50065%206.16666C6.50054%205.41993%206.69339%204.68584%207.06051%204.03559C7.42763%203.38534%207.95655%202.84099%208.59598%202.45533C8.86065%202.29533%208.80932%201.83333%208.50065%201.83333C4.81865%201.83333%201.83398%204.81799%201.83398%208.49999Z'%20fill='%230A0A0A'/%3e%3c/svg%3e" alt="Moon" class="theme-icon icon-dark-theme">
-                        <img src="data:image/svg+xml,%3csvg%20width='16'%20height='16'%20viewBox='0%200%2016%2016'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M8.00078%204.8C9.77145%204.8%2011.2008%206.22934%2011.2008%208C11.2008%209.77067%209.77145%2011.2%208.00078%2011.2C6.23011%2011.2%204.80078%209.77067%204.80078%208C4.80078%206.22934%206.23011%204.8%208.00078%204.8ZM8.00078%206.4C7.11545%206.4%206.40078%207.11467%206.40078%208C6.40078%208.88534%207.11545%209.6%208.00078%209.6C8.88611%209.6%209.60078%208.88534%209.60078%208C9.60078%207.11467%208.88611%206.4%208.00078%206.4Z'%20fill='%230A0A0A'/%3e%3c/svg%3e" alt="Dot" class="theme-icon icon-dot-right">
-                    </div>
+<nav class="fixed-header" id="header">
+    <!-- LEFT GROUP: Início, Sobre Mim, O que entrego, Theme Lantern Toggle Button with 12px gap -->
+    <div class="nav-group-left">
+        <a href="#hero" class="nav-item" id="nav-home">Início</a>
+        <a href="#sobre-mim" class="nav-item" id="nav-about">Sobre Mim</a>
+        <a href="#entrego" class="nav-item" id="nav-services">O que entrego</a>
+        
+        <!-- THEME TOGGLE PILL BUTTON (FIGMA SPEC MATCHING theme-toggle-dark / theme-toggle-light) -->
+        <button class="bttn-theme-pill" id="btn-theme" title="Alternar tema (Dark / Light)" aria-label="Alternar tema">
+            <div class="theme-pill-track">
+                <div class="theme-slot left-slot">
+                    <img src="/assets/icon-light-theme-CTpibAt4.svg" alt="Sun" class="theme-icon icon-sun">
+                    <img src="data:image/svg+xml,%3csvg%20width='16'%20height='16'%20viewBox='0%200%2016%2016'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M8.00078%204.8C9.77145%204.8%2011.2008%206.22934%2011.2008%208C11.2008%209.77067%209.77145%2011.2%208.00078%2011.2C6.23011%2011.2%204.80078%209.77067%204.80078%208C4.80078%206.22934%206.23011%204.8%208.00078%204.8ZM8.00078%206.4C7.11545%206.4%206.40078%207.11467%206.40078%208C6.40078%208.88534%207.11545%209.6%208.00078%209.6C8.88611%209.6%209.60078%208.88534%209.60078%208C9.60078%207.11467%208.88611%206.4%208.00078%206.4Z'%20fill='%230A0A0A'/%3e%3c/svg%3e" alt="Dot" class="theme-icon icon-dot-left">
                 </div>
-            </button>
-        </div>
-
-        <!-- RIGHT GROUP: Projetos, Currículo + icon-download 16x16, Fale comigo (Radius 0px) -->
-        <div class="nav-group-right">
-            <a href="#projetos" class="nav-item" id="nav-projects">Projetos</a>
-            
-            <!-- CURRICULO LINK WITH 16x16 DOWNLOAD ICON TO RIGHT -->
-            <a href="files/Curriculo/pt-br/Curriculo%20Gabriel%20Fonseca.pdf" download="Curriculo Gabriel Fonseca.pdf" target="_blank" class="curriculo-link" id="link-cv">
-                <span id="txt-cv">Currículo</span>
-                <img id="img-cv" src="data:image/svg+xml,%3csvg%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M12%2016L7%2011L8.4%209.55L11%2012.15V4H13V12.15L15.6%209.55L17%2011L12%2016Z'%20fill='%23F6FBFF'/%3e%3cpath%20d='M4.588%2019.413C4.97933%2019.8043%205.45%2020%206%2020H18C18.5507%2020.0007%2019.0217%2019.805%2019.413%2019.413C19.8043%2019.021%2020%2018.55%2020%2018V15H18V18H6V15H4V18C4.00067%2018.5507%204.19667%2019.0217%204.588%2019.413Z'%20fill='%23F6FBFF'%20fill-opacity='0.5'/%3e%3c/svg%3e" alt="Download">
-            </a>
-
-            <!-- FALE COMIGO BUTTON (CORNER RADIUS: 0px WITH FIXED HOVER VISIBILITY) -->
-            <a href="javascript:void(0)" class="btn-fale-comigo" id="btn-contact">
-                <span id="txt-contact" class="shimmer-text">Fale comigo</span>
-            </a>
-
-            <!-- MOBILE HAMBURGER MENU BUTTON (VISIBLE ONLY <= 768px) -->
-            <button class="mobile-menu-toggle" id="btn-mobile-menu" aria-label="Abrir menu de navegação">
-                <img id="img-mobile-menu" src="data:image/svg+xml,%3csvg%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M3%2018V16H21V18H3ZM3%208V6H21V8H3Z'%20fill='%23F6FBFF'/%3e%3cpath%20d='M3%2011V13H21V11H3Z'%20fill='%23F6FBFF'%20fill-opacity='0.5'/%3e%3c/svg%3e" alt="Menu">
-            </button>
-        </div>
-    </nav>
-
-    <!-- MOBILE NAVIGATION OVERLAY DRAWER -->
-    <div id="mobile-nav-overlay" class="mobile-nav-overlay" aria-hidden="true">
-        <div class="mobile-nav-drawer">
-            <div class="mobile-nav-links">
-                <a href="#hero" class="mobile-nav-link" id="mobile-nav-home">Início</a>
-                <a href="#sobre-mim" class="mobile-nav-link" id="mobile-nav-about">Sobre Mim</a>
-                <a href="#entrego" class="mobile-nav-link" id="mobile-nav-services">O que entrego</a>
-                <a href="#projetos" class="mobile-nav-link" id="mobile-nav-projects">Projetos</a>
-                <a href="files/Curriculo/pt-br/Curriculo%20Gabriel%20Fonseca.pdf" download="Curriculo Gabriel Fonseca.pdf" target="_blank" class="mobile-nav-link mobile-cv-link" id="mobile-link-cv">
-                    <span class="mobile-cv-wrapper">
-                        <span id="mobile-txt-cv">Currículo</span>
-                        <img id="mobile-img-cv" src="data:image/svg+xml,%3csvg%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M12%2016L7%2011L8.4%209.55L11%2012.15V4H13V12.15L15.6%209.55L17%2011L12%2016Z'%20fill='%23F6FBFF'/%3e%3cpath%20d='M4.588%2019.413C4.97933%2019.8043%205.45%2020%206%2020H18C18.5507%2020.0007%2019.0217%2019.805%2019.413%2019.413C19.8043%2019.021%2020%2018.55%2020%2018V15H18V18H6V15H4V18C4.00067%2018.5507%204.19667%2019.0217%204.588%2019.413Z'%20fill='%23F6FBFF'%20fill-opacity='0.5'/%3e%3c/svg%3e" alt="Download" class="mobile-cv-icon">
-                    </span>
-                </a>
-                <!-- CLOSE BUTTON PLACED BELOW CURRÍCULO BUTTON, CENTERED WITH X ICON -->
-                <button class="mobile-close-nav-btn" id="btn-mobile-nav-close" title="Fechar menu">
-                    <span id="mobile-txt-close">Fechar</span>
-                    <span class="mobile-close-x-icon">✕</span>
-                </button>
+                <div class="theme-slot right-slot">
+                    <img src="data:image/svg+xml,%3csvg%20width='17'%20height='17'%20viewBox='0%200%2017%2017'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3crect%20x='0.25'%20y='0.25'%20width='16.5'%20height='16.5'%20rx='8.25'%20stroke='%230A0A0A'%20stroke-width='0.5'/%3e%3cpath%20opacity='0.5'%20fill-rule='evenodd'%20clip-rule='evenodd'%20d='M15.1673%208.50001C15.1673%2012.182%2012.1827%2015.1667%208.50066%2015.1667C7.7467%2015.1674%206.99809%2015.0403%206.28666%2014.7907C5.98722%2014.0641%205.83342%2013.2858%205.83399%2012.5C5.83216%2011.0774%206.33752%209.70083%207.25932%208.61734C7.65743%209.1979%208.19098%209.67273%208.81382%2010.0008C9.43666%2010.3288%2010.13%2010.5001%2010.834%2010.5C11.5807%2010.5001%2012.3148%2010.3073%2012.9651%209.94015C13.6153%209.57303%2014.1597%209.04411%2014.5453%208.40467C14.7053%208.14067%2015.1673%208.19134%2015.1673%208.50001Z'%20fill='%230A0A0A'/%3e%3cpath%20d='M1.83398%208.49999C1.83398%2011.406%203.69332%2013.8773%206.28665%2014.79C5.9873%2014.0637%205.8335%2013.2856%205.83398%2012.5C5.83398%2011.0193%206.37065%209.66399%207.25932%208.61733C6.76373%207.89629%206.49914%207.04159%206.50065%206.16666C6.50054%205.41993%206.69339%204.68584%207.06051%204.03559C7.42763%203.38534%207.95655%202.84099%208.59598%202.45533C8.86065%202.29533%208.80932%201.83333%208.50065%201.83333C4.81865%201.83333%201.83398%204.81799%201.83398%208.49999Z'%20fill='%230A0A0A'/%3e%3c/svg%3e" alt="Moon" class="theme-icon icon-dark-theme">
+                    <img src="data:image/svg+xml,%3csvg%20width='16'%20height='16'%20viewBox='0%200%2016%2016'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M8.00078%204.8C9.77145%204.8%2011.2008%206.22934%2011.2008%208C11.2008%209.77067%209.77145%2011.2%208.00078%2011.2C6.23011%2011.2%204.80078%209.77067%204.80078%208C4.80078%206.22934%206.23011%204.8%208.00078%204.8ZM8.00078%206.4C7.11545%206.4%206.40078%207.11467%206.40078%208C6.40078%208.88534%207.11545%209.6%208.00078%209.6C8.88611%209.6%209.60078%208.88534%209.60078%208C9.60078%207.11467%208.88611%206.4%208.00078%206.4Z'%20fill='%230A0A0A'/%3e%3c/svg%3e" alt="Dot" class="theme-icon icon-dot-right">
+                </div>
             </div>
-        </div>
+        </button>
     </div>
 
-    <!-- TRANSLATE ICON BUTTON (16x16 ICON, POSITIONS EXACTLY 12px TO RIGHT OF CENTER LOGO IN HEADER) -->
-    <button class="header-translate-btn" id="btn-translate" title="Alternar idioma (PT / EN)">
-        <img id="img-translate" src="data:image/svg+xml,%3csvg%20width='16'%20height='16'%20viewBox='0%200%2016%2016'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20clip-path='url(%23clip0_267_1106)'%3e%3cpath%20d='M4.545%206.714L4.11%208H3L4.862%203H6.146L8%208H6.833L6.398%206.714H4.545ZM6.179%205.978L5.5%203.956H5.451L4.772%205.978H6.179Z'%20fill='white'/%3e%3cpath%20d='M0%202C0%201.46957%200.210714%200.960859%200.585786%200.585786C0.960859%200.210714%201.46957%200%202%200L9%200C9.53043%200%2010.0391%200.210714%2010.4142%200.585786C10.7893%200.960859%2011%201.46957%2011%202V5H14C14.5304%205%2015.0391%205.21071%2015.4142%205.58579C15.7893%205.96086%2016%206.46957%2016%207V14C16%2014.5304%2015.7893%2015.0391%2015.4142%2015.4142C15.0391%2015.7893%2014.5304%2016%2014%2016H7C6.46957%2016%205.96086%2015.7893%205.58579%2015.4142C5.21071%2015.0391%205%2014.5304%205%2014V11H2C1.46957%2011%200.960859%2010.7893%200.585786%2010.4142C0.210714%2010.0391%200%209.53043%200%209V2ZM2%201C1.73478%201%201.48043%201.10536%201.29289%201.29289C1.10536%201.48043%201%201.73478%201%202V9C1%209.26522%201.10536%209.51957%201.29289%209.70711C1.48043%209.89464%201.73478%2010%202%2010H9C9.26522%2010%209.51957%209.89464%209.70711%209.70711C9.89464%209.51957%2010%209.26522%2010%209V2C10%201.73478%209.89464%201.48043%209.70711%201.29289C9.51957%201.10536%209.26522%201%209%201H2ZM9.138%2010.995C9.33067%2011.2957%209.54067%2011.5777%209.768%2011.841C9.02%2012.416%208.095%2012.842%207%2013.133C7.178%2013.35%207.451%2013.768%207.555%2014C8.68%2013.641%209.635%2013.156%2010.441%2012.506C11.218%2013.171%2012.18%2013.671%2013.371%2013.978C13.504%2013.724%2013.785%2013.305%2014%2013.088C12.875%2012.835%2011.943%2012.394%2011.18%2011.804C11.861%2011.057%2012.402%2010.153%2012.801%209.047H14V8H11V9.047H11.765C11.447%209.891%2011.025%2010.593%2010.493%2011.177C10.346%2011.0205%2010.2074%2010.8563%2010.078%2010.685C9.79559%2010.8655%209.47236%2010.9721%209.138%2010.995Z'%20fill='white'/%3e%3c/g%3e%3cdefs%3e%3cclipPath%20id='clip0_267_1106'%3e%3crect%20width='16'%20height='16'%20fill='white'/%3e%3c/clipPath%3e%3c/defs%3e%3c/svg%3e" alt="Traduzir">
-    </button>
-
-    <div class="logo-wrapper" id="logo-wrapper">
-        <div class="resize-border" id="resize-ui"></div>
-        <img src="/assets/logo-gabux-light-Hn4x35dM.svg" alt="Logo" id="logo-img">
-        <div class="handle nw"></div><div class="handle ne"></div>
-        <div class="handle sw"></div><div class="handle se"></div>
+    <!-- CENTER GROUP: LOGO & TRANSLATE BUTTON -->
+    <div class="nav-group-center">
+        <a href="#hero" class="nav-logo-link" title="Gabux - Início">
+            <img src="/assets/logo-gabux-light-Hn4x35dM.svg" alt="Logo" id="logo-img" class="nav-logo-img">
+        </a>
+        <button class="header-translate-btn" id="btn-translate" title="Alternar idioma (PT / EN)">
+            <img id="img-translate" src="data:image/svg+xml,%3csvg%20width='16'%20height='16'%20viewBox='0%200%2016%2016'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20clip-path='url(%23clip0_267_1106)'%3e%3cpath%20d='M4.545%206.714L4.11%208H3L4.862%203H6.146L8%208H6.833L6.398%206.714H4.545ZM6.179%205.978L5.5%203.956H5.451L4.772%205.978H6.179Z'%20fill='white'/%3e%3cpath%20d='M0%202C0%201.46957%200.210714%200.960859%200.585786%200.585786C0.960859%200.210714%201.46957%200%202%200L9%200C9.53043%200%2010.0391%200.210714%2010.4142%200.585786C10.7893%200.960859%2011%201.46957%2011%202V5H14C14.5304%205%2015.0391%205.21071%2015.4142%205.58579C15.7893%205.96086%2016%206.46957%2016%207V14C16%2014.5304%2015.7893%2015.0391%2015.4142%2015.4142C15.0391%2015.7893%2014.5304%2016%2014%2016H7C6.46957%2016%205.96086%2015.7893%205.58579%2015.4142C5.21071%2015.0391%205%2014.5304%205%2014V11H2C1.46957%2011%200.960859%2010.7893%200.585786%2010.4142C0.210714%2010.0391%200%209.53043%200%209V2ZM2%201C1.73478%201%201.48043%201.10536%201.29289%201.29289C1.10536%201.48043%201%201.73478%201%202V9C1%209.26522%201.10536%209.51957%201.29289%209.70711C1.48043%209.89464%201.73478%2010%202%2010H9C9.26522%2010%209.51957%209.89464%209.70711%209.70711C9.89464%209.51957%2010%209.26522%2010%209V2C10%201.73478%209.89464%201.48043%209.70711%201.29289C9.51957%201.10536%209.26522%201%209%201H2ZM9.138%2010.995C9.33067%2011.2957%209.54067%2011.5777%209.768%2011.841C9.02%2012.416%208.095%2012.842%207%2013.133C7.178%2013.35%207.451%2013.768%207.555%2014C8.68%2013.641%209.635%2013.156%2010.441%2012.506C11.218%2013.171%2012.18%2013.671%2013.371%2013.978C13.504%2013.724%2013.785%2013.305%2014%2013.088C12.875%2012.835%2011.943%2012.394%2011.18%2011.804C11.861%2011.057%2012.402%2010.153%2012.801%209.047H14V8H11V9.047H11.765C11.447%209.891%2011.025%2010.593%2010.493%2011.177C10.346%2011.0205%2010.2074%2010.8563%2010.078%2010.685C9.79559%2010.8655%209.47236%2010.9721%209.138%2010.995Z'%20fill='white'/%3e%3c/g%3e%3cdefs%3e%3cclipPath%20id='clip0_267_1106'%3e%3crect%20width='16'%20height='16'%20fill='white'/%3e%3c/clipPath%3e%3c/defs%3e%3c/svg%3e" alt="Traduzir">
+        </button>
     </div>
-</div>
+
+    <!-- RIGHT GROUP: Projetos, Currículo + icon-download 16x16, Fale comigo -->
+    <div class="nav-group-right">
+        <a href="#projetos" class="nav-item" id="nav-projects">Projetos</a>
+        <a href="files/Curriculo/pt-br/Curriculo%20Gabriel%20Fonseca.pdf" download="Curriculo Gabriel Fonseca.pdf" target="_blank" class="curriculo-link" id="link-cv">
+            <span id="txt-cv">Currículo</span>
+            <img id="img-cv" src="data:image/svg+xml,%3csvg%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M12%2016L7%2011L8.4%209.55L11%2012.15V4H13V12.15L15.6%209.55L17%2011L12%2016Z'%20fill='%23F6FBFF'/%3e%3cpath%20d='M4.588%2019.413C4.97933%2019.8043%205.45%2020%206%2020H18C18.5507%2020.0007%2019.0217%2019.805%2019.413%2019.413C19.8043%2019.021%2020%2018.55%2020%2018V15H18V18H6V15H4V18C4.00067%2018.5507%204.19667%2019.0217%204.588%2019.413Z'%20fill='%23F6FBFF'%20fill-opacity='0.5'/%3e%3c/svg%3e" alt="Download">
+        </a>
+        <a href="javascript:void(0)" class="btn-fale-comigo" id="btn-contact">
+            <span id="txt-contact" class="shimmer-text">Fale comigo</span>
+        </a>
+        <button class="mobile-burger-btn" id="btn-mobile-burger" aria-label="Abrir Menu">
+            <img src="data:image/svg+xml,%3csvg%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M3%2018V16H21V18H3ZM3%208V6H21V8H3Z'%20fill='%23F6FBFF'/%3e%3cpath%20d='M3%2011V13H21V11H3Z'%20fill='%23F6FBFF'%20fill-opacity='0.5'/%3e%3c/svg%3e" alt="Menu" class="mobile-burger-icon" id="img-mobile-menu">
+        </button>
+    </div>
+</nav>
 
 <!-- FOLD 3: SOBRE MIM SECTION WITH CHROMA BACKGROUND & PINNED TEXT DECRYPT -->
 <div class="sobre-mim-scroll-wrapper" id="sobre-mim-wrapper">
@@ -255,7 +216,7 @@
             </div>
 
             <h2 class="decrypt-heading" id="decrypt-text">
-                CONSTRUO SOLUÇÕES EM UX E UI ALIADO AO VIBE CODE EM UM WORKFLOW COMPLETO COM FOCO EM RESULTADOS E PRODUTOS DE ALTO VALOR.
+                Agilizo a criação de protótipos e produtos sem abrir mão da consistência visual, acessibilidade, hierarquia de informação e usabilidade, unindo Figma e Desenvolvimento com IA.
             </h2>
 
             <!-- VERTICAL TOOLS LIST (ICON 22x22 MATCHING LANTERN ICON SIZE) -->
@@ -323,7 +284,7 @@
             </div>
             <div class="deliverable-subtext-container">
                 <p class="deliverable-subtext" id="deliv-sub-1">
-                    Entrego interfaces de SaaS e Micro SaaS, bem como a possibilidade do uso de Vibe Code para criar a versão inicial em código, acelerando o processo de desenvolvimento.
+                    Arquitetura de informação e interfaces completas para SaaS de educação, saúde, fintechs e RH com foco em experiência e eficiência. Reduzo a taxa de abandono (churn) criando fluxos de onboarding simples, fluxos claros e protótipos em código para validação rápida com investidores e usuários.
                 </p>
             </div>
         </div>
@@ -332,7 +293,7 @@
         <div class="deliverable-row" data-row="2">
             <div class="hover-expand-rect"></div>
             <div class="deliverable-main-content">
-                <span class="deliverable-text" id="deliv-line-2">LANDING PAGES & S.P.As</span>
+                <span class="deliverable-text" id="deliv-line-2">PÁGINAS FOCADAS EM CONVERSÃO</span>
                 <span class="btn-expand-toggle" id="btn-toggle-2">expandir</span>
                 <button class="mobile-chevron-btn" type="button" aria-label="Expandir">
                     <svg class="chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -342,7 +303,7 @@
             </div>
             <div class="deliverable-subtext-container">
                 <p class="deliverable-subtext" id="deliv-sub-2">
-                    Crio Landing Pages e Single Page Applications que vão do simples ao avançado, do estático à animações complexas com funcionalidades que agregam valor ao produto.
+                    Desenvolvo Landing Pages estáticas ou animadas (Framer/Next.js/React/GSAP) para startups em fase de captação, validação ou lançamento otimizado para SEO, carregamento rápido e integração com ferramentas de métricas e analytics.
                 </p>
             </div>
         </div>
@@ -351,7 +312,7 @@
         <div class="deliverable-row" data-row="3">
             <div class="hover-expand-rect"></div>
             <div class="deliverable-main-content">
-                <span class="deliverable-text" id="deliv-line-3">SITES E APPS WEB & MOBILE</span>
+                <span class="deliverable-text" id="deliv-line-3">DASHBOARDS & CRMS</span>
                 <span class="btn-expand-toggle" id="btn-toggle-3">expandir</span>
                 <button class="mobile-chevron-btn" type="button" aria-label="Expandir">
                     <svg class="chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -361,141 +322,110 @@
             </div>
             <div class="deliverable-subtext-container">
                 <p class="deliverable-subtext" id="deliv-sub-3">
-                    Desenvolvo layouts de sites e aplicações web e mobile completos, incluindo com um workflow completo que envolve Figma/Framer + IA Vibe Coding.
-                </p>
-            </div>
-        </div>
-
-        <!-- ROW 4 -->
-        <div class="deliverable-row" data-row="4">
-            <div class="hover-expand-rect"></div>
-            <div class="deliverable-main-content">
-                <span class="deliverable-text" id="deliv-line-4">DASHBOARDS, CRMs APPS</span>
-                <span class="btn-expand-toggle" id="btn-toggle-4">expandir</span>
-                <button class="mobile-chevron-btn" type="button" aria-label="Expandir">
-                    <svg class="chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m6 9 6 6 6-6"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="deliverable-subtext-container">
-                <p class="deliverable-subtext" id="deliv-sub-4">
-                    Estruturo e desenvolvo interfaces para Dashboards e CRMs de qualquer segmento.
+                    Estruturação de sistemas de gestão e análise de dados como os de setores de logística, financeiro e pessoal, com foco em hierarquia visual, contexto, e fácil usabilidade.
                 </p>
             </div>
         </div>
     </div>
 
-    <!-- BOTTOM SUB-HEADING TEXT BELOW THE 4 LINES (PP EDITORIAL NEW EXTRA LIGHT) -->
+    <!-- BOTTOM SUB-HEADING TEXT BELOW THE LINES -->
     <p class="entrego-bottom-text" id="txt-entrego-bottom">
-        Tudo com a agilidade e qualidade que só um UX/UI Designer com skills de Design Engineer consegue entregar.
+        Atuo com métodos ágeis, sem ignorar etapas cruciais, e utilizando uma stack atualizada com Figma e Framer aliados com programação por IA, do início ao fim.
     </p>
 </section>
 
-<!-- FOLD 5: SECTION "PROJETOS" (PINNED STICKY SCROLL CONTAINER WITH EXACT 345x440 COLOR CARDS & PARALLAX ENTRY/EXIT) -->
-<div class="projetos-scroll-wrapper" id="projetos-wrapper">
-    <section id="projetos">
-        <!-- ANIMATED RANDOM NOISE GRAIN BACKGROUND CANVAS FOR PROJETOS (45% OPACITY FLICKERING) -->
-        <canvas id="projetos-grain-canvas"></canvas>
+<!-- FOLD 5: SECTION "PROJETOS" — TEXT-BASED LIST (DESKTOP HOVER / MOBILE SCROLL) -->
+<section id="projetos" class="projetos-section-wrap">
+    <!-- ANIMATED RANDOM NOISE GRAIN BACKGROUND CANVAS FOR PROJETOS -->
+    <canvas id="projetos-grain-canvas"></canvas>
 
-        <!-- TOP SECTION HEADER FOR PROJETOS (REPLICATED LINE + LEFT TITLE SCROLL ANIMATION) -->
-        <div class="projetos-header-wrapper" id="projetos-header">
-            <h3 class="projetos-title" id="txt-projetos-header-title">Projetos</h3>
-            <div class="projetos-top-line"></div>
-        </div>
+    <!-- TOP SECTION HEADER -->
+    <div class="projetos-header-wrapper" id="projetos-header">
+        <h3 class="projetos-title" id="txt-projetos-header-title">Projetos</h3>
+        <div class="projetos-top-line"></div>
+    </div>
 
-        <!-- STACKED PROJECT STAGE CONTAINER -->
-        <div class="projects-stage">
-            <!-- PROJETO 1: TRAVEL (#6661FF) -->
-            <div class="project-card-item" data-project="1">
-                <div class="project-col-left">
-                    <span class="project-sub-label" id="proj1-sub">Projeto de estudo</span>
-                    <h3 class="project-title-name" id="proj1-name">Travel</h3>
-                </div>
-                <div class="project-col-center">
-                    <div class="project-glow-aura"></div>
-                    <div class="project-color-card" style="background-color: #6661FF;">
-                        <img src="/assets/logo-travel-B-CsXF90.svg" alt="Travel Logo" class="project-card-logo">
-                    </div>
-                </div>
-                <div class="project-col-right">
-                    <p class="project-desc-text" id="proj1-desc">
-                        App mobile de viagens onde o usuário pode fazer reservas em hospedagens parceiras.
-                    </p>
-                    <a href="projeto-travel.html" class="btn-visualizar-projeto" id="btn-proj-1">
-                        <span id="txt-btn-proj-1">Visualizar Projeto</span>
-                    </a>
+    <!-- TEXT-BASED PROJECTS LIST -->
+    <div class="projetos-list" id="projetos-list">
+
+        <!-- PROJETO 01: TRAVEL -->
+        <a href="projeto-travel.html" class="projeto-row active" data-project="1">
+            <div class="proj-row-header">
+                <div class="proj-num">01</div>
+                <div class="proj-title-group">
+                    <span class="proj-sub-label" id="proj1-sub">Projeto de estudo</span>
+                    <h3 class="proj-title-name" id="proj1-name">Travel</h3>
                 </div>
             </div>
-
-            <!-- PROJETO 2: MEGA VAREJO (#F4841A) -->
-            <div class="project-card-item" data-project="2">
-                <div class="project-col-left">
-                    <span class="project-sub-label" id="proj2-sub">Projeto de estudo</span>
-                    <h3 class="project-title-name" id="proj2-name">Mega<br>Varejo</h3>
-                </div>
-                <div class="project-col-center">
-                    <div class="project-glow-aura"></div>
-                    <div class="project-color-card" style="background-color: #F4841A;">
-                        <img src="/assets/logo-mega-varejo-DlYcmtBT.svg" alt="Mega Varejo Logo" class="project-card-logo">
-                    </div>
-                </div>
-                <div class="project-col-right">
-                    <p class="project-desc-text" id="proj2-desc">
-                        Aplicação Web e Mobile de compra e venda com opção de loja local.
-                    </p>
-                    <a href="projeto-megavarejo.html" class="btn-visualizar-projeto" id="btn-proj-2">
-                        <span id="txt-btn-proj-2">Visualizar Projeto</span>
-                    </a>
+            <div class="proj-body">
+                <p class="proj-desc-text" id="proj1-desc">
+                    App mobile de viagens onde o usuário pode fazer reservas em hospedagens parceiras.
+                </p>
+                <div class="proj-action-group">
+                    <span class="proj-link-btn" id="txt-btn-proj-1">Ver detalhes</span>
                 </div>
             </div>
+        </a>
 
-            <!-- PROJETO 3: SPARK (#0066FF) -->
-            <div class="project-card-item" data-project="3">
-                <div class="project-col-left">
-                    <span class="project-sub-label" id="proj3-sub">Projeto de estudo</span>
-                    <h3 class="project-title-name" id="proj3-name">Spark</h3>
-                </div>
-                <div class="project-col-center">
-                    <div class="project-glow-aura"></div>
-                    <div class="project-color-card" style="background-color: #0066FF;">
-                        <img src="data:image/svg+xml,%3csvg%20width='326'%20height='121'%20viewBox='0%200%20326%20121'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M164%2085.5812H142L171.5%2034.5581L200.5%2085.5812H178'%20stroke='white'%20stroke-width='15'%20stroke-linejoin='round'/%3e%3cpath%20d='M28.16%2095.104C16.896%2095.104%207.552%2092.8%201.408%2087.424L9.344%2075.008C15.104%2079.36%2021.376%2080.896%2028.16%2080.896C35.2%2080.896%2038.272%2079.232%2038.272%2075.392C38.272%2071.552%2035.2%2070.144%2024.064%2068.224C10.496%2065.92%203.968%2060.416%203.968%2048.768C3.968%2036.096%2013.824%2028.032%2030.08%2028.032C39.808%2028.032%2048.768%2030.208%2054.272%2034.688L47.104%2047.232C41.984%2043.648%2035.84%2042.24%2029.824%2042.24C23.552%2042.24%2020.48%2043.904%2020.48%2047.232C20.48%2050.816%2023.296%2051.84%2035.072%2053.888C48%2056.192%2055.04%2061.824%2055.04%2073.984C55.04%2087.68%2045.184%2095.104%2028.16%2095.104ZM101.654%2028.032C116.63%2028.032%20128.278%2039.808%20128.278%2059.648C128.278%2083.072%20114.838%2095.104%2097.942%2095.104C91.67%2095.104%2086.678%2093.824%2082.582%2091.392V118.912H64.662V29.952H80.662L81.558%2037.504C85.526%2031.872%2092.054%2028.032%20101.654%2028.032ZM110.102%2061.696C110.23%2049.664%20104.214%2044.032%2096.022%2044.032C90.262%2044.032%2084.63%2047.104%2082.582%2053.504V75.648C85.91%2078.08%2090.006%2079.36%2094.486%2079.36C103.83%2079.36%20110.102%2073.856%20110.102%2061.696Z'%20fill='%23F4F4F4'/%3e%3cpath%20d='M250.96%2028.032C253.52%2028.032%20255.44%2028.288%20257.744%2028.928L255.184%2046.848C252.88%2046.208%20251.472%2045.952%20248.656%2045.952C242.768%2045.952%20238.288%2048.768%20234.832%2052.992V93.312H216.912V29.952H233.168L233.936%2038.016C237.904%2032.512%20243.408%2028.032%20250.96%2028.032ZM304.747%2093.312L289.643%2070.144L281.195%2071.04V93.312H263.275L263.531%207.62939e-06H281.451L281.323%2053.248L289.387%2052.352L305.003%2029.952H324.587L304.107%2060.8L325.611%2093.312H304.747Z'%20fill='%23F4F4F4'/%3e%3c/svg%3e" alt="Spark Logo" class="project-card-logo">
-                    </div>
-                </div>
-                <div class="project-col-right">
-                    <p class="project-desc-text" id="proj3-desc">
-                        Aplicação Web e Mobile de gerenciamento e agendamento de vagas em estacionamentos.
-                    </p>
-                    <a href="projeto-spark.html" class="btn-visualizar-projeto" id="btn-proj-3">
-                        <span id="txt-btn-proj-3">Visualizar Projeto</span>
-                    </a>
+        <!-- PROJETO 02: MEGA VAREJO -->
+        <a href="projeto-megavarejo.html" class="projeto-row" data-project="2">
+            <div class="proj-row-header">
+                <div class="proj-num">02</div>
+                <div class="proj-title-group">
+                    <span class="proj-sub-label" id="proj2-sub">Projeto de estudo</span>
+                    <h3 class="proj-title-name" id="proj2-name">MegaVarejo</h3>
                 </div>
             </div>
-
-            <!-- PROJETO 4: SAFEROUT (#CEDDF2) -->
-            <div class="project-card-item" data-project="4">
-                <div class="project-col-left">
-                    <span class="project-sub-label" id="proj4-sub">Projeto Real - Freelance</span>
-                    <h3 class="project-title-name" id="proj4-name">Safer<br>Out</h3>
-                </div>
-                <div class="project-col-center">
-                    <div class="project-glow-aura"></div>
-                    <div class="project-color-card" style="background-color: #CEDDF2;">
-                        <img src="/assets/logo-saferout-DpIfLuww.svg" alt="SaferOut Logo" class="project-card-logo">
-                    </div>
-                </div>
-                <div class="project-col-right">
-                    <p class="project-desc-text" id="proj4-desc">
-                        Aplicativo mobile de monitoramento urbano em tempo real
-                    </p>
-                    <a href="projeto-saferout.html" class="btn-visualizar-projeto" id="btn-proj-4">
-                        <span id="txt-btn-proj-4">Visualizar Projeto</span>
-                    </a>
+            <div class="proj-body">
+                <p class="proj-desc-text" id="proj2-desc">
+                    Aplicação Web e Mobile de compra e venda com opção de loja local.
+                </p>
+                <div class="proj-action-group">
+                    <span class="proj-link-btn" id="txt-btn-proj-2">Ver detalhes</span>
                 </div>
             </div>
-        </div>
-    </section>
-</div>
+        </a>
+
+        <!-- PROJETO 03: SPARK -->
+        <a href="projeto-spark.html" class="projeto-row" data-project="3">
+            <div class="proj-row-header">
+                <div class="proj-num">03</div>
+                <div class="proj-title-group">
+                    <span class="proj-sub-label" id="proj3-sub">Projeto de estudo</span>
+                    <h3 class="proj-title-name" id="proj3-name">Spark</h3>
+                </div>
+            </div>
+            <div class="proj-body">
+                <p class="proj-desc-text" id="proj3-desc">
+                    Aplicação Web e Mobile de gerenciamento e agendamento de vagas em estacionamentos.
+                </p>
+                <div class="proj-action-group">
+                    <span class="proj-link-btn" id="txt-btn-proj-3">Ver detalhes</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- PROJETO 04: SAFEROUT -->
+        <a href="projeto-saferout.html" class="projeto-row" data-project="4">
+            <div class="proj-row-header">
+                <div class="proj-num">04</div>
+                <div class="proj-title-group">
+                    <span class="proj-sub-label" id="proj4-sub">Projeto Real - Freelance</span>
+                    <h3 class="proj-title-name" id="proj4-name">SaferOut</h3>
+                </div>
+            </div>
+            <div class="proj-body">
+                <p class="proj-desc-text" id="proj4-desc">
+                    Aplicativo mobile de monitoramento urbano em tempo real.
+                </p>
+                <div class="proj-action-group">
+                    <span class="proj-link-btn" id="txt-btn-proj-4">Ver detalhes</span>
+                </div>
+            </div>
+        </a>
+
+    </div>
+</section>
 
 <!-- FOLD 6: SECTION "FOOTER" (FIGMA SECTION 5-FOOTER-MAIN / FRAME FOOTER) -->
 <footer id="contato" class="footer-section">
@@ -599,9 +529,26 @@
                     ©2026. Desenvolvido por gab.ux. Todos os direitos reservados.
                 </p>
             </div>
+<!-- MOBILE NAVIGATION OVERLAY DRAWER -->
+<div id="mobile-nav-overlay" class="mobile-nav-overlay" aria-hidden="true">
+    <div class="mobile-nav-drawer">
+        <div class="mobile-nav-links">
+            <a href="#hero" class="mobile-nav-link" id="mobile-nav-home">Início</a>
+            <a href="#sobre-mim" class="mobile-nav-link" id="mobile-nav-about">Sobre Mim</a>
+            <a href="#entrego" class="mobile-nav-link" id="mobile-nav-services">O que entrego</a>
+            <a href="#projetos" class="mobile-nav-link" id="mobile-nav-projects">Projetos</a>
+            <a href="files/Curriculo/pt-br/Curriculo%20Gabriel%20Fonseca.pdf" download="Curriculo Gabriel Fonseca.pdf" target="_blank" class="mobile-nav-link mobile-cv-link" id="mobile-link-cv">
+                <span class="mobile-cv-wrapper">
+                    <span id="mobile-txt-cv">Currículo</span>
+                    <img id="mobile-img-cv" src="data:image/svg+xml,%3csvg%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M12%2016L7%2011L8.4%209.55L11%2012.15V4H13V12.15L15.6%209.55L17%2011L12%2016Z'%20fill='%23F6FBFF'/%3e%3cpath%20d='M4.588%2019.413C4.97933%2019.8043%205.45%2020%206%2020H18C18.5507%2020.0007%2019.0217%2019.805%2019.413%2019.413C19.8043%2019.021%2020%2018.55%2020%2018V15H18V18H6V15H4V18C4.00067%2018.5507%204.19667%2019.0217%204.588%2019.413Z'%20fill='%23F6FBFF'%20fill-opacity='0.5'/%3e%3c/svg%3e" alt="Download" class="mobile-cv-icon">
+                </span>
+            </a>
         </div>
+        <button class="mobile-close-nav-btn" id="btn-mobile-nav-close" aria-label="Fechar Menu">
+            <span id="mobile-txt-close">Fechar</span> <span class="mobile-close-x-icon">✕</span>
+        </button>
     </div>
-</footer>
+</div>
 
 </body>
 </html>
