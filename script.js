@@ -775,21 +775,24 @@ function initSectionGrains() {
     const canvases = canvasIds.map(id => document.getElementById(id)).filter(Boolean);
     if (canvases.length === 0) return;
 
+    const visibleCanvases = new Set();
+
     function resizeAll() {
         canvases.forEach(c => {
             const parent = c.parentElement;
             if (parent) {
-                c.width = Math.max(300, Math.floor(parent.clientWidth * 0.5));
-                c.height = Math.max(300, Math.floor(parent.clientHeight * 0.5));
+                c.width = Math.max(250, Math.floor(parent.clientWidth * 0.4));
+                c.height = Math.max(250, Math.floor(parent.clientHeight * 0.4));
             }
         });
     }
     resizeAll();
-    window.addEventListener('resize', resizeAll);
+    window.addEventListener('resize', resizeAll, { passive: true });
 
     function renderGrains() {
         canvases.forEach(c => {
-            const ctx = c.getContext('2d');
+            if (!visibleCanvases.has(c)) return;
+            const ctx = c.getContext('2d', { alpha: true });
             const w = c.width, h = c.height;
             if (w === 0 || h === 0) return;
             const imgData = ctx.createImageData(w, h);
@@ -799,23 +802,28 @@ function initSectionGrains() {
                 data[i] = noise;
                 data[i+1] = noise;
                 data[i+2] = noise;
-                data[i+3] = 22;
+                data[i+3] = 20;
             }
             ctx.putImageData(imgData, 0, 0);
         });
     }
 
-    let isGrainsVisible = true;
     if ('IntersectionObserver' in window) {
         const grainObs = new IntersectionObserver((entries) => {
-            isGrainsVisible = entries.some(e => e.isIntersecting);
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    visibleCanvases.add(e.target);
+                } else {
+                    visibleCanvases.delete(e.target);
+                }
+            });
         }, { threshold: 0.01 });
         canvases.forEach(c => grainObs.observe(c));
     }
 
     setInterval(() => {
-        if (isGrainsVisible) renderGrains();
-    }, 120);
+        if (visibleCanvases.size > 0) renderGrains();
+    }, 150);
 }
 
 window.addEventListener('load', () => {
@@ -1124,16 +1132,30 @@ document.querySelectorAll('.deliverable-row').forEach(row => {
 // --- 9. FOLD 5: SECTION "PROJETOS" — TEXT LIST HOVER (DESKTOP) & SCROLL (MOBILE) ---
 const projetosSection = document.getElementById('projetos');
 const projetosHeader  = document.getElementById('projetos-header');
+let meRowsProjetos = [];
+let isProjetosVisible = false;
 
 function initProjetosList() {
-    const rows = document.querySelectorAll('.projeto-row');
-    if (rows.length === 0) return;
+    meRowsProjetos = Array.from(document.querySelectorAll('.projeto-row'));
+    if (meRowsProjetos.length === 0) return;
+
+    if ('IntersectionObserver' in window && projetosSection) {
+        const projObs = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                isProjetosVisible = e.isIntersecting;
+                if (e.isIntersecting && projetosHeader) {
+                    projetosHeader.classList.add('active');
+                }
+            });
+        }, { threshold: 0.05 });
+        projObs.observe(projetosSection);
+    }
 
     // Desktop: Hover state activation
-    rows.forEach(row => {
+    meRowsProjetos.forEach(row => {
         row.addEventListener('mouseenter', () => {
             if (window.innerWidth > 840) {
-                rows.forEach(r => r.classList.remove('active'));
+                meRowsProjetos.forEach(r => r.classList.remove('active'));
                 row.classList.add('active');
             }
         });
@@ -1141,26 +1163,16 @@ function initProjetosList() {
 }
 
 function updateProjetosScrollAnimations() {
-    if (!projetosSection) return;
-
-    if (projetosHeader) {
-        const rect = projetosSection.getBoundingClientRect();
-        if (rect.top <= window.innerHeight * 0.85) {
-            projetosHeader.classList.add('active');
-        } else {
-            projetosHeader.classList.remove('active');
-        }
-    }
+    if (!projetosSection || !isProjetosVisible) return;
 
     // Mobile: Scroll-based activation (closest row to screen center)
-    if (window.innerWidth <= 840) {
-        const rows = projetosSection.querySelectorAll('.projeto-row');
+    if (window.innerWidth <= 840 && meRowsProjetos.length > 0) {
         const winHeight = window.innerHeight;
         const screenCenter = winHeight / 2;
         let closestRow = null;
         let minDistance = Infinity;
 
-        rows.forEach(row => {
+        meRowsProjetos.forEach(row => {
             const rRect = row.getBoundingClientRect();
             const rCenter = rRect.top + rRect.height / 2;
             const dist = Math.abs(rCenter - screenCenter);
@@ -1170,13 +1182,15 @@ function updateProjetosScrollAnimations() {
             }
         });
 
-        rows.forEach(row => {
+        meRowsProjetos.forEach(row => {
             if (row === closestRow) {
-                row.classList.add('active-scroll');
-                row.classList.add('active');
+                if (!row.classList.contains('active-scroll')) {
+                    row.classList.add('active-scroll', 'active');
+                }
             } else {
-                row.classList.remove('active-scroll');
-                row.classList.remove('active');
+                if (row.classList.contains('active-scroll')) {
+                    row.classList.remove('active-scroll', 'active');
+                }
             }
         });
     }
