@@ -50,11 +50,7 @@ function revealHeroTitles() {
     const mainTitleText = document.getElementById('main-title-text');
     const btnHeroContactMobile = document.getElementById('btn-hero-contact-mobile');
 
-    if (subTitleText) subTitleText.style.transition = 'opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
-    if (mainTitleText) mainTitleText.style.transition = 'opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
-    if (btnHeroContactMobile) btnHeroContactMobile.style.transition = 'opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
-
-    requestAnimationFrame(() => {
+    const revealFn = () => {
         if (subTitleText) {
             subTitleText.style.opacity = '1';
             subTitleText.style.transform = 'translateY(0)';
@@ -68,7 +64,9 @@ function revealHeroTitles() {
             btnHeroContactMobile.style.transform = 'translateY(0)';
             btnHeroContactMobile.style.pointerEvents = 'auto';
         }
-    });
+    };
+
+    requestAnimationFrame(revealFn);
 }
 
 function runPreloader() {
@@ -129,7 +127,12 @@ function runPreloader() {
         if (preloader) {
             preloader.style.opacity = '0';
             preloader.style.pointerEvents = 'none';
-            revealHeroTitles();
+
+            // Smooth brief 150ms delay after preloader fadeout starts
+            setTimeout(() => {
+                revealHeroTitles();
+            }, 150);
+
             setTimeout(() => {
                 sessionStorage.setItem('site_visited', 'true');
                 if (preloader.parentNode) preloader.remove();
