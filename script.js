@@ -1014,7 +1014,17 @@ function initChromaShader() {
 // --- 6. SCROLL-TRIGGERED PINNED TEXT DECRYPT EFFECT FOR FOLD 3 ---
 let rawDecryptTargetText = i18n.pt.decryptText;
 const decryptEl = document.getElementById('decrypt-text');
-const MATRIX_CHARS = '!<>-_\\/[]{}—=+*^?#________!@#$%&*';
+const CIPHER_MAP = {
+    'a': 'X', 'b': 'K', 'c': 'Z', 'd': 'W', 'e': 'V', 'f': 'Q', 'g': 'N', 'h': 'M', 'i': 'L',
+    'j': 'J', 'k': 'K', 'l': 'L', 'm': 'M', 'n': 'N', 'o': 'O', 'p': 'P', 'q': 'Q', 'r': 'R',
+    's': 'S', 't': 'T', 'u': 'U', 'v': 'V', 'w': 'W', 'x': 'X', 'y': 'Y', 'z': 'Z',
+    'A': 'X', 'B': 'K', 'C': 'Z', 'D': 'W', 'E': 'V', 'F': 'Q', 'G': 'N', 'H': 'M', 'I': 'L',
+    'J': 'J', 'K': 'K', 'L': 'L', 'M': 'M', 'N': 'O', 'O': 'O', 'P': 'P', 'Q': 'Q', 'R': 'R',
+    'S': 'S', 'T': 'T', 'U': 'U', 'V': 'V', 'W': 'W', 'X': 'X', 'Y': 'Y', 'Z': 'Z',
+    'á': 'X', 'ã': 'X', 'â': 'X', 'ç': 'Z', 'é': 'V', 'ê': 'V', 'í': 'L', 'ó': 'O', 'ô': 'O', 'ú': 'U',
+    'Á': 'X', 'Ã': 'X', 'Â': 'X', 'Ç': 'Z', 'É': 'V', 'Ê': 'V', 'Í': 'L', 'Ó': 'O', 'Ô': 'O', 'Ú': 'U'
+};
+const RANDOM_CIPHERS = ['X', '0', 'V', '8', 'K', '2', 'N', '4', 'Z', '9', 'W', '1', 'Q', '7', 'M', '3', 'L', '5', 'B', '6', 'P'];
 
 function updateTextDecryptOnScroll() {
     if (!decryptEl) return;
@@ -1030,10 +1040,9 @@ function updateTextDecryptOnScroll() {
     const revealedLength = Math.floor(progress * totalLength);
 
     const result = rawDecryptTargetText.split('').map((char, index) => {
-        if (char === ' ' || char === '\n') return char;
+        if (char === ' ' || char === '\n' || char === ',' || char === '.' || char === '-') return char;
         if (index < revealedLength) return char;
-        if (index < revealedLength + 8) return MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)];
-        return MATRIX_CHARS[index % MATRIX_CHARS.length];
+        return CIPHER_MAP[char] || 'X';
     }).join('');
 
     decryptEl.innerText = result;
