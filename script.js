@@ -50,14 +50,15 @@ function revealHeroTitles() {
     const mainTitleText = document.getElementById('main-title-text');
     const btnHeroContactMobile = document.getElementById('btn-hero-contact-mobile');
 
-    setTimeout(() => {
+    if (subTitleText) subTitleText.style.transition = 'opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+    if (mainTitleText) mainTitleText.style.transition = 'opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+    if (btnHeroContactMobile) btnHeroContactMobile.style.transition = 'opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+
+    requestAnimationFrame(() => {
         if (subTitleText) {
             subTitleText.style.opacity = '1';
             subTitleText.style.transform = 'translateY(0)';
         }
-    }, 120);
-
-    setTimeout(() => {
         if (mainTitleText) {
             mainTitleText.style.opacity = '1';
             mainTitleText.style.transform = 'translateY(0)';
@@ -67,7 +68,7 @@ function revealHeroTitles() {
             btnHeroContactMobile.style.transform = 'translateY(0)';
             btnHeroContactMobile.style.pointerEvents = 'auto';
         }
-    }, 350);
+    });
 }
 
 function runPreloader() {
