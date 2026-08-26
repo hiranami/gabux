@@ -1,10 +1,11 @@
 // --- PROJECT PRESENTATION PAGE LOGIC ---
 
-// 1. Theme Management (Defaults to Light Theme)
-let currentTheme = localStorage.getItem('portfolio_theme') || 'light';
+// 1. Theme Management (Defaults to Light Theme by default)
+let currentTheme = sessionStorage.getItem('user_toggled_theme') || 'light';
 
 function applyTheme(theme) {
     currentTheme = theme;
+    sessionStorage.setItem('user_toggled_theme', theme);
     localStorage.setItem('portfolio_theme', theme);
     document.documentElement.setAttribute('data-theme', theme);
     

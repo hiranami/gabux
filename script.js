@@ -225,7 +225,7 @@ const i18n = {
 };
 
 let currentLang = localStorage.getItem('portfolio_lang') || 'pt';
-let currentTheme = localStorage.getItem('portfolio_theme') || 'light';
+let currentTheme = sessionStorage.getItem('user_toggled_theme') || 'light';
 
 // --- 2. THEME & TRANSLATION TOGGLE LOGIC ---
 const btnTheme = document.getElementById('btn-theme');
