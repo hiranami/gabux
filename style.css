@@ -3598,5 +3598,243 @@ html[data-theme="light"] .btn-circle-top-mobile img {
     }
 }
 
+/* --- SEGMENTED HOLLOW TRANSLATION BUTTON (BRA | ENG) --- */
+.header-translate-btn.lang-segmented-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    padding: 2px 4px;
+    border: 1px solid var(--nav-border, rgba(10, 10, 10, 0.25));
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+body.dark-theme .header-translate-btn.lang-segmented-btn {
+    border-color: rgba(246, 251, 255, 0.25);
+}
+
+.header-translate-btn.lang-segmented-btn:hover {
+    border-color: var(--text-color);
+}
+
+.lang-seg-option {
+    font-family: 'PP Mori', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    color: var(--text-color);
+    opacity: 0.6;
+    transition: all 0.25s ease;
+}
+
+.lang-seg-option.active {
+    opacity: 1;
+    font-weight: 700;
+    background-color: var(--text-color);
+    color: var(--bg-color);
+}
+
+.lang-seg-divider {
+    width: 1px;
+    height: 12px;
+    background-color: var(--text-color);
+    opacity: 0.25;
+    margin: 0 1px;
+}
+
+/* --- CINETECA FLOATING INTERACTIVE MODAL OVERLAY --- */
+.cineteca-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
+}
+
+.cineteca-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.cineteca-modal-card {
+    background: var(--bg-color, #F6FBFF);
+    color: var(--text-color, #0A0A0A);
+    border: 1px solid var(--nav-border, rgba(10, 10, 10, 0.18));
+    border-radius: 12px;
+    width: 100%;
+    max-width: 520px;
+    padding: 28px 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    position: relative;
+    transform: scale(0.94) translateY(10px);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box;
+}
+
+body.dark-theme .cineteca-modal-card {
+    background: #141414;
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.cineteca-modal-overlay.active .cineteca-modal-card {
+    transform: scale(1) translateY(0);
+}
+
+.cineteca-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.cineteca-modal-title {
+    font-family: 'PP Mori', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0;
+    color: var(--text-color);
+}
+
+.cineteca-modal-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    opacity: 0.6;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 8px;
+    line-height: 1;
+    border-radius: 4px;
+    transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.cineteca-modal-close-btn:hover {
+    opacity: 1;
+    background: rgba(127, 127, 127, 0.15);
+}
+
+.cineteca-modal-body {
+    font-size: 14px;
+    line-height: 1.55;
+    margin-bottom: 20px;
+}
+
+.cineteca-modal-intro {
+    margin-bottom: 16px;
+    color: var(--text-color);
+}
+
+.cineteca-modal-link {
+    color: #FF5500;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.cineteca-modal-link:hover {
+    color: #FF7722;
+}
+
+.cineteca-creds-box {
+    background: rgba(127, 127, 127, 0.08);
+    border: 1px dashed rgba(127, 127, 127, 0.3);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+}
+
+.cineteca-creds-label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-color);
+}
+
+.cineteca-creds-item {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    margin: 4px 0;
+    display: flex;
+    gap: 8px;
+}
+
+.cineteca-creds-key {
+    opacity: 0.7;
+    min-width: 50px;
+}
+
+.cineteca-creds-val {
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.cineteca-modal-footnotes {
+    font-size: 12px;
+    font-style: italic;
+    line-height: 1.45;
+    opacity: 0.75;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid rgba(127, 127, 127, 0.18);
+    padding-top: 14px;
+}
+
+.cineteca-modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.cineteca-modal-btn-primary {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    background: #0A0A0A;
+    color: #F6FBFF;
+    border: none;
+    border-radius: 6px;
+    font-family: 'PP Mori', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+body.dark-theme .cineteca-modal-btn-primary {
+    background: #F6FBFF;
+    color: #0A0A0A;
+}
+
+.cineteca-modal-btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
 
 

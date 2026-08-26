@@ -13,7 +13,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        travel: resolve(__dirname, 'projeto-travel.html'),
+        cineteca: resolve(__dirname, 'projeto-cineteca.html'),
         megavarejo: resolve(__dirname, 'projeto-megavarejo.html'),
         spark: resolve(__dirname, 'projeto-spark.html'),
         saferout: resolve(__dirname, 'projeto-saferout.html')

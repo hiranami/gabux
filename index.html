@@ -25,7 +25,7 @@
 
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-theme">
+<body class="light-theme">
 
 <!-- MAIL BOX CONTACT OVERLAY WINDOW (FIGMA SPEC) -->
 <div id="mailbox-overlay" aria-hidden="true">
@@ -174,8 +174,10 @@
         <a href="#hero" class="nav-logo-link" title="Gabux - Início">
             <img src="files/imagens/imagens-dark-mode/logo-gabux-light.svg" alt="Logo" id="logo-img" class="nav-logo-img">
         </a>
-        <button class="header-translate-btn" id="btn-translate" title="Alternar idioma (PT / EN)">
-            <img id="img-translate" src="files/imagens/imagens-dark-mode/icon-translate-light.svg" alt="Traduzir">
+        <button class="header-translate-btn lang-segmented-btn" id="btn-translate" title="Alternar idioma (BRA / ENG)" aria-label="Alternar idioma">
+            <span class="lang-seg-option lang-bra active" id="lang-opt-bra">BRA</span>
+            <span class="lang-seg-divider"></span>
+            <span class="lang-seg-option lang-eng" id="lang-opt-eng">ENG</span>
         </button>
     </div>
 
@@ -349,18 +351,18 @@
     <!-- TEXT-BASED PROJECTS LIST -->
     <div class="projetos-list" id="projetos-list">
 
-        <!-- PROJETO 01: TRAVEL -->
-        <a href="projeto-travel.html" class="projeto-row active" data-project="1">
+        <!-- PROJETO 01: CINETECA -->
+        <a href="projeto-cineteca.html" class="projeto-row active" data-project="1">
             <div class="proj-row-header">
                 <div class="proj-num">01</div>
                 <div class="proj-title-group">
                     <span class="proj-sub-label" id="proj1-sub">Projeto de estudo</span>
-                    <h3 class="proj-title-name" id="proj1-name">Travel</h3>
+                    <h3 class="proj-title-name" id="proj1-name">Cineteca - TeóShopping</h3>
                 </div>
             </div>
             <div class="proj-body">
                 <p class="proj-desc-text" id="proj1-desc">
-                    App mobile de viagens onde o usuário pode fazer reservas em hospedagens parceiras.
+                    Cinema pertencente ao shopping de Teófilo Otoni, o TeóShopping.
                 </p>
                 <div class="proj-action-group">
                     <span class="proj-link-btn" id="txt-btn-proj-1">Ver detalhes</span>

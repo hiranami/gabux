@@ -175,8 +175,7 @@ const i18n = {
         txtExpand: "expandir", txtHide: "ocultar",
         projetosTitle: "Projetos",
         projStudySub: "Projeto de estudo",
-        projFreelanceSub: "Projeto Real - Freelance",
-        proj1Desc: "App mobile de viagens onde o usuário pode fazer reservas em hospedagens parceiras.",
+              proj1Desc: "Cinema pertencente ao shopping de Teófilo Otoni, o TeóShopping.",
         proj2Desc: "Aplicação Web e Mobile de compra e venda com opção de loja local.",
         proj3Desc: "Aplicação Web e Mobile de gerenciamento e agendamento de vagas em estacionamentos.",
         proj4Desc: "Aplicativo mobile de monitoramento urbano em tempo real",
@@ -208,7 +207,7 @@ const i18n = {
         projetosTitle: "Projects",
         projStudySub: "Study project",
         projFreelanceSub: "Real Project - Freelance",
-        proj1Desc: "Travel mobile app where users can book partner accommodations.",
+        proj1Desc: "Cinema belonging to the TeóShopping mall in Teófilo Otoni.",
         proj2Desc: "Web and Mobile e-commerce application with local store option.",
         proj3Desc: "Web and Mobile application for parking space management and booking.",
         proj4Desc: "Mobile application for real-time urban monitoring",
@@ -222,8 +221,8 @@ const i18n = {
     }
 };
 
-let currentLang = 'pt';
-let currentTheme = 'dark';
+let currentLang = localStorage.getItem('portfolio_lang') || 'pt';
+let currentTheme = localStorage.getItem('portfolio_theme') || 'light';
 
 // --- 2. THEME & TRANSLATION TOGGLE LOGIC ---
 const btnTheme = document.getElementById('btn-theme');
@@ -309,6 +308,20 @@ function updateThemeAssets() {
 
 function updateLanguageTexts() {
     const data = i18n[currentLang];
+    
+    // Segmented language button toggle state (BRA / ENG)
+    const optBra = document.getElementById('lang-opt-bra');
+    const optEng = document.getElementById('lang-opt-eng');
+    if (optBra && optEng) {
+        if (currentLang === 'pt') {
+            optBra.classList.add('active');
+            optEng.classList.remove('active');
+        } else {
+            optEng.classList.add('active');
+            optBra.classList.remove('active');
+        }
+    }
+
     setElText('nav-home', data.navHome);
     setElText('nav-about', data.navAbout);
     setElText('nav-services', data.navServices);

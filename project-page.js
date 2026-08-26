@@ -1,7 +1,7 @@
 // --- PROJECT PRESENTATION PAGE LOGIC ---
 
-// 1. Theme Management (Always Dark Theme by default on opening presentation pages)
-let currentTheme = 'dark';
+// 1. Theme Management (Defaults to Light Theme)
+let currentTheme = localStorage.getItem('portfolio_theme') || 'light';
 
 function applyTheme(theme) {
     currentTheme = theme;
@@ -56,7 +56,7 @@ function applyTheme(theme) {
         }
     });
 
-    // Update Translate Icon
+    // Update Translate Icon if image based
     const imgTranslate = document.querySelector('#btn-translate img');
     if (imgTranslate) {
         imgTranslate.src = theme === 'dark'
@@ -66,8 +66,7 @@ function applyTheme(theme) {
 }
 
 // 2. Language Management
-// Project pages always open in pt-br by default, regardless of any previously saved preference.
-let currentLang = 'pt';
+let currentLang = localStorage.getItem('portfolio_lang') || 'pt';
 
 const pageTranslations = {
     pt: {
@@ -107,10 +106,29 @@ function applyLanguage(lang) {
     const elMobileClose = document.getElementById('mobile-txt-close');
     if (elMobileClose) elMobileClose.innerText = t.mobileClose || (lang === 'pt' ? 'Fechar' : 'Close');
 
-    // Elements with data-pt and data-en
+    // Segmented language button toggle state (BRA / ENG)
+    const optBra = document.getElementById('lang-opt-bra');
+    const optEng = document.getElementById('lang-opt-eng');
+    if (optBra && optEng) {
+        if (lang === 'pt') {
+            optBra.classList.add('active');
+            optEng.classList.remove('active');
+        } else {
+            optEng.classList.add('active');
+            optBra.classList.remove('active');
+        }
+    }
+
+    // Elements with data-pt and data-en attributes (handles text, innerHTML for HTML links)
     document.querySelectorAll('[data-pt]').forEach(el => {
         const text = lang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-pt');
-        if (text) el.innerText = text;
+        if (text) {
+            if (text.includes('<') && text.includes('>')) {
+                el.innerHTML = text;
+            } else {
+                el.innerText = text;
+            }
+        }
     });
 
     const btnTranslate = document.getElementById('btn-translate');
@@ -178,11 +196,41 @@ function initCarousels() {
     });
 }
 
+// 4. Cineteca Interactive Modal Logic
+function initCinetecaModal() {
+    const modalOverlay = document.getElementById('cineteca-modal-overlay');
+    const closeBtn = document.getElementById('btn-close-cineteca-modal');
+    
+    if (!modalOverlay) return;
+
+    function closeModal() {
+        modalOverlay.classList.remove('active');
+        modalOverlay.setAttribute('aria-hidden', 'true');
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+    }
+
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+            closeModal();
+        }
+    });
+}
+
 // DOM Init
 document.addEventListener('DOMContentLoaded', () => {
-    applyTheme('dark'); // Always default to Dark theme when opening project presentation pages
+    applyTheme(currentTheme);
     applyLanguage(currentLang);
     initCarousels();
+    initCinetecaModal();
 
     const btnTheme = document.getElementById('btn-toggle-theme');
     if (btnTheme) {
