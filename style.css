@@ -2124,12 +2124,17 @@ footer.footer-section {
 }
 
 .footer-top-line {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
+    display: block !important;
+    width: 100% !important;
+    height: 0.5px !important;
+    background-color: var(--nav-border, #888888) !important;
+    opacity: 0.2 !important;
+    visibility: visible !important;
     border: none !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 40 !important;
 }
 
 .footer-top-block {
@@ -3162,9 +3167,10 @@ html[data-theme="light"] .icon-btn-header img {
     margin: 0;
 }
 
-/* Carousels */
+/* Carousels (Clean layout - no container boxes, outside arrows, bottom dots) */
 .project-carousel-section {
     margin-bottom: 64px;
+    width: 100%;
 }
 
 .carousel-header-title {
@@ -3178,11 +3184,19 @@ html[data-theme="light"] .icon-btn-header img {
 .carousel-container {
     position: relative;
     width: 100%;
-    overflow: hidden;
-    border-radius: 16px;
-    border: 1px solid var(--nav-border);
-    background: rgba(0, 0, 0, 0.4);
+    overflow: visible;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 60px;
     box-sizing: border-box;
+}
+
+.carousel-viewport {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    border-radius: 8px;
 }
 
 .carousel-track {
@@ -3197,7 +3211,8 @@ html[data-theme="light"] .icon-btn-header img {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 24px;
+    padding: 0;
+    background: transparent !important;
 }
 
 .carousel-slide img {
@@ -3206,56 +3221,74 @@ html[data-theme="light"] .icon-btn-header img {
     height: auto;
     object-fit: contain;
     border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: none !important;
+    border: none !important;
 }
 
 .carousel-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 44px;
-    height: 44px;
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 42px;
+    height: 42px;
+    background: transparent;
+    border: 1px solid var(--nav-border, rgba(127, 127, 127, 0.3));
     border-radius: 50%;
-    color: #ffffff;
-    font-size: 20px;
+    color: var(--text-color);
+    font-size: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 10;
-    transition: background-color 0.25s ease, transform 0.25s ease;
+    opacity: 0.75;
+    transition: opacity 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
 }
 
 .carousel-btn:hover {
-    background: rgba(0, 0, 0, 0.85);
-    transform: translateY(-50%) scale(1.1);
+    opacity: 1;
+    border-color: var(--text-color);
+    background: rgba(127, 127, 127, 0.12);
+    transform: translateY(-50%);
 }
 
-.carousel-btn-prev { left: 16px; }
-.carousel-btn-next { right: 16px; }
+.carousel-btn-prev { left: 0; }
+.carousel-btn-next { right: 0; }
 
 .carousel-dots {
     display: flex;
     justify-content: center;
     gap: 8px;
-    padding: 16px 0;
-    background: rgba(0, 0, 0, 0.2);
+    padding: 16px 0 0 0;
+    margin-top: 16px;
+    background: transparent !important;
+    border: none !important;
 }
 
 .carousel-dot {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
+    background: var(--text-color);
+    opacity: 0.25;
     cursor: pointer;
-    transition: background-color 0.25s ease, transform 0.25s ease;
+    transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
 .carousel-dot.active {
-    background: var(--text-color);
-    transform: scale(1.3);
+    opacity: 1;
+    transform: scale(1.25);
+}
+
+@media (max-width: 640px) {
+    .carousel-container {
+        padding: 0 40px;
+    }
+    .carousel-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 14px;
+    }
 }
 
 /* Bottom Action Section (Behance on mobile / Voltar ao topo on desktop) */
