@@ -222,7 +222,7 @@ body.light-theme .nav-logo-img {
     transition: transform 0.25s ease;
 }
 .header-translate-btn:hover {
-    transform: scale(1.1) !important;
+    transform: none !important;
 }
 .header-translate-btn img {
     width: 18px;
@@ -1246,8 +1246,8 @@ section#sobre-mim {
     position: sticky !important;
     top: 0 !important; left: 0 !important;
     width: 100% !important; height: 100vh !important;
-    background-color: #0a0a0a !important;
-    color: #ffffff !important;
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -1257,10 +1257,6 @@ section#sobre-mim {
     overflow: hidden !important;
     z-index: 20 !important;
     box-shadow: none !important;
-}
-body.light-theme section#sobre-mim {
-    background-color: #f7f7f8;
-    color: #121214;
 }
 
 .sobre-mim-header-wrapper {
@@ -3834,6 +3830,95 @@ body.dark-theme .cineteca-modal-btn-primary {
 .cineteca-modal-btn-primary:hover {
     opacity: 0.9;
     transform: translateY(-1px);
+}
+
+/* --- CINETECA TYPOGRAPHY LAYOUT (EXACT FIGMA MATCH, NO BOXES/STROKES) --- */
+.cineteca-section-block {
+    margin-bottom: 48px;
+    width: 100%;
+}
+
+.cineteca-section-title {
+    font-family: 'PP Mori', sans-serif;
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 700;
+    line-height: 1.25;
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: var(--text-color);
+}
+
+.cineteca-section-text {
+    font-family: 'PP Mori', sans-serif;
+    font-size: clamp(14px, 1.4vw, 17px);
+    line-height: 1.65;
+    color: var(--text-color);
+    opacity: 0.9;
+    margin: 0 0 16px 0;
+}
+
+/* Tomada de decisões layout with mini images wrapped beside text */
+.cineteca-decision-item {
+    margin-top: 24px;
+    margin-bottom: 40px;
+    width: 100%;
+    clear: both;
+}
+
+.cineteca-decision-item::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.cineteca-decision-subtitle {
+    font-family: 'PP Mori', sans-serif;
+    font-size: clamp(18px, 2vw, 24px);
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 14px;
+    color: var(--text-color);
+}
+
+.cineteca-decision-img-right {
+    float: right;
+    width: clamp(280px, 45%, 480px);
+    max-width: 100%;
+    height: auto;
+    margin-left: 24px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    display: block;
+}
+
+.cineteca-decision-img-left {
+    float: left;
+    width: clamp(280px, 45%, 480px);
+    max-width: 100%;
+    height: auto;
+    margin-right: 24px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    display: block;
+}
+
+.carousel-caption-sub {
+    text-align: center;
+    font-size: 13px;
+    font-style: italic;
+    opacity: 0.7;
+    margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .cineteca-decision-img-right,
+    .cineteca-decision-img-left {
+        float: none !important;
+        width: 100% !important;
+        margin: 0 0 16px 0 !important;
+    }
 }
 
 
