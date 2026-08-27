@@ -268,10 +268,13 @@
     <div id="cineteca-modal-overlay" class="cineteca-modal-overlay active" aria-hidden="false">
         <div class="cineteca-modal-card" role="dialog" aria-modal="true" aria-labelledby="cineteca-modal-title">
             <div class="cineteca-modal-header">
-                <h3 class="cineteca-modal-title" id="cineteca-modal-title"
-                    data-pt="Este é um projeto navegável" 
-                    data-en="This is a navigable project">
-                    Este é um projeto navegável
+                <h3 class="cineteca-modal-title" id="cineteca-modal-title">
+                    <span id="cineteca-modal-title-text" data-pt="Este é um projeto navegável" data-en="This is a navigable project">Este é um projeto navegável</span>
+                    <button class="header-translate-btn lang-segmented-btn modal-translate-btn" id="btn-translate-modal" title="Alternar idioma (BRA / ENG)" aria-label="Alternar idioma">
+                        <span class="lang-seg-option lang-bra active" id="modal-lang-opt-bra">BRA</span>
+                        <span class="lang-seg-divider"></span>
+                        <span class="lang-seg-option lang-eng" id="modal-lang-opt-eng">ENG</span>
+                    </button>
                 </h3>
                 <button class="cineteca-modal-close-btn" id="btn-close-cineteca-modal" title="Fechar modal" aria-label="Fechar modal">✕</button>
             </div>

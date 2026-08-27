@@ -107,18 +107,15 @@ function applyLanguage(lang) {
     const elMobileClose = document.getElementById('mobile-txt-close');
     if (elMobileClose) elMobileClose.innerText = t.mobileClose || (lang === 'pt' ? 'Fechar' : 'Close');
 
-    // Segmented language button toggle state (BRA / ENG)
-    const optBra = document.getElementById('lang-opt-bra');
-    const optEng = document.getElementById('lang-opt-eng');
-    if (optBra && optEng) {
-        if (lang === 'pt') {
-            optBra.classList.add('active');
-            optEng.classList.remove('active');
-        } else {
-            optEng.classList.add('active');
-            optBra.classList.remove('active');
-        }
-    }
+    // Segmented language button toggle state (BRA / ENG) across header and modal
+    document.querySelectorAll('.lang-bra').forEach(el => {
+        if (lang === 'pt') el.classList.add('active');
+        else el.classList.remove('active');
+    });
+    document.querySelectorAll('.lang-eng').forEach(el => {
+        if (lang === 'en') el.classList.add('active');
+        else el.classList.remove('active');
+    });
 
     // Elements with data-pt and data-en attributes (handles text, innerHTML for HTML links)
     document.querySelectorAll('[data-pt]').forEach(el => {
@@ -241,13 +238,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const btnTranslate = document.getElementById('btn-translate');
-    if (btnTranslate) {
-        btnTranslate.addEventListener('click', () => {
-            const nextLang = currentLang === 'pt' ? 'en' : 'pt';
-            applyLanguage(nextLang);
-        });
-    }
+    ['btn-translate', 'btn-translate-modal'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.addEventListener('click', () => {
+                const nextLang = currentLang === 'pt' ? 'en' : 'pt';
+                applyLanguage(nextLang);
+            });
+        }
+    });
 
     // Página Anterior button: set skip_preloader and scroll_to_projetos flags so index.html loads clean at #projetos
     const btnBackHome = document.getElementById('btn-back-home');
