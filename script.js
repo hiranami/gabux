@@ -161,7 +161,7 @@ const i18n = {
         navProjects: "Projetos", txtCv: "Currículo", txtContact: "Fale comigo",
         heroH5: "Olá, me chamo Gabriel, sou",
         heroLine1: "UX/UI Designer e transformo ideias complexas em interfaces ", heroH1Em: "funcionais e escaláveis", heroLine2Post: " de alta conversão com Figma e Inteligência Artificial.",
-        lblSobrePt: "Sobre mim", lblSobreEn: "About me",
+        lblSobrePt: "Sobre mim", lblSobreEn: "About me", sobreTitle: "Sobre mim",
         decryptText: "Agilizo a criação de protótipos e produtos sem abrir mão da consistência visual, acessibilidade, hierarquia de informação e usabilidade, unindo Figma e Desenvolvimento com IA.",
         themeDark: "desligado", themeLight: "ligado",
         entregoTitle: "O que entrego",
@@ -194,7 +194,7 @@ const i18n = {
         navProjects: "Projects", txtCv: "CV", txtContact: "Contact Me",
         heroH5: "Hello, I'm Gabriel, I'm a",
         heroLine1: "UX/UI Designer turning complex ideas into ", heroH1Em: "functional and scalable", heroLine2Post: " high-converting interfaces with Figma and AI.",
-        lblSobrePt: "Sobre mim", lblSobreEn: "About me",
+        lblSobrePt: "Sobre mim", lblSobreEn: "About me", sobreTitle: "About me",
         decryptText: "I accelerate prototype and product creation without sacrificing visual consistency, accessibility, information hierarchy, and usability, combining Figma and AI Development.",
         themeDark: "off", themeLight: "on",
         entregoTitle: "What I deliver",
@@ -367,7 +367,7 @@ function updateLanguageTexts() {
     setElText('title-line-2-post', data.heroLine2Post);
     setElText('lbl-sobre-pt', data.lblSobrePt);
     setElText('lbl-sobre-en', data.lblSobreEn);
-    setElText('txt-sobre-mim-header-title', data.lblSobrePt);
+    setElText('txt-sobre-mim-header-title', data.sobreTitle);
     rawDecryptTargetText = data.decryptText;
 
     // Section "O que entrego" texts update
