@@ -265,10 +265,10 @@ body.light-theme .header-translate-btn img {
     height: 22px;
     display: block;
     object-fit: contain;
-    filter: var(--logo-filter, none);
+    filter: none !important;
 }
 body.light-theme .mobile-burger-icon {
-    filter: invert(1);
+    filter: none !important;
 }
 
 .nav-item { 
