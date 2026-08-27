@@ -165,12 +165,14 @@ const i18n = {
         decryptText: "Agilizo a criação de protótipos e produtos sem abrir mão da consistência visual, acessibilidade, hierarquia de informação e usabilidade, unindo Figma e Desenvolvimento com IA.",
         themeDark: "desligado", themeLight: "ligado",
         entregoTitle: "O que entrego",
-        delivLine1: "SAAS & MICRO SAAS",
-        delivSub1: "Arquitetura de informação e interfaces completas para SaaS de educação, saúde, fintechs e RH com foco em experiência e eficiência. Reduzo a taxa de abandono (churn) criando fluxos de onboarding simples, fluxos claros e protótipos em código para validação rápida com investidores e usuários.",
-        delivLine2: "PÁGINAS FOCADAS EM CONVERSÃO",
-        delivSub2: "Desenvolvo Landing Pages estáticas ou animadas (Framer/Next.js/React/GSAP) para startups em fase de captação, validação ou lançamento otimizado para SEO, carregamento rápido e integração com ferramentas de métricas e analytics.",
-        delivLine3: "DASHBOARDS & CRMS",
-        delivSub3: "Estruturação de sistemas de gestão e análise de dados como os de setores de logística, financeiro e pessoal, com foco em hierarquia visual, contexto, e fácil usabilidade.",
+        delivLine1: "PESQUISA & DESCOBERTA",
+        delivSub1: "Pesquisas qualitativas e quantitativas, benchmarking, jornada do usuário, identificação de problemas e oportunidades, análise de métricas NPS, CSAT.",
+        delivLine2: "ESTRATÉGIA & UX",
+        delivSub2: "Arquitetura da informação, fluxos, wireframes, soluções centradas no usuário, requisitos.",
+        delivLine3: "UI & DESIGN VISUAL",
+        delivSub3: "Interfaces web e mobile, design responsivo, design systems, prototipação de alta fidelidade, hierarquia visual, tipografia e acessibilidade.",
+        delivLine4: "VALIDAÇÃO, ITERAÇÃO & DEPLOY",
+        delivSub4: "Protótipos reais e interativos desenvolvidos com inteligência artificial, testes de usabilidades, análise de feedback, iteração de soluções, validação de hipóteses.",
         entregoBottom: "Atuo com métodos ágeis, sem ignorar etapas cruciais, e utilizando uma stack atualizada com Figma e Framer aliados com programação por IA, do início ao fim.",
         txtExpand: "expandir", txtHide: "ocultar",
         projetosTitle: "Projetos",
@@ -198,12 +200,14 @@ const i18n = {
         decryptText: "I accelerate prototype and product creation without sacrificing visual consistency, accessibility, information hierarchy, and usability, combining Figma and AI Development.",
         themeDark: "off", themeLight: "on",
         entregoTitle: "What I deliver",
-        delivLine1: "SAAS & MICRO SAAS",
-        delivSub1: "Information architecture and complete interfaces for education, healthcare, fintech, and HR SaaS focused on experience and efficiency. I reduce churn rate by creating simple onboarding flows, clear user journeys, and coded prototypes for fast validation with investors and users.",
-        delivLine2: "CONVERSION-FOCUSED PAGES",
-        delivSub2: "Static or animated development (Framer/Next.js/React/GSAP) of Landing Pages for startups in fundraising, validation, or launch phases optimized for SEO, fast loading, and integration with analytics tools.",
-        delivLine3: "DASHBOARDS & CRMS",
-        delivSub3: "Structuring management systems and data analytics for logistics, financial, and HR sectors, focusing on visual hierarchy, context, and effortless usability.",
+        delivLine1: "RESEARCH & DISCOVERY",
+        delivSub1: "Qualitative and quantitative research, benchmarking, user journey mapping, problem and opportunity identification, NPS and CSAT metrics analysis.",
+        delivLine2: "STRATEGY & UX",
+        delivSub2: "Information architecture, user flows, wireframes, user-centered solutions, requirements.",
+        delivLine3: "UI & VISUAL DESIGN",
+        delivSub3: "Web and mobile interfaces, responsive design, design systems, high-fidelity prototyping, visual hierarchy, typography, and accessibility.",
+        delivLine4: "VALIDATION, ITERATION & DEPLOYMENT",
+        delivSub4: "Real and interactive prototypes developed with artificial intelligence, usability testing, feedback analysis, solution iteration, hypothesis validation.",
         entregoBottom: "I work with agile methodologies without skipping crucial steps, using an updated stack with Figma and Framer combined with AI coding from start to finish.",
         txtExpand: "expand", txtHide: "hide",
         projetosTitle: "Projects",
@@ -378,6 +382,8 @@ function updateLanguageTexts() {
     setElText('deliv-sub-2', data.delivSub2);
     setElText('deliv-line-3', data.delivLine3);
     setElText('deliv-sub-3', data.delivSub3);
+    setElText('deliv-line-4', data.delivLine4);
+    setElText('deliv-sub-4', data.delivSub4);
     setElText('txt-entrego-bottom', data.entregoBottom);
 
     // Section "Projetos" texts update
