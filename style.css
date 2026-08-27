@@ -3862,6 +3862,7 @@ body.dark-theme .cineteca-modal-card {
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
+    white-space: nowrap;
     transition: opacity 0.2s ease, transform 0.15s ease;
 }
 
